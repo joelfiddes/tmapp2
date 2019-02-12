@@ -1,0 +1,164 @@
+#!/usr/bin/env python
+
+"""
+INI file should be configured named and supplied as argument of fullpathtofile 
+or just filename if in curent wd eg: 
+		
+		$ python writeConfig.py
+
+		$ python topomapp_main.py test.ini &> test.log
+"""
+
+import sys
+import os
+import subprocess
+import logging
+import os.path
+#from listpoints_make import getRasterDims as dims
+import glob
+#import joblib
+import numpy
+
+#===============================================================================
+#	Timer
+#===============================================================================
+import time
+start_time = time.time()
+
+#===============================================================================
+#	Config setup
+#===============================================================================
+#os.system("python writeConfig.py") # update config DONE IN run.sh file
+from configobj import ConfigObj
+config = ConfigObj(sys.argv[1])
+config = ConfigObj("/home/joel/src/topoMAPPv2/my.ini")
+wd = config["main"]["wd"]
+
+#===============================================================================
+#	Logging
+#===============================================================================
+logging.basicConfig(level=logging.DEBUG, filename=wd+"/logfile", filemode="a+",
+                        format="%(asctime)-15s %(levelname)-8s %(message)s")
+
+
+#===============================================================================
+#	Creat wd dir if doesnt exist
+#===============================================================================
+#directory = os.path.dirname(wd)
+if not os.path.exists(wd):
+	os.makedirs(wd)
+if not os.path.exists(wd + "/sim"):
+	os.makedirs(wd + "/sim")
+
+if not os.path.exists(wd + "/spatial"):
+	os.makedirs(wd + "/spatial")
+
+if not os.path.exists(wd + "/forcing"):
+	os.makedirs(wd + "/forcing")
+
+if not os.path.exists(wd + "/predictors"):
+	os.makedirs(wd + "/predictors")
+
+ndvi_wd=wd + "/modis/ndvi"
+if not os.path.exists(ndvi_wd):
+	os.makedirs(ndvi_wd)
+
+#===============================================================================
+#	Announce wd
+#===============================================================================
+logging.info("----------------------- START RUN -----------------------")
+logging.info("Simulation directory: " + wd  )
+
+#===============================================================================
+#	Initialise run: this can be used to copy meteo and surfaces to a new sim directory. 
+# 	Main application is in ensemble runs
+#===============================================================================
+# if config["main"]["initSim"] == "TRUE":
+# 	import TMinit
+# 	TMinit.main(config, ensembRun=False)
+
+  
+#===============================================================================
+# Copy config to simulation directory
+#===============================================================================
+configfilename = os.path.basename(sys.argv[1])
+
+config.filename = wd +  "/" + configfilename
+config.write()
+
+#===============================================================================
+#	Retrieve DEM and compute slp/asp
+#===============================================================================
+
+# control statement to skip if "asp.tif" exist - indicator fileNOT ROBUST
+fname = wd + "/predictors/asp.tif"
+if os.path.isfile(fname) == False:		
+
+		# copy preexisting dem
+	if config["main"]["demexists"] == "TRUE":
+
+		cmd = "mkdir " + wd + "/predictors/"
+		os.system(cmd)
+		src = config["main"]["dempath"]
+		dst = wd +"/predictors/dem.tif"
+		cmd = "cp -r %s %s"%(src,dst)
+		os.system(cmd) 
+
+	logging.info("create shp")
+	cmd = ["Rscript", "./rsrc/makePoly.R" ,config["main"]["latN"],config["main"]["latS"],config["main"]["lonE"],config["main"]["lonW"], wd +"/spatial/domain.shp"] # n,s,e,w
+	subprocess.check_output(cmd)
+
+	logging.info("Retrieve DEM")
+	cmd = ["Rscript", "./rsrc/getDEM.R" , wd, config["main"]["demdir"] , wd +"/spatial/domain.shp"]
+	subprocess.check_output(cmd)
+
+	logging.info("Compute topo predictors")
+	cmd = ["Rscript", "./rsrc/computeTopo.R" , wd,]
+	subprocess.check_output(cmd)
+
+else:
+	logging.info("Topo predictors computed")
+
+#===============================================================================
+#	Retrieve ERA
+#===============================================================================
+import getMeteo.py
+
+#===============================================================================
+#	Retrieve MODIS
+#===============================================================================
+logging.info( "Retrieving MODIS NDVI")
+
+# Define grid AOI shp
+gridAOI = wd + "/spatial/extent.shp"
+cmd = ["Rscript", "./rsrc/rst2shp.R" , wd + "/predictors/ele.tif", gridAOI]
+subprocess.check_output(cmd)
+
+#need to run loop of five requests at set dates (can be fixed for now)
+mydates=["2001-08-12","2004-08-12","2008-08-12","2012-08-12"]#,"2016-08-12"]
+for date in mydates:
+	# call bash script that does grep type stuff to update values in options file
+	cmd = ["./modis/updateOptions.sh" , date , date, config["main"]["srcdir"]+"/modis/optionsNDVI.json", ndvi_wd]
+	subprocess.check_output(cmd)
+
+	# run MODIStsp tool
+	cmd = ["Rscript", "./rsrc/getMODIS.R", config["main"]["srcdir"]+"/modis/optionsNDVI.json", gridAOI] #  able to run non-interactively now
+	subprocess.check_output(cmd)
+
+#===============================================================================
+#	Setup cluster
+#===============================================================================
+logging.info("Setup sim directories")
+cmd = ["Rscript", "./rsrc/prepareClusterSims.R", wd]
+subprocess.check_output(cmd)
+
+#===============================================================================
+#	Start sims
+#===============================================================================
+""" Start sims
+	- generate joblist that can be executed locally on n cores or sent to 
+	cluster
+	"""
+logging.info("Generate joblist")
+cmd = ["Rscript", "./rsrc/joblist.R", wd]
+subprocess.check_output(cmd)
