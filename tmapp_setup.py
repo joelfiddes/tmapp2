@@ -7,6 +7,8 @@ or just filename if in curent wd eg:
 		$ python writeConfig.py
 
 		$ python topomapp_main.py test.ini &> test.log
+
+		tz is always 0 UTC as that is timezone of the data
 """
 
 import sys

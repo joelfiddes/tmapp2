@@ -82,7 +82,7 @@ else:
 	cmd = ["python",  "/home/joel/src/tscaleV2/toposcale/tscale_run.py",
 	"/home/joel/mnt/myserver/sim/yala3/forcing/PLEV.nc", 
 	"/home/joel/mnt/myserver/sim/yala3/forcing/SURF.nc", 
-	home+"/listpoints.txt"]
+	home+"/listpoints.txt", config["forcing"]["product"],str(0)]
 	subprocess.check_output(cmd)
 
 	import TMtoposcale
