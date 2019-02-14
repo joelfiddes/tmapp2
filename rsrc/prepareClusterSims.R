@@ -1,7 +1,9 @@
 require(raster)
+# grids and members are numbered stating at 1 and increasing monotonically
 args = commandArgs(trailingOnly=TRUE)
 wd=args[1]
 grid = args[2]
+members = args[3]
 
 rst = raster(grid)
 aoi=shapefile(paste0(wd,"/spatial/extent.shp"))
@@ -16,14 +18,14 @@ plot(poly)
 text(coordinates(poly)[,1],coordinates(poly)[,2], poly$era5_gp)
 dev.off()
 
-nensembles=10
-for (j in 1:nensembles){
-	jc=formatC(j, width=4, flag='0')
+
+for (j in 1:members){
+	jc=j #formatC(j, width=4, flag='0') # dont both with padding
 	
 	for (i in 1:ncells){
 	setwd(wd)
-	ic=formatC(i, width=5, flag='0')
-	simdir=paste0('c',ic,'e',jc)
+	ic=i #formatC(i, width=5, flag='0')
+	simdir=paste0('g',ic,'m',jc)
 	dir.create(paste0(wd,"/sim/",simdir), showWarnings=FALSE)
 	dir.create(paste0(wd,"/sim/",simdir,"/predictors"), showWarnings=FALSE)
 	setwd(paste0(wd,'/predictors'))
@@ -45,7 +47,7 @@ for (j in 1:nensembles){
 		
 		if(j>1){ 
 		# cp cut predictors from ensemble 1 to ensemble n to save time
-		simdir1 =paste0('c',ic,'e0001')
+		simdir1 =paste0('g',ic,'m1')
 		system(paste0("cp -r ",paste0(wd,'/sim/', simdir1,"/predictors" )," ", paste0(wd,'/sim/', simdir) ) )
 		}
 	}

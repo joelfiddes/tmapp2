@@ -32,8 +32,8 @@ start_time = time.time()
 #===============================================================================
 #os.system("python writeConfig.py") # update config DONE IN run.sh file
 from configobj import ConfigObj
-#config = ConfigObj(sys.argv[1])
-config = ConfigObj("/home/joel/sim/topomapptest/config.ini")	
+config = ConfigObj(sys.argv[1])
+#config = ConfigObj("/home/joel/sim/topomapptest/config.ini")	
 wd = config["main"]["wd"]
 
 #===============================================================================
@@ -173,7 +173,7 @@ Set up cluster
 	[2] grid used by sim (0.25 = era5 0.5 = ensemble)
 """
 logging.info("Setup sim directories")
-cmd = ["Rscript", "./rsrc/prepareClusterSims.R", wd, config['forcing']['grid']]
+cmd = ["Rscript", "./rsrc/prepareClusterSims.R", wd, config['forcing']['grid'], config['forcing']['members']]
 subprocess.check_output(cmd)
 
 #===============================================================================
@@ -186,3 +186,6 @@ subprocess.check_output(cmd)
 logging.info("Generate joblist")
 cmd = ["Rscript", "./rsrc/joblist.R", wd]
 subprocess.check_output(cmd)
+
+logging.info("Setup complete!")
+logging.info(" %f minutes for setup" % round((time.time()/60 - start_time/60),2) )
