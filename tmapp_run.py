@@ -5,6 +5,8 @@
 
 Example:
 
+	joel@joel-ThinkPad-T440p:~/src/tmapp2$ python tmapp_run.py /home/joel/sim/topomapptest/ g1m3 3
+
 
 Attributes:
 
@@ -73,8 +75,8 @@ if int(member) > 1:
 	src=master +"/landcoverZones.txt" 
 	dst= home+"/landcoverZones.txt"
 	copyfile(src,dst)
-		src=master +"/landforms.tif" 
-	dst= home+"/landforms.tif"
+	src=master +"/landform.tif" 
+	dst= home+"/landform.tif"
 	copyfile(src,dst)
 
 start = datetime.strptime(config['main']['startDate'], "%Y-%m-%d")
