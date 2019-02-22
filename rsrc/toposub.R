@@ -150,9 +150,7 @@ gridmaps$landform <-vec
 #writeRaster(raster(gridmaps["landform"]), paste(spath,"/landform_",Nclust,".tif",sep=''),NAflag=-9999,overwrite=T)
 rst=raster(gridmaps["landform"])
 writeRaster(rst, paste0(gridpath,"/landform.tif"),NAflag=-9999,overwrite=T)
-pdf(paste0(gridpath,'/landforms.pdf'))
-plot(rst)
-dev.off()
+
 samp_mean <- aggregate(gridmaps@data[predNames2], by=list(gridmaps$landform), FUN='mean',na.rm=TRUE)
 samp_sd <- aggregate(gridmaps@data[predNames2], by=list(gridmaps$landform), FUN='sd',na.rm=TRUE)
 samp_sum <- aggregate(gridmaps@data[predNames2], by=list(gridmaps$landform), FUN='sum',na.rm=TRUE)
@@ -186,6 +184,10 @@ lsp$lon <-rep(lonbox,dim(lsp)[1])
 lsp$surfRough = rep(1e-3,dim(lsp)[1])
 lsp$tz = rep(0,dim(lsp)[1])
 write.csv(round(lsp,2),paste0(gridpath, '/listpoints.txt'), row.names=FALSE)
+
+pdf(paste0(gridpath,'/landforms.pdf'))
+plot(rst)
+dev.off()
 
 # moved to sepatae fn sampleDistributions.R
 # pdf(paste0(gridpath, '/sampleDistributions.pdf'), width=6, height =12)
