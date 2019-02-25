@@ -15,7 +15,7 @@
 
 #require("gregmisc") - depracated
 #does it really need these packages? 
-#require(gdata)
+require(gdata) # required by trim function
 #require(gtools)
 #require(gmodels)
 
