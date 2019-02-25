@@ -5,7 +5,7 @@
 # redo this as bash with sed
 
 #DEPENDENCY
-#require(gdata)
+
 
 #SOURCE
 source("./rsrc/gt_control.R")
