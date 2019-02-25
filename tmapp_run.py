@@ -28,6 +28,7 @@ import glob
 from shutil import copyfile
 import sys
 
+tscale_root="/home/joel/src/"
 
 def main(wd, simdir, member):
 
@@ -158,7 +159,7 @@ def main(wd, simdir, member):
 
 				cmd = [
 				"python",  
-				"/home/joel/src/tscaleV2/toposcale/tscale_run_ensemble.py",
+				tscale_root+"/tscaleV2/toposcale/tscale_run_ensemble.py",
 				wd + "/forcing/", 
 				home,home+"/forcing/" ,
 				str(member),
@@ -172,7 +173,7 @@ def main(wd, simdir, member):
 
 				cmd = [
 				"python",  
-				"/home/joel/src/tscaleV2/toposcale/tscale_run.py",
+				tscale_root+"/tscaleV2/toposcale/tscale_run.py",
 				wd + "/forcing/", 
 				home,home+"/forcing/",
 				startTime,
@@ -301,7 +302,7 @@ def main(wd, simdir, member):
 
 		cmd = [
 		"python",  
-		"/home/joel/src/tscaleV2/toposcale/tscale_run_ensemble.py",
+		tscale_root+"/tscaleV2/toposcale/tscale_run_ensemble.py",
 		wd + "/forcing/", 
 		home,home+"/forcing/" ,
 		str(member),
@@ -315,7 +316,7 @@ def main(wd, simdir, member):
 
 		cmd = [
 		"python",  
-		"/home/joel/src/tscaleV2/toposcale/tscale_run.py",
+		tscale_root+"/tscaleV2/toposcale/tscale_run.py",
 		wd + "/forcing/", 
 		home,home+"/forcing/",
 		startTime,
