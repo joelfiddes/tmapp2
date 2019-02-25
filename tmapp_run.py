@@ -28,7 +28,7 @@ import glob
 from shutil import copyfile
 import sys
 
-tscale_root="/home/joel/src/"
+
 
 def main(wd, simdir, member):
 
@@ -39,6 +39,7 @@ def main(wd, simdir, member):
 	from configobj import ConfigObj
 	config = ConfigObj(wd+"/config.ini")
 
+	tscale_root=config['main']['tscale_root'] # path to tscaleV2 directory
 	#===============================================================================
 	#	Logging
 	#===============================================================================
