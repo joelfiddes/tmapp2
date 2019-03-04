@@ -27,7 +27,7 @@ from dateutil.relativedelta import *
 import glob
 from shutil import copyfile
 import sys
-
+import time
 
 
 def main(wd, simdir, member):
@@ -49,7 +49,6 @@ def main(wd, simdir, member):
 	#====================================================================
 	#	Timer
 	#====================================================================
-	import time
 	start_time = time.time()
 
 	#===============================================================================
@@ -112,7 +111,7 @@ def main(wd, simdir, member):
 		if os.path.isfile(fname) == False:
 
 			logging.info( "Run TopoSUB 1 ")
-			cmd = ["Rscript",  "./rsrc/toposub.R",home,str(config['toposub']['nclust'])]
+			cmd = ["Rscript",  "./rsrc/toposub.R",home,str(config['toposub']['nclust']), "TRUE"]
 			subprocess.check_output(cmd)
 		else:
 			logging.info("TopoSUB already run!")
@@ -248,7 +247,7 @@ def main(wd, simdir, member):
 		#===============================================================================
 
 				logging.info( "Run toposub informed")
-				cmd = ["Rscript",  "./rsrc/toposub_inform.R", home , config['toposub']['nclust'] , config['geotop']['targV'] , "TRUE"]
+				cmd = ["Rscript",  "./rsrc/toposub_inform.R", home , config['toposub']['nclust'] , config['geotop']['targV'] , "TRUE", "FALSE"]
 				subprocess.check_output(cmd)
 
 				logging.info( "TopoSUB INFORM complete"  )

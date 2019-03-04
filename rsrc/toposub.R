@@ -8,6 +8,8 @@
 #DEPENDENCY
 require(rgdal)
 require(raster)
+require(FNN)
+#require(biganalytics) for bigkmeans
 
 #SOURCE
 source("./rsrc/toposub_src.R")
@@ -18,6 +20,7 @@ source("./rsrc/toposub_src.R")
 args = commandArgs(trailingOnly=TRUE)
 gridpath=args[1]
 Nclust=args[2]
+lowmem=args[3]
 #Ngrid=args[3]
 # # test if there is at least one argument: if not, return an error
 # if (length(args)==0) {
@@ -39,9 +42,9 @@ nRand=100000	# sample size
 nstart1=10 	# nstart for sample kmeans [find centers]
 nstart2=1 	# nstart for entire data kmeans [apply centers]
 thresh_per=0.001 # needs experimenting with
-samp_reduce=FALSE
-algo="Hartigan-Wong" #"MacQueen" # ("Hartigan-Wong", "Lloyd", "Forgy",
- 
+samp_reduce=FALSE # this would change Nclust value and break many things!
+algo="Hartigan-Wong"#"MacQueen" # ("Hartigan-Wong", "Lloyd", "Forgy",
+# https://stackoverflow.com/questions/20446053/k-means-lloyd-forgy-macqueen-hartigan-wong
 #**********************  SCRIPT BEGIN *******************************
 print(paste0('Running TOPOSUB on ',Nclust,' samples'))
 
@@ -62,6 +65,10 @@ gridmaps<- as(rstack, 'SpatialGridDataFrame')
 res=aspect_decomp(gridmaps$asp)
 gridmaps$aspC<-res$aspC
 gridmaps$aspS<-res$aspS
+
+# remove unecessary dimensions
+gridmaps$asp<-NULL
+gridmaps$surface<-NULL
 
 #define new predNames (aspC, aspS)
 allNames<-names(gridmaps@data)
@@ -86,10 +93,13 @@ scaleDat_samp= simpleScale(data=samp_dat, pnames=predNames2)
 
 #remove NA's from dataset (not tolerated by kmeans)
 scaleDat_samp2=na.omit(scaleDat_samp)
-#kmeans on sample
+scaleDat_samp2 = round(scaleDat_samp2,2) # try to improve convergence
 
+#kmeans on sample
+print("Running Kmeans on 100000 pixel sample to find optimal start centres..")
 #clust1=Kmeans(scaleDat=scaleDat_samp2,iter.max=iter.max,centers=Nclust, nstart=nstart1)
 clust1 <- kmeans(x=scaleDat_samp2, centers=Nclust, iter.max = iter.max, nstart = nstart1, trace=FALSE, algorithm = algo)
+#clust1 <-bigkmeans(x=scaleDat_samp2, centers=Nclust, iter.max = iter.max, nstart = nstart1, dist = "euclid")
 #http://stackoverflow.com/questions/21382681/kmeans-quick-transfer-stage-steps-exceeded-maximum
 
 
@@ -107,11 +117,24 @@ scaleDat_all= simpleScale(data=gridmaps@data, pnames=predNames2)
 
 #remove NA's from dataset (not tolerated by kmeans)
 scaleDat_all2=na.omit(scaleDat_all)
+scaleDat_all2 = round(scaleDat_all2,2) # try to improve convergence
 #kmeans whole dataset
 
+if (lowmem==FALSE){
+print("Running full Kmeans on entire dataset....")
 #clust2=Kmeans(scaleDat=scaleDat_all2,iter.max=iter.max,centers=clust1$centers, nstart=nstart2)
 clust2 <- kmeans(x=scaleDat_all2, centers=clust1$centers, iter.max = iter.max, nstart = nstart2, trace=FALSE,algorithm = algo)
+#clust2 <-bigkmeans(x=scaleDat_all2, centers=clust1$centers, iter.max = iter.max, nstart = nstart2, dist = "euclid")
 #http://stackoverflow.com/questions/21382681/kmeans-quick-transfer-stage-steps-exceeded-maximum
+}
+
+
+if (lowmem==TRUE){
+	print("Running lowmem Fast k-nearest neighbor search")
+	# https://www.rdocumentation.org/packages/FNN/versions/1.1.3/topics/get.knn
+	clust2 <- get.knnx(clust1$center, scaleDat_all2, 1)$nn.index[,1]
+}
+
 
 #**CLEANUP**
 rm(scaleDat_all2)
@@ -119,13 +142,13 @@ rm(clust1)
 gc()
 
 #remove small samples, redist to nearestneighbour attribute space
-if(samp_reduce==TRUE){
-clust3=sample_redist(pix= length(clust2$cluster),samples=Nclust,thresh_per=thresh_per, clust_obj=clust2)# be careful, samlple size not updated only clust2$cluster changed
-}else{clust2->clust3}
+#if(samp_reduce==TRUE){
+#clust3=sample_redist(pix= length(clust2$cluster),samples=Nclust,thresh_per=thresh_per, clust_obj=clust2)# be careful, samlple size not updated only clust2$cluster changed
+#}else{clust2->clust3}
 
 #**CLEANUP**
-rm(clust2)
-gc()
+#rm(clust2)
+#gc()
 #confused by these commented out lines
 #gridmaps$clust <- clust3$cluster
 #write.asciigrid(gridmaps["landform"], paste(spath,"/landform_",Nclust,".tif",sep=''),na.value=-9999)
@@ -139,7 +162,14 @@ n2=which(is.na(scaleDat_all$aspC)==FALSE & is.na(scaleDat_all$svf)==FALSE)
 #make NA vector
 vec=rep(NA, dim(scaleDat_all)[1])
 #replace values
-vec[n2]<-as.factor(clust3$cluster)
+
+if (lowmem==FALSE){
+	vec[n2]<-as.factor(clust2$cluster)
+}
+if (lowmem==TRUE){
+	vec[n2]<-as.factor(clust2)
+}
+
 
 #**CLEANUP**
 rm(scaleDat_all)

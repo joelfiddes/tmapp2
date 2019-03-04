@@ -5,6 +5,7 @@
 
 #DEPENDENCY
 require(raster)
+require(FNN)
 #SOURCE
 source("./rsrc/toposub_src.R")
 #====================================================================
@@ -15,6 +16,7 @@ gridpath=args[1]
 Nclust=args[2]
 targV=args[3]
 svfCompute=args[4]
+lowmem=args[5]
 #Nclust=args[2] #'/home/joel/sim/topomap_test/grid1' #
 
 #====================================================================
@@ -31,6 +33,7 @@ nstart1=10 	# nstart for sample kmeans [find centers]
 nstart2=1 	# nstart for entire data kmeans [apply centers]
 thresh_per=0.001 # needs experimenting with
 samp_reduce=FALSE
+algo="Hartigan-Wong"#"MacQueen" # ("Hartigan-Wong", "Lloyd", "Forgy",
 #====================================================================
 #			TOPOSUB PREPROCESSOR INFORMED SAMPLING		
 #====================================================================
@@ -56,6 +59,10 @@ res=aspect_decomp(gridmaps$asp)
 gridmaps$aspC<-res$aspC
 gridmaps$aspS<-res$aspS
 
+# remove unecessary dimensions
+gridmaps$asp<-NULL
+gridmaps$surface<-NULL
+
 #define new predNames (aspC, aspS)
 allNames<-names(gridmaps@data)
 predNames2 <- allNames[which(allNames!='surface'&allNames!='asp')]
@@ -65,7 +72,7 @@ predNames2 <- allNames[which(allNames!='surface'&allNames!='asp')]
 #initialise file to write to
 pvec<-rbind(predNames2)
 x<-cbind("tv",pvec,'r2')
-write.table(x, paste(gridpath,"/coeffs.txt",sep=""), sep=",",col.names=F, row.names=F)
+#write.table(x, paste(gridpath,"/coeffs.txt",sep=""), sep=",",col.names=F, row.names=F)
 write.table(x, paste(gridpath,"/decompR.txt",sep=""), sep=",",col.names=F, row.names=F)
 
 # read mean values of targV
@@ -76,7 +83,7 @@ coeffs=linMod2(meanX=meanX,listpoints=listpoints, predNames=predNames2,col=targV
 
 if(sum(as.numeric(coeffs),na.rm=TRUE) == 0){stop("inform targetV variable all zero counts in obs period (tip: are you using SWE in summer for informed scaling routine?) or does preprocessed era in eraDat/all etc match set time period in ini file?")} # This catches the case where targV does not have values in simulation period eg. using snow water equivalent in summer sim period, also case where forcing meteo has been recyldced for another simulation but the preprocessed time slice left in place. forcing and simulation period then do not overlap. First simulation runs without errors but inform will not work.
 
-write(coeffs, paste(gridpath,"/coeffs.txt",sep=""),ncolumns=7, append=TRUE, sep=",") # 6 cols if no svf
+write(coeffs, paste(gridpath,"/coeffs2.txt",sep=""),ncolumns=7, append=TRUE, sep=",") # 6 cols if no svf
 weightsMean<-read.table(paste(gridpath,"/coeffs.txt",sep=""), sep=",",header=T)
 
 #==========mean coeffs table for multiple preds ================================
@@ -104,12 +111,32 @@ informScaleDat2=informScale(data=gridmaps@data, pnames=predNames2,weights=weight
 #remove NA's from dataset (not tolerated by kmeans)
 informScaleDat_all=na.omit(informScaleDat2)
 #kmeans whole dataset
-clust2=Kmeans(scaleDat=informScaleDat_all,iter.max=iter.max,centers=clust1$centers, nstart=nstart2)
+#clust2=Kmeans(scaleDat=informScaleDat_all,iter.max=iter.max,centers=clust1$centers, nstart=nstart2)
+
+if (lowmem==FALSE){
+print("Running full Kmeans on entire dataset....")
+#clust2=Kmeans(scaleDat=scaleDat_all2,iter.max=iter.max,centers=clust1$centers, nstart=nstart2)
+clust2 <- kmeans(x=informScaleDat_all, centers=clust1$centers, iter.max = iter.max, nstart = nstart2, trace=FALSE,algorithm = algo)
+#clust2 <-bigkmeans(x=scaleDat_all2, centers=clust1$centers, iter.max = iter.max, nstart = nstart2, dist = "euclid")
+#http://stackoverflow.com/questions/21382681/kmeans-quick-transfer-stage-steps-exceeded-maximum
+}
+
+if (lowmem==TRUE){
+	print("Running lowmem Fast k-nearest neighbor search")
+	# https://www.rdocumentation.org/packages/FNN/versions/1.1.3/topics/get.knn
+	clust2 <- get.knnx(clust1$center, informScaleDat_all, 1)$nn.index[,1]
+}
+
+#**CLEANUP**
+
+rm(informScaleDat_all)
+rm(clust1)
+gc()
 
 #remove small samples, redist to nearestneighbour attribute space
-if(samp_reduce==TRUE){
-clust3=sample_redist(pix= length(clust2$cluster),samples=Nclust,thresh_per=thresh_per, clust_obj=clust2)# be careful, samlple size not updated only clust2$cluster changed
-}else{clust2->clust3}
+#if(samp_reduce==TRUE){
+#clust3=sample_redist(pix= length(clust2$cluster),samples=Nclust,thresh_per=thresh_per, clust_obj=clust2)# be careful, samlple size not updated only clust2$cluster changed
+#}else{clust2->clust3}
 
 #confused by these commented out lines
 #gridmaps$clust <- clust3$cluster
@@ -123,12 +150,19 @@ n2=which(is.na(informScaleDat2$aspC)==FALSE & is.na(informScaleDat2$svf)==FALSE)
 #make NA vector
 vec=rep(NA, dim(informScaleDat2)[1])
 #replace values
-vec[n2]<-as.factor(clust3$cluster)
+#vec[n2]<-as.factor(clust3$cluster)
+
+if (lowmem==FALSE){
+	vec[n2]<-as.factor(clust2$cluster)
+}
+if (lowmem==TRUE){
+	vec[n2]<-as.factor(clust2)
+}
 
 
 #**CLEANUP**
-rm(informScaleDat_all)
-#gc()
+rm (informScaleDat2)
+gc()
 
 #gridmaps$landform <- as.factor(clust3$cluster)
 gridmaps$landform <-vec
