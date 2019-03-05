@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
 """
-INI file should be configured named and supplied as argument of fullpathtofile 
-or just filename if in curent wd eg: 
-		
-		$ python writeConfig.py
 
-		$ python topomapp_main.py test.ini &> test.log
+args1: full path to config.ini
+
+example:	
+	python tmapp_setup.py "/home/caduff/sim/topomapptest/config.ini"
+
 
 		tz is always 0 UTC as that is timezone of the data
 """

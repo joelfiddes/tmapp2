@@ -113,7 +113,7 @@ def main(wd, simdir, member):
 			logging.info( "Run TopoSUB 1 ")
 			cmd = ["Rscript",  "./rsrc/toposub.R",home,str(config['toposub']['nclust']), "TRUE"]
 			subprocess.check_output(cmd)
-		f = open("SUCCESS_TSUB1", "w")
+			f = open("SUCCESS_TSUB1", "w")
 		else:
 			logging.info("TopoSUB already run!")
 		#===============================================================================
