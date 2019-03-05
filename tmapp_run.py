@@ -247,7 +247,7 @@ def main(wd, simdir, member):
 		#===============================================================================
 
 				logging.info( "Run toposub informed")
-				cmd = ["Rscript",  "./rsrc/toposub_inform.R", home , config['toposub']['nclust'] , config['geotop']['targV'] , "TRUE", "FALSE"]
+				cmd = ["Rscript",  "./rsrc/toposub_inform.R", home , config['toposub']['nclust'] , config['geotop']['targV'] , "TRUE", "TRUE"]
 				subprocess.check_output(cmd)
 
 				logging.info( "TopoSUB INFORM complete"  )
