@@ -110,16 +110,20 @@ if os.path.isfile(fname) == False:
 	cmd = ["Rscript", "./rsrc/makePoly.R" ,config["main"]["latN"],config["main"]["latS"],config["main"]["lonE"],config["main"]["lonW"], wd +"/spatial/domain.shp"] # n,s,e,w
 	subprocess.check_output(cmd)
 
-	logging.info("Retrieve DEM")
-	cmd = ["Rscript", "./rsrc/getDEM.R" , wd, config["main"]["demdir"] , wd +"/spatial/domain.shp"]
-	subprocess.check_output(cmd)
+	fname = wd + "/predictors/ele.tif"
+	if os.path.isfile(fname) == False:	
+		logging.info("Downloading DEM")
+		cmd = ["Rscript", "./rsrc/getDEM.R" , wd, config["main"]["demdir"] , wd +"/spatial/domain.shp"]
+		subprocess.check_output(cmd)
+	else:
+		logging.info("DEM already downloaded")
 
 	logging.info("Compute topo predictors")
 	cmd = ["Rscript", "./rsrc/computeTopo.R" , wd,]
 	subprocess.check_output(cmd)
 
 else:
-	logging.info("Topo predictors computed")
+	logging.info("DEM downloaded and Topo predictors computed")
 
 #===============================================================================
 #	Retrieve ERA
