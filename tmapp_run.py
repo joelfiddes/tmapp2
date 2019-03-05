@@ -338,18 +338,20 @@ def main(wd, simdir, member):
 			]
 
 		subprocess.check_output(cmd)
+		logging.info( "Convert met to geotop")
+		files = os.listdir(home+"/forcing/")
+
+		for file in files:
+			cmd = ["Rscript",  "./rsrc/met2geotop.R",home+"/forcing/"+file]
+			subprocess.check_output(cmd)
+
 		f = open(home + "/SUCCESS_TSCALE2", "w")
 	else:
 		logging.info( "tscale2 already run")
 	#===============================================================================
 	#	Prepare inputs
 	#===============================================================================
-	logging.info( "Convert met to geotop")
-	files = os.listdir(home+"/forcing/")
 
-	for file in files:
-		cmd = ["Rscript",  "./rsrc/met2geotop.R",home+"/forcing/"+file]
-		subprocess.check_output(cmd)
 
 	logging.info( "prepare cluster sim directories")
 	cmd = ["Rscript",  "./rsrc/setupSim.R", home]
