@@ -119,39 +119,40 @@ def main(wd, simdir, member):
 		#===============================================================================
 		#	Run toposcale 1 - only 1 year
 		#===============================================================================
-
+		# define short dates outside of conditional to ensure its done
 		dateDiff=end-start
+		if (dateDiff.days > 368):
+			end = start+relativedelta(months=+12)
+			endDate= str('{0:04}'.format(end.year))+"-"+str('{0:02}'.format(end.month))+"-"+str('{0:02}'.format(end.day))
+			logging.info("Running short Toposcale from: " + config["main"]["startDate"] + " to " + endDate)
+
+		# To control short toposcale run
+		startTime=(
+		str('{0:04}'.format(start.year))+"-"
+		+str('{0:02}'.format(start.month))+"-"
+		+str('{0:02}'.format(start.day))+" "
+		+str('{0:02}'.format(start.hour))+":"
+		+str('{0:02}'.format(start.minute))+":"
+		+str('{0:02}'.format(start.second))
+		)
+
+		endTime=(
+		str('{0:04}'.format(end.year))+"-"
+		+str('{0:02}'.format(end.month))+"-"
+		+str('{0:02}'.format(end.day))+" "
+		+str('{0:02}'.format(end.hour))+":"
+		+str('{0:02}'.format(end.minute))+":"
+		+str('{0:02}'.format(end.second))
+		)
+
+
 
 		'''check for complete forcing/meteo* files==nclust'''
 		meteoCounter = len(glob.glob1(home+"/forcing/","*.csv"))
 
 		if meteoCounter != int(config['toposub']['nclust']):
 			""" run informed toposub on just one year data for efficiency"""
-			if (dateDiff.days > 368):
-				end = start+relativedelta(months=+12)
-				endDate= str('{0:04}'.format(end.year))+"-"+str('{0:02}'.format(end.month))+"-"+str('{0:02}'.format(end.day))
-				logging.info("Running short Toposcale from: " + config["main"]["startDate"] + " to " + endDate)
 
-
-
-			# To control short toposcale run
-			startTime=(
-			str('{0:04}'.format(start.year))+"-"
-			+str('{0:02}'.format(start.month))+"-"
-			+str('{0:02}'.format(start.day))+" "
-			+str('{0:02}'.format(start.hour))+":"
-			+str('{0:02}'.format(start.minute))+":"
-			+str('{0:02}'.format(start.second))
-			)
-
-			endTime=(
-			str('{0:04}'.format(end.year))+"-"
-			+str('{0:02}'.format(end.month))+"-"
-			+str('{0:02}'.format(end.day))+" "
-			+str('{0:02}'.format(end.hour))+":"
-			+str('{0:02}'.format(end.minute))+":"
-			+str('{0:02}'.format(end.second))
-			)
 
 
 			if config["forcing"]["product"]=="ensemble_members":
@@ -279,30 +280,34 @@ def main(wd, simdir, member):
 	#===============================================================================
 	#	Run toposcale 2
 	#===============================================================================
-	
+		
+	# redefine dates outside of any conditionionals to ensure change of enddate is made
+	end = datetime.strptime(config['main']['endDate'], "%Y-%m-%d")
+
+	# Redefine starttime in case sim is restarted
+	startTime=(
+	str('{0:04}'.format(start.year))+"-"
+	+str('{0:02}'.format(start.month))+"-"
+	+str('{0:02}'.format(start.day))+" "
+	+str('{0:02}'.format(start.hour))+":"
+	+str('{0:02}'.format(start.minute))+":"
+	+str('{0:02}'.format(start.second))
+	)
+
+	# TReset to full length endtime
+	endTime=(
+	str('{0:04}'.format(end.year))+"-"
+	+str('{0:02}'.format(end.month))+"-"
+	+str('{0:02}'.format(end.day))+" "
+	+str('{0:02}'.format(end.hour))+":"
+	+str('{0:02}'.format(end.minute))+":"
+	+str('{0:02}'.format(end.second))
+	)
+
+
 	fname1 = home + "/landformsInform.pdf"
 	if os.path.isfile(fname1) == False: #NOT ROBUST
-		end = datetime.strptime(config['main']['endDate'], "%Y-%m-%d")
 
-		# Redefine starttime in case sim is restarted
-		startTime=(
-		str('{0:04}'.format(start.year))+"-"
-		+str('{0:02}'.format(start.month))+"-"
-		+str('{0:02}'.format(start.day))+" "
-		+str('{0:02}'.format(start.hour))+":"
-		+str('{0:02}'.format(start.minute))+":"
-		+str('{0:02}'.format(start.second))
-		)
-
-		# TReset to full length endtime
-		endTime=(
-		str('{0:04}'.format(end.year))+"-"
-		+str('{0:02}'.format(end.month))+"-"
-		+str('{0:02}'.format(end.day))+" "
-		+str('{0:02}'.format(end.hour))+":"
-		+str('{0:02}'.format(end.minute))+":"
-		+str('{0:02}'.format(end.second))
-		)
 
 
 		if config["forcing"]["product"]=="ensemble_members":
