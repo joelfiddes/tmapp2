@@ -16,8 +16,8 @@ wd=sys.argv[2]
 
 
 # all memeber =1 dirs first
-#simdirs = sorted((glob.glob1(wd+"/sim/","*m1")))
-simdirs = ((glob.glob1(wd+"/sim/","*m1")))
+simdirs = sorted((glob.glob1(wd+"/sim/","*m1")))
+#simdirs = ((glob.glob1(wd+"/sim/","*m1")))
 
 print("running jobs: "+str(simdirs))
 members=[i.split("m", 1)[1] for i in simdirs]

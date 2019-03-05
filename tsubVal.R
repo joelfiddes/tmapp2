@@ -1,3 +1,5 @@
+# test to compare toposub lowmem to toposub original.
+
 require(raster)
 require(hydroGOF)
 

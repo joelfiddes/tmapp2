@@ -113,7 +113,7 @@ def main(wd, simdir, member):
 			logging.info( "Run TopoSUB 1 ")
 			cmd = ["Rscript",  "./rsrc/toposub.R",home,str(config['toposub']['nclust']), "TRUE"]
 			subprocess.check_output(cmd)
-			f = open("SUCCESS_TSUB1", "w")
+			f = open(home + "/SUCCESS_TSUB1", "w")
 		else:
 			logging.info("TopoSUB already run!")
 		#===============================================================================
@@ -189,7 +189,7 @@ def main(wd, simdir, member):
 			for file in files:
 				cmd = ["Rscript",  "./rsrc/met2geotop.R",home+"/forcing/"+file]
 				subprocess.check_output(cmd)
-			f = open("SUCCESS_TSCALE1", "w")
+			f = open(home + "/SUCCESS_TSCALE1", "w")
 		else:
 			logging.info( "Toposcale 1 already run "+ config['toposub']['nclust']+ " meteo files found" )
 
@@ -228,7 +228,7 @@ def main(wd, simdir, member):
 				logging.info( "run geotop" + sim)
 				cmd = ["./geotop/geotop1.226", sim]
 				subprocess.check_output(cmd)
-			f = open("SUCCESS_SIM1", "w")
+			f = open(home + "/SUCCESS_SIM1", "w")
 		else:
 			logging.info( "Geotop 1 already run "+ config['toposub']['nclust']+ " _SUCCESSFUL_RUN files found" )
 		#====================================================================
@@ -268,7 +268,7 @@ def main(wd, simdir, member):
 				logging.info( "Assign surface types")
 				cmd = ["Rscript",  "./rsrc/modalSurface.R", home]
 				subprocess.check_output(cmd)
-				f = open("SUCCESS_TSUB_INFORM", "w")
+				f = open(home + "/SUCCESS_TSUB_INFORM", "w")
 			else:
 				logging.info( "TopoSUB INFORM already run"  )
 
@@ -333,7 +333,7 @@ def main(wd, simdir, member):
 			]
 
 		subprocess.check_output(cmd)
-		f = open("SUCCESS_TSCALE2", "w")
+		f = open(home + "/SUCCESS_TSCALE2", "w")
 	else:
 		logging.info( "tscale2 already run")
 	#===============================================================================
