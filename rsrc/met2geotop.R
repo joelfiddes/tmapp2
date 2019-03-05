@@ -11,7 +11,7 @@ gtime=format(d, '%d/%m/%Y %H:%M')
 
 # map Date,Tair,RH,Wd,Ws,SW,LW,Prec
 Date <- gtime
-Tair<- round(dat$T -273.15, 1) # K to C
+Tair<- round(dat$TA -273.15, 1) # K to C
 RH <- round(dat$RH, 1)
 Wd <- round(dat$WD, 1)
 Ws <- round(dat$WS, 1)

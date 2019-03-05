@@ -113,6 +113,7 @@ def main(wd, simdir, member):
 			logging.info( "Run TopoSUB 1 ")
 			cmd = ["Rscript",  "./rsrc/toposub.R",home,str(config['toposub']['nclust']), "TRUE"]
 			subprocess.check_output(cmd)
+		f = open("SUCCESS_TSUB1", "w")
 		else:
 			logging.info("TopoSUB already run!")
 		#===============================================================================
@@ -181,6 +182,14 @@ def main(wd, simdir, member):
 				]
 
 			subprocess.check_output(cmd)
+
+			logging.info( "Convert met to geotop format...")
+			files = os.listdir(home+"/forcing/")
+
+			for file in files:
+				cmd = ["Rscript",  "./rsrc/met2geotop.R",home+"/forcing/"+file]
+				subprocess.check_output(cmd)
+			f = open("SUCCESS_TSCALE1", "w")
 		else:
 			logging.info( "Toposcale 1 already run "+ config['toposub']['nclust']+ " meteo files found" )
 
@@ -196,12 +205,7 @@ def main(wd, simdir, member):
 
 		if runCounter != int(config['toposub']['nclust']):
 
-			logging.info( "Convert met to geotop")
-			files = os.listdir(home+"/forcing/")
 
-			for file in files:
-				cmd = ["Rscript",  "./rsrc/met2geotop.R",home+"/forcing/"+file]
-				subprocess.check_output(cmd)
 
 			logging.info( "prepare cluster sim directories")
 			cmd = ["Rscript",  "./rsrc/setupSim.R", home]
@@ -224,6 +228,7 @@ def main(wd, simdir, member):
 				logging.info( "run geotop" + sim)
 				cmd = ["./geotop/geotop1.226", sim]
 				subprocess.check_output(cmd)
+			f = open("SUCCESS_SIM1", "w")
 		else:
 			logging.info( "Geotop 1 already run "+ config['toposub']['nclust']+ " _SUCCESSFUL_RUN files found" )
 		#====================================================================
@@ -263,6 +268,7 @@ def main(wd, simdir, member):
 				logging.info( "Assign surface types")
 				cmd = ["Rscript",  "./rsrc/modalSurface.R", home]
 				subprocess.check_output(cmd)
+				f = open("SUCCESS_TSUB_INFORM", "w")
 			else:
 				logging.info( "TopoSUB INFORM already run"  )
 
@@ -273,58 +279,63 @@ def main(wd, simdir, member):
 	#===============================================================================
 	#	Run toposcale 2
 	#===============================================================================
-	end = datetime.strptime(config['main']['endDate'], "%Y-%m-%d")
+	
+	fname1 = home + "/landformsInform.pdf"
+	if os.path.isfile(fname1) == False: #NOT ROBUST
+		end = datetime.strptime(config['main']['endDate'], "%Y-%m-%d")
 
-	# Redefine starttime in case sim is restarted
-	startTime=(
-	str('{0:04}'.format(start.year))+"-"
-	+str('{0:02}'.format(start.month))+"-"
-	+str('{0:02}'.format(start.day))+" "
-	+str('{0:02}'.format(start.hour))+":"
-	+str('{0:02}'.format(start.minute))+":"
-	+str('{0:02}'.format(start.second))
-	)
+		# Redefine starttime in case sim is restarted
+		startTime=(
+		str('{0:04}'.format(start.year))+"-"
+		+str('{0:02}'.format(start.month))+"-"
+		+str('{0:02}'.format(start.day))+" "
+		+str('{0:02}'.format(start.hour))+":"
+		+str('{0:02}'.format(start.minute))+":"
+		+str('{0:02}'.format(start.second))
+		)
 
-	# TReset to full length endtime
-	endTime=(
-	str('{0:04}'.format(end.year))+"-"
-	+str('{0:02}'.format(end.month))+"-"
-	+str('{0:02}'.format(end.day))+" "
-	+str('{0:02}'.format(end.hour))+":"
-	+str('{0:02}'.format(end.minute))+":"
-	+str('{0:02}'.format(end.second))
-	)
+		# TReset to full length endtime
+		endTime=(
+		str('{0:04}'.format(end.year))+"-"
+		+str('{0:02}'.format(end.month))+"-"
+		+str('{0:02}'.format(end.day))+" "
+		+str('{0:02}'.format(end.hour))+":"
+		+str('{0:02}'.format(end.minute))+":"
+		+str('{0:02}'.format(end.second))
+		)
 
 
-	if config["forcing"]["product"]=="ensemble_members":
+		if config["forcing"]["product"]=="ensemble_members":
 
-		logging.info( "Run TopoSCALE 2 ensembles")
+			logging.info( "Run TopoSCALE 2 ensembles")
 
-		cmd = [
-		"python",  
-		tscale_root+"/tscaleV2/toposcale/tscale_run_ensemble.py",
-		wd + "/forcing/", 
-		home,home+"/forcing/" ,
-		str(member),
-		startTime,
-		endTime
-		]
+			cmd = [
+			"python",  
+			tscale_root+"/tscaleV2/toposcale/tscale_run_ensemble.py",
+			wd + "/forcing/", 
+			home,home+"/forcing/" ,
+			str(member),
+			startTime,
+			endTime
+			]
 
-	if config["forcing"]["product"]=="reanalysis":
+		if config["forcing"]["product"]=="reanalysis":
 
-		logging.info( "Run TopoSCALE 1 reanalysis")
+			logging.info( "Run TopoSCALE 1 reanalysis")
 
-		cmd = [
-		"python",  
-		tscale_root+"/tscaleV2/toposcale/tscale_run.py",
-		wd + "/forcing/", 
-		home,home+"/forcing/",
-		startTime,
-		endTime
-		]
+			cmd = [
+			"python",  
+			tscale_root+"/tscaleV2/toposcale/tscale_run.py",
+			wd + "/forcing/", 
+			home,home+"/forcing/",
+			startTime,
+			endTime
+			]
 
-	subprocess.check_output(cmd)
-
+		subprocess.check_output(cmd)
+		f = open("SUCCESS_TSCALE2", "w")
+	else:
+		logging.info( "tscale2 already run")
 	#===============================================================================
 	#	Prepare inputs
 	#===============================================================================
@@ -338,8 +349,6 @@ def main(wd, simdir, member):
 	logging.info( "prepare cluster sim directories")
 	cmd = ["Rscript",  "./rsrc/setupSim.R", home]
 	subprocess.check_output(cmd)
-
-
 
 	logging.info( "prepare geotop.inpts")
 	cmd = ["Rscript",  "./rsrc/makeGeotopInputs.R", home , config["main"]["srcdir"]+ "/geotop/geotop.inpts" ,config["main"]["startDate"],config["main"]["endDate"] ]
