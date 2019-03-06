@@ -44,7 +44,8 @@ def main(wd, simdir, member):
 	#	Logging
 	#===============================================================================
 	logfile=wd+"/sim/"+ simdir+"/logfile"
-	os.remove(logfile)
+	if os.path.isfile(logfile) == True:
+		os.remove(logfile)
 	logging.basicConfig(level=logging.DEBUG, filename=logfile, filemode="a+",
 	                        format="%(asctime)-15s %(levelname)-8s %(message)s")
 
@@ -335,7 +336,7 @@ def main(wd, simdir, member):
 #===============================================================================
 #	Run toposcale 2
 #===============================================================================
-	fname1 = home + "/landformsInform.pdf"
+	fname1 = home + "/SUCCESS_TSCALE2.pdf"
 	if os.path.isfile(fname1) == False: #NOT ROBUST
 
 
