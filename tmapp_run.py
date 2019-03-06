@@ -245,7 +245,7 @@ def main(wd, simdir, member):
 #   - sampleDistributions.R
 #   - modalSurface.R 
 #	
-#   Memory: HIGH
+#   Memory: HIGH (around 3GB for ERA5 grid cell)
 #	Runtime: LOW
 #
 #===============================================================================
