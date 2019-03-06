@@ -32,38 +32,42 @@ import time
 
 def main(wd, simdir, member):
 
-	#===============================================================================
-	#	Config setup
-	#===============================================================================
+#===============================================================================
+#	Config setup
+#===============================================================================
 	#os.system("python writeConfig.py") # update config DONE IN run.sh file
 	from configobj import ConfigObj
 	config = ConfigObj(wd+"/config.ini")
 
 	tscale_root=config['main']['tscale_root'] # path to tscaleV2 directory
-	#===============================================================================
-	#	Logging
-	#===============================================================================
+
+	# config start and end date
+	start = datetime.strptime(config['main']['startDate'], "%Y-%m-%d")
+	end = datetime.strptime(config['main']['endDate'], "%Y-%m-%d")
+#===============================================================================
+#	Log
+#===============================================================================
 	logfile=wd+"/sim/"+ simdir+"/logfile"
 	if os.path.isfile(logfile) == True:
 		os.remove(logfile)
 	logging.basicConfig(level=logging.DEBUG, filename=logfile, filemode="a+",
 	                        format="%(asctime)-15s %(levelname)-8s %(message)s")
 
-	#====================================================================
-	#	Timer
-	#====================================================================
+#===============================================================================
+#	Timer
+#===============================================================================
 	start_time = time.time()
 
-	#===============================================================================
-	#	make dirs
-	#===============================================================================
+#===============================================================================
+#	make dirs
+#===============================================================================
 	home = wd+"/sim/"+simdir
 	if not os.path.exists(home + "/forcing"):
 		os.makedirs(home + "/forcing")
 
-	#===============================================================================
-	#	Init ensemble memebers from memeber =1
-	#===============================================================================
+#===============================================================================
+#	Init ensemble memebers from memeber =1
+#===============================================================================
 	'''copy 
 	-listpoints
 
@@ -82,23 +86,22 @@ def main(wd, simdir, member):
 		dst= home+"/landform.tif"
 		copyfile(src,dst)
 
-	start = datetime.strptime(config['main']['startDate'], "%Y-%m-%d")
-	end = datetime.strptime(config['main']['endDate'], "%Y-%m-%d")
+
 
 
 	if int(member) == 1:
-		#=========================  start of memeber 1 only section   ===============================================
+#=========================  start of memeber 1 only section   ==================
 
-		#===============================================================================
-		#	Compute svf
-		#===============================================================================
+#===============================================================================
+#	Compute svf
+#===============================================================================
 		logging.info( "Calculating SVF layer")
 		cmd = ["Rscript", "./rsrc/computeSVF.R", home,str(6), str(500)]
 		subprocess.check_output(cmd)
 
-		#===============================================================================
-		#	Compute surface
-		#===============================================================================
+#===============================================================================
+#	Compute surface
+#===============================================================================
 		fname = home + "/predictors/surface.tif"
 		if os.path.isfile(fname) == False:
 
@@ -107,9 +110,9 @@ def main(wd, simdir, member):
 			subprocess.check_output(cmd)
 		else:
 			logging.info("Surface already computed!")
-		#===============================================================================
-		#	Run toposub 1
-		#===============================================================================
+#===============================================================================
+#	Run toposub 1
+#===============================================================================
 		fname = home + "/listpoints.txt"
 		if os.path.isfile(fname) == False:
 
@@ -119,10 +122,10 @@ def main(wd, simdir, member):
 			f = open(home + "/SUCCESS_TSUB1", "w")
 		else:
 			logging.info("TopoSUB already run!")
-		#===============================================================================
-		#	Run toposcale 1 - only 1 year
-		#===============================================================================
-		# define short dates outside of conditional to ensure its done
+#===============================================================================
+#	Run toposcale 1 - only 1 year
+#===============================================================================
+
 		dateDiff=end-start
 		if (dateDiff.days > 368):
 			end = start+relativedelta(months=+12)
@@ -197,9 +200,9 @@ def main(wd, simdir, member):
 		else:
 			logging.info( "Toposcale 1 already run "+ config['toposub']['nclust']+ " meteo files found" )
 
-		#===============================================================================
-		#	Prepare sims (GEOTOP SPECIFIC)
-		#===============================================================================
+#===============================================================================
+#	Prepare sims (GEOTOP SPECIFIC)
+#===============================================================================
 		''' check for geotop run complete files'''
 		runCounter = 0
 		for root, dirs, files in os.walk(home):
@@ -218,12 +221,19 @@ def main(wd, simdir, member):
 			subprocess.check_output(cmd)
 
 			logging.info( "prepare geotop.inpts")
-			cmd = ["Rscript",  "./rsrc/makeGeotopInputs.R", home , config["main"]["srcdir"]+ "/geotop/geotop.inpts" ,config["main"]["startDate"],endDate ]
+			cmd = [
+			"Rscript", 
+			 "./rsrc/makeGeotopInputs.R", 
+			 home , 
+			 config["main"]["srcdir"]+ "/geotop/geotop.inpts" ,
+			 config["main"]["startDate"],
+			 endDate 
+			 ]
 			subprocess.check_output(cmd)
 
-		#===============================================================================
-		#	Simulate results - 1 year
-		#===============================================================================
+#===============================================================================
+#	Simulate results - 1 year
+#===============================================================================
 			sims = glob.glob(home+"/c0*")
 
 			for sim in sims:
@@ -232,7 +242,8 @@ def main(wd, simdir, member):
 				subprocess.check_output(cmd)
 			f = open(home + "/SUCCESS_SIM1", "w")
 		else:
-			logging.info( "Geotop 1 already run "+ config['toposub']['nclust']+ " _SUCCESSFUL_RUN files found" )
+			logging.info( "Geotop 1 already run "+ config['toposub']['nclust']+ 
+				" _SUCCESSFUL_RUN files found" )
 
 
 
@@ -250,9 +261,9 @@ def main(wd, simdir, member):
 #
 #===============================================================================
 
-#====================================================================
+#===============================================================================
 # Informed sampling
-#====================================================================
+#===============================================================================
 		if config["toposub"]["inform"] == "TRUE":
 
 			fname1 = home + "/landformsInform.pdf"
@@ -263,7 +274,14 @@ def main(wd, simdir, member):
 					# set up sim directoroes #and write metfiles
 
 				logging.info( "postprocess results")
-				cmd = ["Rscript",  "./rsrc/toposub_post.R", home, config['toposub']['nclust'] ,config['geotop']['file1'] ,config['geotop']['targV']]
+				cmd = [
+				"Rscript",  
+				"./rsrc/toposub_post.R", 
+				home, 
+				config['toposub']['nclust'] ,
+				config['geotop']['file1'] ,
+				config['geotop']['targV']
+				]
 				subprocess.check_output(cmd)
 
 #===============================================================================
@@ -271,7 +289,15 @@ def main(wd, simdir, member):
 #===============================================================================
 
 				logging.info( "Run toposub informed")
-				cmd = ["Rscript",  "./rsrc/toposub_inform.R", home , config['toposub']['nclust'] , config['geotop']['targV'] , "TRUE", "TRUE"]
+				cmd = [
+				"Rscript",  
+				"./rsrc/toposub_inform.R", 
+				home , 
+				config['toposub']['nclust'] , 
+				config['geotop']['targV'] , 
+				"TRUE", 
+				"TRUE"
+				]
 				subprocess.check_output(cmd)
 
 				logging.info( "TopoSUB INFORM complete"  )
@@ -285,7 +311,11 @@ def main(wd, simdir, member):
 				os.system(cmd)
 
 				logging.info( "Assign surface types")
-				cmd = ["Rscript",  "./rsrc/modalSurface.R", home]
+				cmd = [
+				"Rscript",  
+				"./rsrc/modalSurface.R", 
+				home
+				]
 				subprocess.check_output(cmd)
 				f = open(home + "/SUCCESS_TSUB_INFORM", "w")
 			else:
@@ -407,7 +437,14 @@ def main(wd, simdir, member):
 		subprocess.check_output(cmd)
 
 		logging.info( "prepare geotop.inpts")
-		cmd = ["Rscript",  "./rsrc/makeGeotopInputs.R", home , config["main"]["srcdir"]+ "/geotop/geotop.inpts" ,config["main"]["startDate"],config["main"]["endDate"] ]
+		cmd = [
+		"Rscript",  
+		"./rsrc/makeGeotopInputs.R", 
+		home , 
+		config["main"]["srcdir"]+ "/geotop/geotop.inpts" ,
+		config["main"]["startDate"],
+		config["main"]["endDate"] 
+		]
 		subprocess.check_output(cmd)
 
 
