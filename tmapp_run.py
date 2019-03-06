@@ -399,7 +399,7 @@ def main(wd, simdir, member):
 #	Prepare inputs
 #===============================================================================
 
-    fname1 = home + "/SUCCESS_SIM2"
+	fname1 = home + "/SUCCESS_SIM2"
 	if os.path.isfile(fname1) == False: #NOT ROBUST
 		logging.info( "prepare cluster sim directories")
 		cmd = ["Rscript",  "./rsrc/setupSim.R", home]
