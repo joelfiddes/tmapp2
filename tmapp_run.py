@@ -131,7 +131,9 @@ def main(wd, simdir, member):
 			end = start+relativedelta(months=+12)
 			endDate= str('{0:04}'.format(end.year))+"-"+str('{0:02}'.format(end.month))+"-"+str('{0:02}'.format(end.day))
 			logging.info("Running short Toposcale from: " + config["main"]["startDate"] + " to " + endDate)
-
+		else:
+			endDate= str('{0:04}'.format(end.year))+"-"+str('{0:02}'.format(end.month))+"-"+str('{0:02}'.format(end.day))
+		
 		# To control short toposcale run
 		startTime=(
 		str('{0:04}'.format(start.year))+"-"
