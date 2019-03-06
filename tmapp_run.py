@@ -43,7 +43,9 @@ def main(wd, simdir, member):
 	#===============================================================================
 	#	Logging
 	#===============================================================================
-	logging.basicConfig(level=logging.DEBUG, filename=wd+"/sim/"+ simdir+"/logfile", filemode="a+",
+	logfile=wd+"/sim/"+ simdir+"/logfile"
+	os.remove(logfile)
+	logging.basicConfig(level=logging.DEBUG, filename=logfile, filemode="a+",
 	                        format="%(asctime)-15s %(levelname)-8s %(message)s")
 
 	#====================================================================
@@ -206,8 +208,6 @@ def main(wd, simdir, member):
 
 		if runCounter != int(config['toposub']['nclust']):
 
-
-
 			logging.info( "prepare cluster sim directories")
 			cmd = ["Rscript",  "./rsrc/setupSim.R", home]
 			subprocess.check_output(cmd)
@@ -232,9 +232,26 @@ def main(wd, simdir, member):
 			f = open(home + "/SUCCESS_SIM1", "w")
 		else:
 			logging.info( "Geotop 1 already run "+ config['toposub']['nclust']+ " _SUCCESSFUL_RUN files found" )
-		#====================================================================
-		# Informed sampling
-		#====================================================================
+
+
+
+#===============================================================================
+#	BLOCK XX
+#	
+#	Code:
+#	- toposub_post.R
+#	- toposub_inform.R
+#   - sampleDistributions.R
+#   - modalSurface.R 
+#	
+#   Memory: HIGH
+#	Runtime: LOW
+#
+#===============================================================================
+
+#====================================================================
+# Informed sampling
+#====================================================================
 		if config["toposub"]["inform"] == "TRUE":
 
 			fname1 = home + "/landformsInform.pdf"
@@ -248,9 +265,9 @@ def main(wd, simdir, member):
 				cmd = ["Rscript",  "./rsrc/toposub_post.R", home, config['toposub']['nclust'] ,config['geotop']['file1'] ,config['geotop']['targV']]
 				subprocess.check_output(cmd)
 
-		#===============================================================================
-		#	Run toposub 2
-		#===============================================================================
+#===============================================================================
+#	Run toposub 2
+#===============================================================================
 
 				logging.info( "Run toposub informed")
 				cmd = ["Rscript",  "./rsrc/toposub_inform.R", home , config['toposub']['nclust'] , config['geotop']['targV'] , "TRUE", "TRUE"]
@@ -274,14 +291,14 @@ def main(wd, simdir, member):
 				logging.info( "TopoSUB INFORM already run"  )
 
 
-	#=========================   END of memeber 1 only section   ===============================================
+#=========================   END of memeber 1 only section   ===============
 
 
-	#===============================================================================
-	#	Run toposcale 2
-	#===============================================================================
-		
-	# redefine dates outside of any conditionionals to ensure change of enddate is made
+#===============================================================================		
+# redefine dates outside of any conditionionals to ensure change of enddate is 
+# made
+#===============================================================================
+
 	end = datetime.strptime(config['main']['endDate'], "%Y-%m-%d")
 
 	# Redefine starttime in case sim is restarted
@@ -304,7 +321,20 @@ def main(wd, simdir, member):
 	+str('{0:02}'.format(end.second))
 	)
 
+#===============================================================================
+#	BLOCK XX
+#	
+#	Code:
+#	- tscale_run_ensemble.py /tscale_run.py
+#	- met2geotop.R
+#	Memory: LOW
+#	Runtime: HIGH
+#
+#===============================================================================
 
+#===============================================================================
+#	Run toposcale 2
+#===============================================================================
 	fname1 = home + "/landformsInform.pdf"
 	if os.path.isfile(fname1) == False: #NOT ROBUST
 
@@ -348,35 +378,58 @@ def main(wd, simdir, member):
 		f = open(home + "/SUCCESS_TSCALE2", "w")
 	else:
 		logging.info( "tscale2 already run")
-	#===============================================================================
-	#	Prepare inputs
-	#===============================================================================
 
 
-	logging.info( "prepare cluster sim directories")
-	cmd = ["Rscript",  "./rsrc/setupSim.R", home]
-	subprocess.check_output(cmd)
-
-	logging.info( "prepare geotop.inpts")
-	cmd = ["Rscript",  "./rsrc/makeGeotopInputs.R", home , config["main"]["srcdir"]+ "/geotop/geotop.inpts" ,config["main"]["startDate"],config["main"]["endDate"] ]
-	subprocess.check_output(cmd)
 
 
-	#===============================================================================
-	#	Simulate results
-	#===============================================================================
-	sims = glob.glob(home+"/c0*")
 
-	for sim in sims:
-		logging.info( "run geotop" + sim)
-		cmd = ["./geotop/geotop1.226", sim]
+#===============================================================================
+#	BLOCK XX
+#	
+#	Code:
+#	- setupSim.R
+#	- makeGeotopInputs.R
+#	- Call Geotop
+#	Memory: LOW
+#	Runtime: HIGH
+#
+#===============================================================================
+
+#===============================================================================
+#	Prepare inputs
+#===============================================================================
+
+    fname1 = home + "/SUCCESS_SIM2"
+	if os.path.isfile(fname1) == False: #NOT ROBUST
+		logging.info( "prepare cluster sim directories")
+		cmd = ["Rscript",  "./rsrc/setupSim.R", home]
 		subprocess.check_output(cmd)
 
-	logging.info("Simulation finished!")
-	logging.info(" %f minutes for total run" % round((time.time()/60 - start_time/60),2) )
+		logging.info( "prepare geotop.inpts")
+		cmd = ["Rscript",  "./rsrc/makeGeotopInputs.R", home , config["main"]["srcdir"]+ "/geotop/geotop.inpts" ,config["main"]["startDate"],config["main"]["endDate"] ]
+		subprocess.check_output(cmd)
 
 
-# calling main
+#===============================================================================
+#	Simulate results
+#===============================================================================
+		sims = glob.glob(home+"/c0*")
+
+		for sim in sims:
+			logging.info( "run geotop" + sim)
+			cmd = ["./geotop/geotop1.226", sim]
+			subprocess.check_output(cmd)
+
+		logging.info("Simulation finished!")
+		logging.info(" %f minutes for total run" % round((time.time()/60 - start_time/60),2) )
+		f = open(home + "/SUCCESS_SIM2", "w")
+	else:
+		logging.info( "SIM2 already run")
+
+
+#===============================================================================
+#	Calling Main
+#===============================================================================
 if __name__ == '__main__':
 	
 	wd = sys.argv[1]
