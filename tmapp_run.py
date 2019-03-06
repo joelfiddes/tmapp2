@@ -336,7 +336,7 @@ def main(wd, simdir, member):
 #===============================================================================
 #	Run toposcale 2
 #===============================================================================
-	fname1 = home + "/SUCCESS_TSCALE2.pdf"
+	fname1 = home + "/SUCCESS_TSCALE2"
 	if os.path.isfile(fname1) == False: #NOT ROBUST
 
 
