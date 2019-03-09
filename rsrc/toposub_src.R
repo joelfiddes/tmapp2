@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript
+
 #v3.11 
 #2/3/12
 library(raster)
