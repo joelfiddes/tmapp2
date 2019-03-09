@@ -477,7 +477,7 @@ def main(wd, simdir, member):
 	home , 
 	config["toposub"]["nclust"],
 	'surface.txt',
-	'snow_water_equivalent.mm.'
+	'snow_water_equivalent.mm.',
 	config["main"]["startDate"],
 	config["main"]["endDate"] 
 	]
