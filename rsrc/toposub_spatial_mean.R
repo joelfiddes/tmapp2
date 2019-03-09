@@ -6,7 +6,7 @@
 # example: joel@myserver:~/src/topoMAPP$ Rscript rsrc/toposub_spatial_mean.R /home/joel/sim/gperm/grid1/ 200 ground.txt X9999.000000 2006-09-01 2007-09-01
 # Rscript rsrc/toposub_spatial_mean.R /home/joel/sim/topomapptest/sim/g1m2/ 100 ground.txt X100.000000 2016-09-01 2018-09-01
 # generates mean annual temp at 10m
-.libPaths("/home/caduff/R/x86_64-redhat-linux-gnu-library/3.3")
+#.libPaths("/home/caduff/R/x86_64-redhat-linux-gnu-library/3.3")
 #DEPENDENCY
 library(raster)
 #SOURCE
