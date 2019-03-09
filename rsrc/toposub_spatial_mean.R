@@ -10,6 +10,10 @@
 # generates mean annual temp at 10m
 #.libPaths("/home/caduff/R/x86_64-redhat-linux-gnu-library/3.3")
 #DEPENDENCY
+
+ a=R.Version()
+
+print( a$version.string)
 library(raster)
 #SOURCE
 source("./rsrc/toposub_src.R")
