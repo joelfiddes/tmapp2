@@ -319,7 +319,7 @@ def main(wd, simdir, member):
 				home
 				]
 				subprocess.check_output(cmd)
-				f = open(home + "/SUCCESS_TSUB_INFORM", "w")
+				f = open(home + "/SUCCESS_TSUB2", "w")
 			else:
 				logging.info( "TopoSUB INFORM already run"  )
 
@@ -465,7 +465,23 @@ def main(wd, simdir, member):
 		f = open(home + "/SUCCESS_SIM2", "w")
 	else:
 		logging.info( "SIM2 already run")
+		logging.info("Simulation finished!")
 
+#===============================================================================
+#	Generate aggregated results
+#===============================================================================
+	logging.info( "Generate spatial mean")
+	cmd = [
+	"Rscript",  
+	"./rsrc/toposub_spatial_mean.R", 
+	home , 
+	config["toposub"]["nclust"],
+	'surface.txt',
+	'snow_water_equivalent.mm.'
+	config["main"]["startDate"],
+	config["main"]["endDate"] 
+	]
+	subprocess.check_output(cmd)
 
 #===============================================================================
 #	Calling Main
