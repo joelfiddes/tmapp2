@@ -8,7 +8,7 @@
 # generates mean annual temp at 10m
 
 #DEPENDENCY
-library(raster)
+library(raster, lib.loc="/home/caduff/R/x86_64-redhat-linux-gnu-library/3.3")
 #SOURCE
 source("./rsrc/toposub_src.R")
 
