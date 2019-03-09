@@ -8,7 +8,7 @@
 # generates mean annual temp at 10m
 
 #DEPENDENCY
-require(raster)
+library(raster)
 #SOURCE
 source("./rsrc/toposub_src.R")
 
