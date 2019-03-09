@@ -7,6 +7,7 @@ members = args[3]
 
 rst = raster(grid)
 aoi=shapefile(paste0(wd,"/spatial/extent.shp"))
+aoi=raster(paste0(wd,"/predictors/ele.tif"))
 eraExtent=crop(rst,aoi, snap='out')
 ncells=ncell(eraExtent)
 idRst = setValues(eraExtent , 1:ncells )
