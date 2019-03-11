@@ -106,6 +106,8 @@ if os.path.isfile(fname) == False:
 		cmd = "cp -r %s %s"%(src,dst)
 		os.system(cmd) 
 
+	'''makes domain.shp that is used to download dem only, could alos now pass ccord directly to getDEM.R. 
+	If DEM is present missing or incorrect coords is not a problem'''
 	logging.info("create shp")
 	cmd = ["Rscript", "./rsrc/makePoly.R" ,config["main"]["latN"],config["main"]["latS"],config["main"]["lonE"],config["main"]["lonW"], wd +"/spatial/domain.shp"] # n,s,e,w
 	subprocess.check_output(cmd)

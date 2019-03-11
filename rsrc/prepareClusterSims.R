@@ -39,7 +39,7 @@ for (j in 1:members){
 		
 		for (p in 1:Npreds){
 			setwd(paste0(wd,'/predictors'))	
-			rst=crop(raster(predictors[p]) ,poly[poly$era5_gp==1,])
+			rst=crop(raster(predictors[p]) ,poly[poly$era5_0.50==ic,])
 			setwd(paste0(wd,'/sim/', simdir,"/predictors"))
 			writeRaster(rst, predictors[p], overwrite=TRUE)
 			removeTmpFiles(h=0)
