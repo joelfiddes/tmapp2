@@ -258,7 +258,7 @@ def main(wd, simdir, member):
 
 			# CASE OF incomplete sims to be restarted (prob interuppted by cluster runtime limit)
 			if runCounter != int(config['toposub']['nclust']) and runCounter >0:
-				logging.info("only" + str(runcounter)+ "complete sims found, finishing now...")
+				logging.info("only" + str(runCounter)+ "complete sims found, finishing now...")
 				# all sims to run
 				sims = glob.glob(home+"/c0*")
 				sims = [i.split('/', 1)[1] for i in sims]
@@ -513,7 +513,7 @@ def main(wd, simdir, member):
 		
 		# case of incomplete sims
 		if runCounter != int(config['toposub']['nclust']) and runCounter >0:
-			logging.info("only" + str(runcounter)+ "complete sims found, these sims left to run:")
+			logging.info("only" + str(runCounter)+ "complete sims found, these sims left to run:")
 
 			# all sims to run
 			sims = glob.glob(home+"/c0*")
