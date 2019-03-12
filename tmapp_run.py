@@ -460,6 +460,7 @@ def main(wd, simdir, member):
 
 	fname1 = home + "/SUCCESS_SIM2"
 	if os.path.isfile(fname1) == False: #NOT ROBUST
+		logging.info( "Run SIM 2")
 
 
 
