@@ -524,6 +524,8 @@ def main(wd, simdir, member):
 			logging.info(sims2do)
 
 			for sim in sims2do:
+				# add back leading slash
+				sim = "/"+sim
 				logging.info( "run geotop " + sim)
 				cmd = ["./geotop/geotop1.226", sim]
 				subprocess.check_output(cmd)
