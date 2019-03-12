@@ -217,60 +217,65 @@ def main(wd, simdir, member):
 		fsims = [i.split('/', 2)[1] for i in foundsims]
 
 
+		fname1 = home + "/SUCCESS_SIM1"
+		if os.path.isfile(fname1) == False: #NOT ROBUST
 
-		# case of no sims and probably no setup done
-		if runCounter ==0:
 
-			logging.info( "prepare cluster sim directories")
-			cmd = ["Rscript",  "./rsrc/setupSim.R", home]
-			subprocess.check_output(cmd)
+			# case of no sims and probably no setup done
+			if runCounter ==0:
 
-			logging.info( "Assign surface types")
-			cmd = ["Rscript",  "./rsrc/modalSurface.R", home]
-			subprocess.check_output(cmd)
+				logging.info( "prepare cluster sim directories")
+				cmd = ["Rscript",  "./rsrc/setupSim.R", home]
+				subprocess.check_output(cmd)
 
-			logging.info( "prepare geotop.inpts")
-			cmd = [
-			"Rscript", 
-			 "./rsrc/makeGeotopInputs.R", 
-			 home , 
-			 config["main"]["srcdir"]+ "/geotop/geotop.inpts" ,
-			 config["main"]["startDate"],
-			 endDate 
-			 ]
-			subprocess.check_output(cmd)
+				logging.info( "Assign surface types")
+				cmd = ["Rscript",  "./rsrc/modalSurface.R", home]
+				subprocess.check_output(cmd)
+
+				logging.info( "prepare geotop.inpts")
+				cmd = [
+				"Rscript", 
+				 "./rsrc/makeGeotopInputs.R", 
+				 home , 
+				 config["main"]["srcdir"]+ "/geotop/geotop.inpts" ,
+				 config["main"]["startDate"],
+				 endDate 
+				 ]
+				subprocess.check_output(cmd)
 
 
 #===============================================================================
 #	Simulate results - 1 year
 #===============================================================================
-			sims = glob.glob(home+"/c0*")
+				sims = glob.glob(home+"/c0*")
 
-			for sim in sims:
-				logging.info( "run geotop" + sim)
-				cmd = ["./geotop/geotop1.226", sim]
-				subprocess.check_output(cmd)
-			f = open(home + "/SUCCESS_SIM1", "w")
+				for sim in sims:
+					logging.info( "run geotop" + sim)
+					cmd = ["./geotop/geotop1.226", sim]
+					subprocess.check_output(cmd)
 
-		# CASE OF incomplete sims to be restarted (prob interuppted by cluster runtime limit)
-		if runCounter != int(config['toposub']['nclust']) and runCounter >0:
-			logging.info("only" + str(runcounter)+ "complete sims found, finishing now...")
-			# all sims to run
-			sims = glob.glob(home+"/c0*")
-			sims = [i.split('/', 1)[1] for i in sims]
-			# fsims = found complemete sims
-			# list only files that dont exist
-			sims2do = [x for x in sims if x not in fsims]
 			
 
-			for sim in sims2do:
-				logging.info( "run geotop" + sim)
-				cmd = ["./geotop/geotop1.226", sim]
-				subprocess.check_output(cmd)
+			# CASE OF incomplete sims to be restarted (prob interuppted by cluster runtime limit)
+			if runCounter != int(config['toposub']['nclust']) and runCounter >0:
+				logging.info("only" + str(runcounter)+ "complete sims found, finishing now...")
+				# all sims to run
+				sims = glob.glob(home+"/c0*")
+				sims = [i.split('/', 1)[1] for i in sims]
+				# fsims = found complemete sims
+				# list only files that dont exist
+				sims2do = [x for x in sims if x not in fsims]
+				
 
-		f = open(home + "/SUCCESS_SIM1", "w")
+				for sim in sims2do:
+					logging.info( "run geotop" + sim)
+					cmd = ["./geotop/geotop1.226", sim]
+					subprocess.check_output(cmd)
+
+			f = open(home + "/SUCCESS_SIM1", "w")
+
 		else:
-			logging.info( "Geotop 1 already run "+ config['toposub']['nclust']+ 
+			logging.info( "Geotop 1 already run "+str(runCounter)+ 
 				" _SUCCESSFUL_RUN files found" )
 
 
