@@ -507,14 +507,15 @@ def main(wd, simdir, member):
 		
 		# case of incomplete sims
 		if runCounter != int(config['toposub']['nclust']) and runCounter >0:
-			logging.info("only" + str(runcounter)+ "complete sims found, finishing now...")
+			logging.info("only" + str(runcounter)+ "complete sims found, these sims left to run:")
+
 			# all sims to run
 			sims = glob.glob(home+"/c0*")
 			sims = [i.split('/', 1)[1] for i in sims]
 			# fsims = found complemete sims
 			# list only files that dont exist
 			sims2do = [x for x in sims if x not in fsims]
-			
+			logging.info("sims2do")
 
 			for sim in sims2do:
 				logging.info( "run geotop" + sim)
