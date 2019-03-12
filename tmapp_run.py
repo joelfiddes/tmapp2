@@ -258,7 +258,7 @@ def main(wd, simdir, member):
 
 			# CASE OF incomplete sims to be restarted (prob interuppted by cluster runtime limit)
 			if runCounter != int(config['toposub']['nclust']) and runCounter >0:
-				logging.info("only" + str(runCounter)+ "complete sims found, finishing now...")
+				logging.info("only " + str(runCounter)+ " complete sims found, finishing now...")
 				# all sims to run
 				sims = glob.glob(home+"/c0*")
 				sims = [i.split('/', 1)[1] for i in sims]
@@ -268,7 +268,7 @@ def main(wd, simdir, member):
 				
 
 				for sim in sims2do:
-					logging.info( "run geotop" + sim)
+					logging.info( "run geotop " + sim)
 					cmd = ["./geotop/geotop1.226", sim]
 					subprocess.check_output(cmd)
 
@@ -513,7 +513,7 @@ def main(wd, simdir, member):
 		
 		# case of incomplete sims
 		if runCounter != int(config['toposub']['nclust']) and runCounter >0:
-			logging.info("only" + str(runCounter)+ "complete sims found, these sims left to run:")
+			logging.info("only " + str(runCounter)+ " complete sims found, these sims left to run:")
 
 			# all sims to run
 			sims = glob.glob(home+"/c0*")
@@ -521,13 +521,13 @@ def main(wd, simdir, member):
 			# fsims = found complemete sims
 			# list only files that dont exist
 			sims2do = [x for x in sims if x not in fsims]
-			logging.info("sims2do")
+			logging.info(sims2do)
 
 			for sim in sims2do:
-				logging.info( "run geotop" + sim)
+				logging.info( "run geotop " + sim)
 				cmd = ["./geotop/geotop1.226", sim]
 				subprocess.check_output(cmd)
-
+ 
 		logging.info("Simulation finished!")
 		logging.info(" %f minutes for total run" % round((time.time()/60 - start_time/60),2) )
 		f = open(home + "/SUCCESS_SIM2", "w")
