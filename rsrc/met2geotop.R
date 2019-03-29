@@ -20,5 +20,5 @@ LW <- round(dat$LWIN, 1)
 Prec <- round(dat$PRATE, 3)
 
 gmet<- data.frame(Date, Tair, RH, Wd, Ws, SW, LW, Prec)
-write.csv(gmet, file,row.names=FALSE, quote=FALSE)
+write.csv(gmet, paste0(file,".gtp"),row.names=FALSE, quote=FALSE)
 

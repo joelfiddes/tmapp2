@@ -44,6 +44,7 @@ def main(wd, simdir, member):
 	# config start and end date
 	start = datetime.strptime(config['main']['startDate'], "%Y-%m-%d")
 	end = datetime.strptime(config['main']['endDate'], "%Y-%m-%d")
+	windCor=config['toposcale']['windCor']
 #===============================================================================
 #	Log
 #===============================================================================
@@ -169,12 +170,14 @@ def main(wd, simdir, member):
 
 				cmd = [
 				"python",  
-				tscale_root+"/tscaleV2/toposcale/tscale_run_ensemble.py",
+				tscale_root+"/tscaleV2/toposcale/tscale_run_EDA.py",
 				wd + "/forcing/", 
-				home,home+"/forcing/" ,
+				home,
+				home+"/forcing/" ,
 				str(member),
 				startTime,
-				endTime
+				endTime,
+				windCor
 				]
 
 			if config["forcing"]["product"]=="reanalysis":
@@ -185,9 +188,11 @@ def main(wd, simdir, member):
 				"python",  
 				tscale_root+"/tscaleV2/toposcale/tscale_run.py",
 				wd + "/forcing/", 
-				home,home+"/forcing/",
+				home,
+				home+"/forcing/",
 				startTime,
-				endTime
+				endTime,
+				windCor
 				]
 
 			subprocess.check_output(cmd)
@@ -389,7 +394,7 @@ def main(wd, simdir, member):
 #	BLOCK XX
 #	
 #	Code:
-#	- tscale_run_ensemble.py /tscale_run.py
+#	- tscale_run_EDA.py /tscale_run.py
 #	- met2geotop.R
 #	Memory: LOW
 #	Runtime: HIGH
@@ -410,12 +415,13 @@ def main(wd, simdir, member):
 
 			cmd = [
 			"python",  
-			tscale_root+"/tscaleV2/toposcale/tscale_run_ensemble.py",
+			tscale_root+"/tscaleV2/toposcale/tscale_run_EDAf_.py",
 			wd + "/forcing/", 
 			home,home+"/forcing/" ,
 			str(member),
 			startTime,
-			endTime
+			endTime,
+			windCor
 			]
 
 		if config["forcing"]["product"]=="reanalysis":
@@ -428,7 +434,8 @@ def main(wd, simdir, member):
 			wd + "/forcing/", 
 			home,home+"/forcing/",
 			startTime,
-			endTime
+			endTime,
+			windCor
 			]
 
 		subprocess.check_output(cmd)
@@ -460,7 +467,7 @@ def main(wd, simdir, member):
 #===============================================================================
 
 #===============================================================================
-#	Prepare inputs
+#	Prepare inputs 2
 #===============================================================================
 
 	fname1 = home + "/SUCCESS_SIM2"
@@ -470,7 +477,17 @@ def main(wd, simdir, member):
 
 
 		''' check for geotop run complete files - we check for .old files as
-		this shows geotop has run successfully twice'''
+		this shows geotop has run successfully twice, 
+
+		however '_SUCCESSFUL_RUN.old' is generated upon start of second sim by 
+		renaming _SUCCESSFIL_RUN to _SUCCESSFIL_RUN.old. this means if sim fails 
+		then _SUCCESSFIL_RUN.old exists but no _SUCCESSFIL_RUN file. Also  a  _FAILED_RUN 
+		file is generated. tHEREFORE:
+
+		_SUCCESSFUL_RUN + _SUCCESSFUL_RUN.old = SIM2 SUCCEEDED
+		 _SUCCESSFIL_RUN.old + _FAILED_RUN = SIM2 FAILED
+
+		'''
 		runCounter = 0
 		foundsims = []
 		for root, dirs, files in os.walk(home):
@@ -502,7 +519,8 @@ def main(wd, simdir, member):
 
 
 	#===============================================================================
-	#	Simulate results
+	#	Simulate results 2
+	#	
 	#===============================================================================
 			sims = glob.glob(home+"/c0*")
 

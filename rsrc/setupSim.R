@@ -61,7 +61,7 @@ npoints=dim(mf)[1]
 		dir.create(paste0(simindex,'/out'), recursive=TRUE)
 		dir.create(paste0(simindex,'/rec'), recursive=TRUE)
 
-		met = read.csv(paste0(simdir,"/forcing/meteoc",i,".csv"))
+		met = read.csv(paste0(simdir,"/forcing/meteoc",i,".csv.gtp"))
 		write.table(met, paste(simindex,'/meteo0001.txt', sep=''), sep=',', row.names=F, quote=FALSE)
 
 		listp=mf[i,]

@@ -9,6 +9,9 @@ example:
 
 
 		tz is always 0 UTC as that is timezone of the data
+
+TODO:
+	still not clear what the start point is dem? ccords? era grid?
 """
 
 import sys
@@ -179,8 +182,14 @@ Set up cluster
 	[2] grid used by sim (0.25 = era5 0.5 = ensemble)
 """
 logging.info("Setup sim directories")
-cmd = ["Rscript", "./rsrc/prepareClusterSims.R", wd, config['forcing']['grid'], config['forcing']['members']]
-subprocess.check_output(cmd)
+
+if config["forcing"]["product"]=="ensemble_members":
+	cmd = ["Rscript", "./rsrc/prepClust_EDA.R", wd, config['forcing']['grid'], config['forcing']['members']]
+	subprocess.check_output(cmd)
+
+if config["forcing"]["product"]=="reanalysis":
+	cmd = ["Rscript", "./rsrc/prepClust_HRES.R", wd, config['forcing']['grid']]
+	subprocess.check_output(cmd)
 
 #===============================================================================
 #	Start sims
