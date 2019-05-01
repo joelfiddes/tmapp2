@@ -13,10 +13,10 @@ gtime=format(d, '%d/%m/%Y %H:%M')
 Date <- gtime
 Tair<- round(dat$TA -273.15, 1) # K to C
 RH <- round(dat$RH, 1)
-Wd <- round(dat$WD, 1)
-Ws <- round(dat$WS, 1)
-SW <- round(dat$SWIN, 1)
-LW <- round(dat$LWIN, 1)
+Wd <- round(dat$DW, 1)
+Ws <- round(dat$VW, 1)
+SW <- round(dat$ISWR, 1)
+LW <- round(dat$ILWR, 1)
 Prec <- round(dat$PRATE, 3)
 
 gmet<- data.frame(Date, Tair, RH, Wd, Ws, SW, LW, Prec)

@@ -8,8 +8,11 @@ Example:
 	joel@joel-ThinkPad-T440p:~/src/tmapp2$ python tmapp_run.py /home/joel/sim/topomapptest/ g1m3 3
 
 
-Attributes:
-
+ARGS:
+	wd:
+	simdir:
+	member=1 (HRES) or 1:n (EDA)
+	model= SNOWPACK or GEOTOP
 Todo:
     * limit tscale 1 to only a single yrear for efficiency
     * init ensemble memeber with existing listpoints only do 1*tscale 1*sim
@@ -28,15 +31,15 @@ import glob
 from shutil import copyfile
 import sys
 import time
+from configobj import ConfigObj
 
-
-def main(wd, simdir, member):
+def main(wd, simdir, member, model="SNOWPACK"):
 
 #===============================================================================
 #	Config setup
 #===============================================================================
 	#os.system("python writeConfig.py") # update config DONE IN run.sh file
-	from configobj import ConfigObj
+	
 	config = ConfigObj(wd+"/config.ini")
 
 	tscale_root=config['main']['tscale_root'] # path to tscaleV2 directory
@@ -198,93 +201,146 @@ def main(wd, simdir, member):
 			subprocess.check_output(cmd)
 
 			logging.info( "Convert met to geotop format...")
+
+			# list of toposcale generated forcing files
 			files = os.listdir(home+"/forcing/")
 
-			for file in files:
-				cmd = ["Rscript",  "./rsrc/met2geotop.R",home+"/forcing/"+file]
-				subprocess.check_output(cmd)
+#===============================================================================
+#	Prepare GEOTOP meteo file
+#===============================================================================
+			if model=="GEOTOP":
+				# make geotop met files
+				for file in files:
+					cmd = ["Rscript",  "./rsrc/met2geotop.R",home+"/forcing/"+file]
+					subprocess.check_output(cmd)
+
+#===============================================================================
+#	Prepare SNOWPACK SMET INI and SNO
+#===============================================================================
+			if model=="SNOWPACK":
+				# make smet ini here
+				# configure any additional / resampling /  QC here
+				for file in files:
+					cmd = ["Rscript",  "./rsrc/sp_makeInputs.R",
+					config["main"]["srcdir"]+"/snowpack/",
+					home+'/forcing/',
+					file, 
+					config['main']['startDate']]
+					subprocess.check_output(cmd)
+
+					# quick fix to ensure second meteopath correctly configured
+					# todo: cover all ini settins like this
+					from configobj import ConfigObj
+					fileini = os.path.basename(file).split('.')[0]+".ini"
+					configini = ConfigObj(fileini)
+					configini['Output']['METEOPATH']=home+'/forcing/'
+					configini.write()
+
+				# run meteoio
+				for file in files:
+					fileini = os.path.basename(file).split('.')[0]+".ini"
+					cmd = [config["main"]["srcdir"]+"snowpack/data_converter "+ 
+					config['main']['startDate'] +
+					" "+ config['main']['endDate']+ 
+					" 60 " + 
+					home+"/forcing/"+fileini]
+					logging.info( cmd)
+					subprocess.check_output(cmd, shell=True)
+			# cleanup
+			#meteotoremove = glob.glob("*.csv")
+			#os.remove(meteotoremove)
+			
+			# report sucess
 			f = open(home + "/SUCCESS_TSCALE1", "w")
 		else:
 			logging.info( "Toposcale 1 already run "+ config['toposub']['nclust']+ " meteo files found" )
 
 #===============================================================================
-#	Prepare sims (GEOTOP SPECIFIC)
+#	Prepare GEOTOP sims 
 #===============================================================================
-		''' check for geotop run complete files'''
-		runCounter = 0
-		foundsims = []
-		for root, dirs, files in os.walk(home):
-			for file in files:    
-				if file.endswith('_SUCCESSFUL_RUN'):
-					runCounter += 1
-					foundsims.append(os.path.join(root,file))
+		if model=="GEOTOP":
+			''' check for geotop run complete files'''
+			runCounter = 0
+			foundsims = []
+			for root, dirs, files in os.walk(home):
+				for file in files:    
+					if file.endswith('_SUCCESSFUL_RUN'):
+						runCounter += 1
+						foundsims.append(os.path.join(root,file))
 
-		fsims = [i.split('/', 2)[1] for i in foundsims]
-
-
-		fname1 = home + "/SUCCESS_SIM1"
-		if os.path.isfile(fname1) == False: #NOT ROBUST
+			fsims = [i.split('/', 2)[1] for i in foundsims]
 
 
-			# case of no sims and probably no setup done
-			if runCounter ==0:
+			fname1 = home + "/SUCCESS_SIM1"
+			if os.path.isfile(fname1) == False: #NOT ROBUST
 
-				logging.info( "prepare cluster sim directories")
-				cmd = ["Rscript",  "./rsrc/setupSim.R", home]
-				subprocess.check_output(cmd)
 
-				logging.info( "Assign surface types")
-				cmd = ["Rscript",  "./rsrc/modalSurface.R", home]
-				subprocess.check_output(cmd)
+				# case of no sims and probably no setup done
+				if runCounter ==0:
 
-				logging.info( "prepare geotop.inpts")
-				cmd = [
-				"Rscript", 
-				 "./rsrc/makeGeotopInputs.R", 
-				 home , 
-				 config["main"]["srcdir"]+ "/geotop/geotop.inpts" ,
-				 config["main"]["startDate"],
-				 endDate 
-				 ]
-				subprocess.check_output(cmd)
+					logging.info( "prepare cluster sim directories")
+					cmd = ["Rscript",  "./rsrc/setupSim.R", home]
+					subprocess.check_output(cmd)
+
+					logging.info( "Assign surface types")
+					cmd = ["Rscript",  "./rsrc/modalSurface.R", home]
+					subprocess.check_output(cmd)
+
+					logging.info( "prepare geotop.inpts")
+					cmd = [
+					"Rscript", 
+					 "./rsrc/makeGeotopInputs.R", 
+					 home , 
+					 config["main"]["srcdir"]+ "/geotop/geotop.inpts" ,
+					 config["main"]["startDate"],
+					 endDate 
+					 ]
+					subprocess.check_output(cmd)
 
 
 #===============================================================================
 #	Simulate results - 1 year
 #===============================================================================
-				sims = glob.glob(home+"/c0*")
+					sims = glob.glob(home+"/c0*")
 
-				for sim in sims:
-					logging.info( "run geotop" + sim)
-					cmd = ["./geotop/geotop1.226", sim]
-					subprocess.check_output(cmd)
+					for sim in sims:
+						logging.info( "run geotop" + sim)
+						cmd = ["./geotop/geotop1.226", sim]
+						subprocess.check_output(cmd)
 
-			
-
-			# CASE OF incomplete sims to be restarted (prob interuppted by cluster runtime limit)
-			if runCounter != int(config['toposub']['nclust']) and runCounter >0:
-				logging.info("only " + str(runCounter)+ " complete sims found, finishing now...")
-				# all sims to run
-				sims = glob.glob(home+"/c0*")
-				sims = [i.split('/', 1)[1] for i in sims]
-				# fsims = found complemete sims
-				# list only files that dont exist
-				sims2do = [x for x in sims if x not in fsims]
 				
 
-				for sim in sims2do:
-					logging.info( "run geotop " + sim)
-					cmd = ["./geotop/geotop1.226", sim]
-					subprocess.check_output(cmd)
+				# CASE OF incomplete sims to be restarted (prob interuppted by cluster runtime limit)
+				if runCounter != int(config['toposub']['nclust']) and runCounter >0:
+					logging.info("only " + str(runCounter)+ " complete sims found, finishing now...")
+					# all sims to run
+					sims = glob.glob(home+"/c0*")
+					sims = [i.split('/', 1)[1] for i in sims]
+					# fsims = found complemete sims
+					# list only files that dont exist
+					sims2do = [x for x in sims if x not in fsims]
+					
 
-			f = open(home + "/SUCCESS_SIM1", "w")
+					for sim in sims2do:
+						logging.info( "run geotop " + sim)
+						cmd = ["./geotop/geotop1.226", sim]
+						subprocess.check_output(cmd)
 
-		else:
-			logging.info( "Geotop 1 already run "+str(runCounter)+ 
-				" _SUCCESSFUL_RUN files found" )
+				f = open(home + "/SUCCESS_SIM1", "w")
+
+			else:
+				logging.info( "Geotop 1 already run "+str(runCounter)+ 
+					" _SUCCESSFUL_RUN files found" )
 
 
-
+#===============================================================================
+#	Prepare Snowpack sims
+#===============================================================================
+		if model=="SNOWPACK":
+			myinis = glob.glob(home+"/forcing/"+"*.ini")
+			for myini in myinis:
+				cmd=["snowpack -c "+ myini +" -e "+ config['main']['endDate']]
+				subprocess.check_output(cmd, shell=True)
 #===============================================================================
 #	BLOCK XX
 #	
@@ -407,8 +463,6 @@ def main(wd, simdir, member):
 	fname1 = home + "/SUCCESS_TSCALE2"
 	if os.path.isfile(fname1) == False: #NOT ROBUST
 
-
-
 		if config["forcing"]["product"]=="ensemble_members":
 
 			logging.info( "Run TopoSCALE 2 ensembles")
@@ -474,8 +528,6 @@ def main(wd, simdir, member):
 	if os.path.isfile(fname1) == False: #NOT ROBUST
 		logging.info( "Run SIM 2")
 
-
-
 		''' check for geotop run complete files - we check for .old files as
 		this shows geotop has run successfully twice, 
 
@@ -485,8 +537,7 @@ def main(wd, simdir, member):
 		file is generated. tHEREFORE:
 
 		_SUCCESSFUL_RUN + _SUCCESSFUL_RUN.old = SIM2 SUCCEEDED
-		 _SUCCESSFIL_RUN.old + _FAILED_RUN = SIM2 FAILED
-
+		_SUCCESSFIL_RUN.old + _FAILED_RUN = SIM2 FAILED
 		'''
 		runCounter = 0
 		foundsims = []

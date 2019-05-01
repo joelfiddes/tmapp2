@@ -29,7 +29,7 @@ USER=unlist(strsplit(readLines("~/.netrc")[[2]]," "))[2]
 PWD=unlist(strsplit(readLines("~/.netrc")[[3]]," "))[2]
 
 #====================================================================
-# DEM retrieval based on set of points:
+# DEM retrieval based on set of points or polygon:
 #====================================================================
 dir.create(paste0(wd,'/predictors'), showWarnings=FALSE)
 dir.create(paste0(wd,'/spatial'), showWarnings=FALSE)

@@ -65,9 +65,9 @@ if not os.path.exists(wd + "/forcing"):
 if not os.path.exists(wd + "/predictors"):
 	os.makedirs(wd + "/predictors")
 
-ndvi_wd=wd + "/modis/ndvi"
-if not os.path.exists(ndvi_wd):
-	os.makedirs(ndvi_wd)
+#ndvi_wd=wd + "/modis/ndvi"
+#if not os.path.exists(ndvi_wd):
+	#os.makedirs(ndvi_wd)
 
 #===============================================================================
 #	Announce wd
@@ -111,17 +111,30 @@ if os.path.isfile(fname) == False:
 
 	'''makes domain.shp that is used to download dem only, could alos now pass ccord directly to getDEM.R. 
 	If DEM is present missing or incorrect coords is not a problem'''
-	logging.info("create shp")
-	cmd = ["Rscript", "./rsrc/makePoly.R" ,config["main"]["latN"],config["main"]["latS"],config["main"]["lonE"],config["main"]["lonW"], wd +"/spatial/domain.shp"] # n,s,e,w
-	subprocess.check_output(cmd)
-
-	fname = wd + "/predictors/ele.tif"
-	if os.path.isfile(fname) == False:	
-		logging.info("Downloading DEM")
-		cmd = ["Rscript", "./rsrc/getDEM.R" , wd, config["main"]["demdir"] , wd +"/spatial/domain.shp"]
+	if config['main']['runmode']=='grid':
+		logging.info("create shp")
+		cmd = ["Rscript", "./rsrc/makePoly.R" ,config["main"]["latN"],config["main"]["latS"],config["main"]["lonE"],config["main"]["lonW"], wd +"/spatial/domain.shp"] # n,s,e,w
 		subprocess.check_output(cmd)
-	else:
-		logging.info("DEM already downloaded")
+
+		fname = wd + "/predictors/ele.tif"
+		if os.path.isfile(fname) == False:	
+			logging.info("Downloading DEM")
+			cmd = ["Rscript", "./rsrc/getDEM.R" , wd, config["main"]["demdir"] , wd +"/spatial/domain.shp"]
+			subprocess.check_output(cmd)
+		else:
+			logging.info("DEM already downloaded")
+
+
+	if config['main']['runmode']=='points':
+		fname = wd + "/predictors/ele.tif"
+		if os.path.isfile(fname) == False:	
+			logging.info("Downloading DEM")
+			cmd = ["Rscript", "./rsrc/getDEM.R" , wd, config["main"]["demdir"] , config["main"]["pointsShp"]]
+			subprocess.check_output(cmd)
+		else:
+			logging.info("DEM already downloaded")
+
+
 
 	logging.info("Compute topo predictors")
 	cmd = ["Rscript", "./rsrc/computeTopo.R" , wd,]
@@ -181,15 +194,16 @@ Set up cluster
 	[1] work dir
 	[2] grid used by sim (0.25 = era5 0.5 = ensemble)
 """
-logging.info("Setup sim directories")
+if config['main']['runmode']=='grid':
+	logging.info("Setup sim directories")
 
-if config["forcing"]["product"]=="ensemble_members":
-	cmd = ["Rscript", "./rsrc/prepClust_EDA.R", wd, config['forcing']['grid'], config['forcing']['members']]
-	subprocess.check_output(cmd)
+	if config["forcing"]["product"]=="ensemble_members":
+		cmd = ["Rscript", "./rsrc/prepClust_EDA.R", wd, config['forcing']['grid'], config['forcing']['members']]
+		subprocess.check_output(cmd)
 
-if config["forcing"]["product"]=="reanalysis":
-	cmd = ["Rscript", "./rsrc/prepClust_HRES.R", wd, config['forcing']['grid']]
-	subprocess.check_output(cmd)
+	if config["forcing"]["product"]=="reanalysis":
+		cmd = ["Rscript", "./rsrc/prepClust_HRES.R", wd, config['forcing']['grid']]
+		subprocess.check_output(cmd)
 
 #===============================================================================
 #	Start sims
@@ -198,9 +212,9 @@ if config["forcing"]["product"]=="reanalysis":
 	- generate joblist that can be executed locally on n cores or sent to 
 	cluster
 	"""
-logging.info("Generate joblist")
-cmd = ["Rscript", "./rsrc/joblist.R", wd]
-subprocess.check_output(cmd)
+#logging.info("Generate joblist")
+#cmd = ["Rscript", "./rsrc/joblist.R", wd]
+#subprocess.check_output(cmd)
 
 logging.info("Setup complete!")
 logging.info(" %f minutes for setup" % round((time.time()/60 - start_time/60),2) )
