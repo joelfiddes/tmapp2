@@ -72,6 +72,11 @@ def main(wd, model="SNOWPACK"):
 	if not os.path.exists(home + "/forcing"):
 		os.makedirs(home + "/forcing")
 
+	# make out path for results
+	out = home+"/out/"
+	if not os.path.exists(out):
+		os.makedirs(out)
+
 #===============================================================================
 #	Init ensemble memebers from memeber =1
 #===============================================================================
@@ -156,9 +161,10 @@ def main(wd, model="SNOWPACK"):
 
 
 	'''check for complete forcing/meteo* files==nclust'''
-	meteoCounter = len(glob.glob1(home+"/forcing/","*.csv"))
+	meteoCounter = len(glob.glob1(home+"/out/","*.csv"))
+	lp = pd.read_csv(home + "/listpoints.txt")
 
-	if meteoCounter != int(config['toposub']['nclust']):
+	if meteoCounter != len(lp.name):
 		""" run informed toposub on just one year data for efficiency"""
 
 
@@ -183,22 +189,27 @@ def main(wd, model="SNOWPACK"):
 
 		# 		logging.info( "Run TopoSCALE 1 reanalysis")
 
-		# 		cmd = [
-		# 		"python",  
-		# 		tscale_root+"/tscaleV2/toposcale/tscale_run.py",
-		# 		wd + "/forcing/", 
-		# 		home,
-		# 		home+"/forcing/",
-		# 		startTime,
-		# 		endTime,
-		# 		windCor
-		# 		]
-
 		if config['main']['runmode']=='points':
 
 			if config["forcing"]["product"]=="reanalysis":
 
-				logging.info( "Run TopoSCALE points reanalysis")
+				# 2d
+		 	# 	cmd = [
+				# "python",  
+		 	# 	tscale_root+"/tscaleV2/toposcale/tscale_run.py",
+		 	# 	wd + "/forcing/", 
+		 	# 	home,
+		 	# 	home+"/out/",
+				# config['main']['startDate'],
+				# config['main']['endDate'],
+				# windCor
+				# ]
+
+
+
+				# logging.info( "Run TopoSCALE points reanalysis")
+
+				# #3d
 
 				cmd = [
 				"python",  
@@ -217,93 +228,95 @@ def main(wd, model="SNOWPACK"):
 
 		
 
-		# list of toposcale generated forcing files with full path
-		files = glob.glob(home+"/out/*.csv")
-		print(files)
 
+				# report sucess
+		f = open(home + "/SUCCESS_TSCALE1", "w")
+	else:
+		logging.info( "Toposcale 1 already run "+ str(len(lp.name))+ " meteo files found" )
 
+	# list of toposcale generated forcing files with full path
+	files = glob.glob(home+"/out/*.csv")
+	print(files)
 #===============================================================================
 #	Prepare GEOTOP meteo file
 #===============================================================================
-		if model=="GEOTOP":
-			logging.info( "Convert met to geotop format...")
-			# make geotop met files
-			for file in files:
-				cmd = ["Rscript",  "./rsrc/met2geotop.R",home+"/out/"+file]
-				subprocess.check_output(cmd)
+	if model=="GEOTOP":
+		logging.info( "Convert met to geotop format...")
+		# make geotop met files
+		for file in files:
+			file =os.path.basename(file) # remove path
+			cmd = ["Rscript",  "./rsrc/met2geotop.R",home+"/out/"+file]
+			subprocess.check_output(cmd)
 
 #===============================================================================
 #	Prepare SNOWPACK SMET INI and SNO - use direct confiobj inserts here
 #===============================================================================
-		if model=="SNOWPACK":
-			logging.info( "Preparing snowpack inputs...")
+	if model=="SNOWPACK":
+		logging.info( "Preparing snowpack inputs...")
 
-			# parse listpoints to get metadata
-			lp = pd.read_csv(home + "/listpoints.txt")
+		# parse listpoints to get metadata
+		lp = pd.read_csv(home + "/listpoints.txt")
 
-			# make smet ini here
-			# configure any additional / resampling /  QC here
-			for file in files:
-				file =os.path.basename(file) # remove path
-				logging.info( "Now running "+file)
-				# parse the file name to get id, -1 to get py index
-				res =os.path.basename(file).split('.')[0]
-				id =int(os.path.basename(res).split('meteoc')[1]) -1 
-				
-				cmd = ["Rscript",  "./rsrc/sp_makeInputs.R",
-				config["main"]["srcdir"]+"/snowpack/",
-				home+'/out/',
-				file, 
-				config['main']['startDate'], 'dummy']
-				subprocess.check_output(cmd)
+		# make smet ini here
+		# configure any additional / resampling /  QC here
+		for file in files:
+			file =os.path.basename(file) # remove path
+			logging.info( "Now running "+file)
+			# parse the file name to get id, -1 to get py index
+			res =os.path.basename(file).split('.')[0]
+			id =int(os.path.basename(res).split('meteoc')[1]) -1 
+			
+			cmd = ["Rscript",  "./rsrc/sp_makeInputs.R",
+			config["main"]["srcdir"]+"/snowpack/",
+			home+'/out/',
+			file, 
+			config['main']['startDate'], 'dummy'] # test to see if overidden by below - NOW redundent??
+			subprocess.check_output(cmd)
 
-				# quick fix to ensure second meteopath correctly configured
-				# todo: cover all ini settins like this
-				
-				fileini = home+'/out/'+os.path.basename(file).split('.')[0]+".ini"
-				print(fileini)
-				configini = ConfigObj(fileini)
-				configini['Output']['METEOPATH']=home+'/out/'
-				configini['Input']['POSITION1']="latlon " +str(lp.lat[id])+", "+str(lp.lon[id])+" " +str(lp.ele[id])
-				configini['Input']['CSV_NAME']=lp.name[id]
-				configini['Input']['CSV_AZI']=lp.asp[id]
-				configini['Input']['CSV_SLOPE']=lp.slp[id]
-				configini['Output']['EXPERIMENT']=lp.name[id]
-				configini.write()
+			# quick fix to ensure second meteopath correctly configured
+			# todo: cover all ini settins like this
+			
+			fileini = home+'/out/'+os.path.basename(file).split('.')[0]+".ini"
+			print(fileini)
+			configini = ConfigObj(fileini)
+			configini['Output']['METEOPATH']=home+'/out/'
+			configini['Input']['POSITION1']="latlon " +str(lp.lat[id])+", "+str(lp.lon[id])+" " +str(lp.ele[id])
+			configini['Input']['CSV_NAME']=lp.name[id]
+			configini['Input']['CSV_AZI']=lp.asp[id]
+			configini['Input']['CSV_SLOPE']=lp.slp[id]
+			configini['Output']['EXPERIMENT']=lp.name[id]
+			configini.write()
 
-				# stip out any quotations that stop snowpack parser
-				with open(fileini, "r") as sources:
-				    lines = sources.readlines()
-				with open(fileini, "w") as sources:
-				    for line in lines:
-				        sources.write(re.sub(r'"', '', line))
+			# stip out any quotations that stop snowpack parser
+			with open(fileini, "r") as sources:
+			    lines = sources.readlines()
+			with open(fileini, "w") as sources:
+			    for line in lines:
+			        sources.write(re.sub(r'"', '', line))
 
-				filesno = home+'/out/'+os.path.basename(file).split('.')[0]+".sno"
-				# replace date in sno file
-				with open(filesno, "r") as sources:
-				    lines = sources.readlines()
-				with open(filesno, "w") as sources:
-				    for line in lines:
-				        sources.write(re.sub(r'1997-09-01T00:00', config['main']['startDate']+'T00:00', line))
+			filesno = home+'/out/'+os.path.basename(file).split('.')[0]+".sno"
+			# replace date in sno file
+			with open(filesno, "r") as sources:
+			    lines = sources.readlines()
+			with open(filesno, "w") as sources:
+			    for line in lines:
+			        sources.write(re.sub(r'1997-09-01T00:00', config['main']['startDate']+'T00:00', line))
 
-			# run meteoio
-			for file in files:
-				fileini = os.path.basename(file).split('.')[0]+".ini"
-				cmd = [config["main"]["srcdir"]+"snowpack/data_converter "+ 
-				config['main']['startDate'] +
-				" "+ config['main']['endDate']+ 
-				" " +config['meteoio']['timestep']+" "+ 
-				home+"/out/"+fileini]
-				logging.info( cmd)
-				subprocess.check_output(cmd, shell=True)
-		# cleanup
-		#meteotoremove = glob.glob("*.csv")
-		#os.remove(meteotoremove)
-		
-		# report sucess
-		f = open(home + "/SUCCESS_TSCALE1", "w")
-	else:
-		logging.info( "Toposcale 1 already run "+ config['toposub']['nclust']+ " meteo files found" )
+		# run meteoio
+		for file in files:
+			fileini = os.path.basename(file).split('.')[0]+".ini"
+			cmd = [config["main"]["srcdir"]+"snowpack/data_converter "+ 
+			config['main']['startDate'] +
+			" "+ config['main']['endDate']+ 
+			" " +config['meteoio']['timestep']+" "+ 
+			home+"/out/"+fileini]
+			logging.info( cmd)
+			subprocess.check_output(cmd, shell=True)
+	# cleanup
+	#meteotoremove = glob.glob("*.csv")
+	#os.remove(meteotoremove)
+	
+
 
 #===============================================================================
 #	Prepare GEOTOP sims 
@@ -332,7 +345,7 @@ def main(wd, model="SNOWPACK"):
 				subprocess.check_output(cmd)
 
 				logging.info( "Assign surface types")
-				cmd = ["Rscript",  "./rsrc/modalSurface.R", home]
+				cmd = ["Rscript",  "./rsrc/modalSurface_points.R", home]
 				subprocess.check_output(cmd)
 
 				logging.info( "prepare geotop.inpts")
@@ -342,7 +355,7 @@ def main(wd, model="SNOWPACK"):
 				 home , 
 				 config["main"]["srcdir"]+ "/geotop/geotop.inpts" ,
 				 config["main"]["startDate"],
-				 endDate 
+				 config["main"]["endDate"] 
 				 ]
 				subprocess.check_output(cmd)
 
@@ -354,7 +367,7 @@ def main(wd, model="SNOWPACK"):
 					subprocess.check_output(cmd)
 
 			# CASE OF incomplete sims to be restarted (prob interuppted by cluster runtime limit)
-			if runCounter != int(config['toposub']['nclust']) and runCounter >0:
+			if runCounter != len(lp.name) and runCounter >0:
 				logging.info("only " + str(runCounter)+ " complete sims found, finishing now...")
 				# all sims to run
 				sims = glob.glob(home+"/c0*")
@@ -401,3 +414,12 @@ if __name__ == '__main__':
 	model = sys.argv[2]
 	main(wd, model)
 
+
+# # plot points
+#  files = list.files(".","surface.txt", recursive=T)
+#  par(mfrow=c(4,3))
+#  for (i in files){
+#  dat = read.csv(i)
+#  plot(dat$snow_depth.mm.)
+#  }
+ 

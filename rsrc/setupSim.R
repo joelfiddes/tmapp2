@@ -61,13 +61,18 @@ npoints=dim(mf)[1]
 		dir.create(paste0(simindex,'/out'), recursive=TRUE)
 		dir.create(paste0(simindex,'/rec'), recursive=TRUE)
 
-		met = read.csv(paste0(simdir,"/forcing/meteoc",i,".csv.gtp"))
+		met = read.csv(paste0(simdir,"/out/meteoc",i,".csv.gtp"))
 		write.table(met, paste(simindex,'/meteo0001.txt', sep=''), sep=',', row.names=F, quote=FALSE)
 
 		listp=mf[i,]
-		listp=round(listp,5)
+
+		# round while excluding string column name
+		listp=round(mf[,which(names(mf)!='name')],5)
+		
+		# readd name
+		listp$name<-mf$name
 		#names(listp)<-c('id', 'ele', 'asp', 'slp', 'svf')
-		write.table(listp, paste0(simindex, '/listpoints.txt', sep=''), sep=',',row.names=F)
+		write.table(listp[i,], paste0(simindex, '/listpoints.txt', sep=''), sep=',',row.names=F)
 
 		hor(listPath=simindex)
 		}

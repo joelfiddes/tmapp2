@@ -469,7 +469,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 
 			cmd = [
 			"python",  
-			tscale_root+"/tscaleV2/toposcale/tscale_run_EDAf_.py",
+			tscale_root+"/tscaleV2/toposcale/tscale_run_EDA_.py",
 			wd + "/forcing/", 
 			home,home+"/forcing/" ,
 			str(member),
