@@ -202,8 +202,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 
 			logging.info( "Convert met to geotop format...")
 
-			# list of toposcale generated forcing files
-			files = os.listdir(home+"/forcing/")
+
 
 
 
@@ -214,7 +213,8 @@ def main(wd, simdir, member, model="SNOWPACK"):
 		else:
 			logging.info( "Toposcale 1 already run "+ config['toposub']['nclust']+ " meteo files found" )
 
-
+		# list of toposcale generated forcing files
+		files = os.listdir(home+"/forcing/")
 #===============================================================================
 #	Prepare SNOWPACK SMET INI and SNO
 #===============================================================================
@@ -249,7 +249,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 		# cleanup
 		#meteotoremove = glob.glob("*.csv")
 		#os.remove(meteotoremove)
-			
+
 #===============================================================================
 #	Prepare GEOTOP sims 
 #===============================================================================
