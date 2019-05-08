@@ -286,7 +286,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 					# make geotop met files
 					for file in files:
 						logging.info( "Generating Toposcale 1 geotop met files")
-						cmd = ["Rscript",  "./rsrc/met2geotop.R",home+"/forcing/"+file]
+						cmd = ["Rscript",  "./rsrc/met2geotop.R",file]
 						subprocess.check_output(cmd)
 
 					logging.info( "prepare cluster sim directories")
@@ -529,11 +529,11 @@ def main(wd, simdir, member, model="SNOWPACK"):
 #===============================================================================
 #	Prepare inputs 2
 #===============================================================================
-	logging.info( "Generating Toposcale 1 geotop met files")
+	logging.info( "Generating Toposcale 2 geotop met files")
 	files = glob.glob(home+"/forcing/*.csv")
 
 	for file in files:
-		cmd = ["Rscript",  "./rsrc/met2geotop.R",home+"/forcing/"+file]
+		cmd = ["Rscript",  "./rsrc/met2geotop.R",file]
 		subprocess.check_output(cmd)
 
 	fname1 = home + "/SUCCESS_SIM2"
