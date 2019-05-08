@@ -230,7 +230,6 @@ def main(wd, simdir, member, model="SNOWPACK"):
 
 					# quick fix to ensure second meteopath correctly configured
 					# todo: cover all ini settins like this
-					from configobj import ConfigObj
 					fileini = os.path.basename(file).split('.')[0]+".ini"
 					configini = ConfigObj(fileini)
 					configini['Output']['METEOPATH']=home+'/forcing/'
