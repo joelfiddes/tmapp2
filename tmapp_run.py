@@ -499,12 +499,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 			]
 
 		subprocess.check_output(cmd)
-		logging.info( "Convert met to geotop")
-		files = glob.glob(home+"/forcing/*.csv")
 
-		for file in files:
-			cmd = ["Rscript",  "./rsrc/met2geotop.R",home+"/forcing/"+file]
-			subprocess.check_output(cmd)
 
 		f = open(home + "/SUCCESS_TSCALE2", "w")
 	else:
@@ -529,7 +524,13 @@ def main(wd, simdir, member, model="SNOWPACK"):
 #===============================================================================
 #	Prepare inputs 2
 #===============================================================================
+	logging.info( "Convert met to geotop")
+	files = glob.glob(home+"/forcing/*.csv")
 
+	for file in files:
+		cmd = ["Rscript",  "./rsrc/met2geotop.R",home+"/forcing/"+file]
+		subprocess.check_output(cmd)
+		
 	fname1 = home + "/SUCCESS_SIM2"
 	if os.path.isfile(fname1) == False: #NOT ROBUST
 		logging.info( "Run SIM 2")
