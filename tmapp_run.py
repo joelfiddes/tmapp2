@@ -205,58 +205,63 @@ def main(wd, simdir, member, model="SNOWPACK"):
 			# list of toposcale generated forcing files
 			files = os.listdir(home+"/forcing/")
 
-#===============================================================================
-#	Prepare GEOTOP meteo file
-#===============================================================================
-			if model=="GEOTOP":
-				# make geotop met files
-				for file in files:
-					cmd = ["Rscript",  "./rsrc/met2geotop.R",home+"/forcing/"+file]
-					subprocess.check_output(cmd)
 
-#===============================================================================
-#	Prepare SNOWPACK SMET INI and SNO
-#===============================================================================
-			if model=="SNOWPACK":
-				# make smet ini here
-				# configure any additional / resampling /  QC here
-				for file in files:
-					cmd = ["Rscript",  "./rsrc/sp_makeInputs.R",
-					config["main"]["srcdir"]+"/snowpack/",
-					home+'/forcing/',
-					file, 
-					config['main']['startDate']]
-					subprocess.check_output(cmd)
 
-					# quick fix to ensure second meteopath correctly configured
-					# todo: cover all ini settins like this
-					fileini = os.path.basename(file).split('.')[0]+".ini"
-					configini = ConfigObj(fileini)
-					configini['Output']['METEOPATH']=home+'/forcing/'
-					configini.write()
 
-				# run meteoio
-				for file in files:
-					fileini = os.path.basename(file).split('.')[0]+".ini"
-					cmd = [config["main"]["srcdir"]+"snowpack/data_converter "+ 
-					config['main']['startDate'] +
-					" "+ config['main']['endDate']+ 
-					" 60 " + 
-					home+"/forcing/"+fileini]
-					logging.info( cmd)
-					subprocess.check_output(cmd, shell=True)
-			# cleanup
-			#meteotoremove = glob.glob("*.csv")
-			#os.remove(meteotoremove)
 			
 			# report sucess
 			f = open(home + "/SUCCESS_TSCALE1", "w")
 		else:
 			logging.info( "Toposcale 1 already run "+ config['toposub']['nclust']+ " meteo files found" )
 
+
+#===============================================================================
+#	Prepare SNOWPACK SMET INI and SNO
+#===============================================================================
+		if model=="SNOWPACK":
+			# make smet ini here
+			# configure any additional / resampling /  QC here
+			for file in files:
+				cmd = ["Rscript",  "./rsrc/sp_makeInputs.R",
+				config["main"]["srcdir"]+"/snowpack/",
+				home+'/forcing/',
+				file, 
+				config['main']['startDate']]
+				subprocess.check_output(cmd)
+
+				# quick fix to ensure second meteopath correctly configured
+				# todo: cover all ini settins like this
+				fileini = os.path.basename(file).split('.')[0]+".ini"
+				configini = ConfigObj(fileini)
+				configini['Output']['METEOPATH']=home+'/forcing/'
+				configini.write()
+
+			# run meteoio
+			for file in files:
+				fileini = os.path.basename(file).split('.')[0]+".ini"
+				cmd = [config["main"]["srcdir"]+"snowpack/data_converter "+ 
+				config['main']['startDate'] +
+				" "+ config['main']['endDate']+ 
+				" 60 " + 
+				home+"/forcing/"+fileini]
+				logging.info( cmd)
+				subprocess.check_output(cmd, shell=True)
+		# cleanup
+		#meteotoremove = glob.glob("*.csv")
+		#os.remove(meteotoremove)
+			
 #===============================================================================
 #	Prepare GEOTOP sims 
 #===============================================================================
+		#===============================================================================
+#	Prepare GEOTOP meteo file
+#===============================================================================
+		if model=="GEOTOP":
+			# make geotop met files
+			for file in files:
+				cmd = ["Rscript",  "./rsrc/met2geotop.R",home+"/forcing/"+file]
+				subprocess.check_output(cmd)
+
 		if model=="GEOTOP":
 			''' check for geotop run complete files'''
 			runCounter = 0
