@@ -215,12 +215,14 @@ def main(wd, simdir, member, model="SNOWPACK"):
 
 		# list of toposcale generated forcing files
 
-		files = glob.glob(home+"/forcing/*.csv")
+		
 
 #===============================================================================
 #	Prepare SNOWPACK SMET INI and SNO
 #===============================================================================
 		if model=="SNOWPACK":
+
+			files = glob.glob(home+"/forcing/*.csv")
 			# make smet ini here
 			# configure any additional / resampling /  QC here
 			for file in files:
@@ -258,13 +260,10 @@ def main(wd, simdir, member, model="SNOWPACK"):
 		#===============================================================================
 #	Prepare GEOTOP meteo file
 #===============================================================================
-		if model=="GEOTOP":
-			# make geotop met files
-			for file in files:
-				cmd = ["Rscript",  "./rsrc/met2geotop.R",home+"/forcing/"+file]
-				subprocess.check_output(cmd)
+
 
 		if model=="GEOTOP":
+			files = glob.glob(home+"/forcing/*.csv")
 			''' check for geotop run complete files'''
 			runCounter = 0
 			foundsims = []
@@ -281,8 +280,14 @@ def main(wd, simdir, member, model="SNOWPACK"):
 			if os.path.isfile(fname1) == False: #NOT ROBUST
 
 
-				# case of no sims and probably no setup done
+				# case of no sims and likely no setup done
 				if runCounter ==0:
+
+					# make geotop met files
+					for file in files:
+						logging.info( "Generating Toposcale 1 geotop met files")
+						cmd = ["Rscript",  "./rsrc/met2geotop.R",home+"/forcing/"+file]
+						subprocess.check_output(cmd)
 
 					logging.info( "prepare cluster sim directories")
 					cmd = ["Rscript",  "./rsrc/setupSim.R", home]
@@ -524,13 +529,13 @@ def main(wd, simdir, member, model="SNOWPACK"):
 #===============================================================================
 #	Prepare inputs 2
 #===============================================================================
-	logging.info( "Convert met to geotop")
+	logging.info( "Generating Toposcale 1 geotop met files")
 	files = glob.glob(home+"/forcing/*.csv")
 
 	for file in files:
 		cmd = ["Rscript",  "./rsrc/met2geotop.R",home+"/forcing/"+file]
 		subprocess.check_output(cmd)
-		
+
 	fname1 = home + "/SUCCESS_SIM2"
 	if os.path.isfile(fname1) == False: #NOT ROBUST
 		logging.info( "Run SIM 2")
