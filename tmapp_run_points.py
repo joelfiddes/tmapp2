@@ -35,8 +35,9 @@ import pandas as pd
 from configobj import ConfigObj
 import re
 
-def main(wd, model="SNOWPACK"):
-
+def main(wd, model="SNOWPACK" , interp='1D'):
+	print("Toposcale= "+ interp)
+	print("Model= "+ model)
 #===============================================================================
 #	Config setup
 #===============================================================================
@@ -165,63 +166,41 @@ def main(wd, model="SNOWPACK"):
 	lp = pd.read_csv(home + "/listpoints.txt")
 
 	if meteoCounter != len(lp.name):
-		""" run informed toposub on just one year data for efficiency"""
-
-
-		# if config['main']['runmode']=='grid':
-		# 	if config["forcing"]["product"]=="ensemble_members":
-
-		# 		logging.info( "Run TopoSCALE 1 ensembles")
-
-		# 		cmd = [
-		# 		"python",  
-		# 		tscale_root+"/tscaleV2/toposcale/tscale_run_EDA.py",
-		# 		wd + "/forcing/", 
-		# 		home,
-		# 		home+"/forcing/" ,
-		# 		str(member),
-		# 		startTime,
-		# 		endTime,
-		# 		windCor
-		# 		]
-
-		# 	if config["forcing"]["product"]=="reanalysis":
-
-		# 		logging.info( "Run TopoSCALE 1 reanalysis")
 
 		if config['main']['runmode']=='points':
 
 			if config["forcing"]["product"]=="reanalysis":
 
 				# 2d
-		 	# 	cmd = [
-				# "python",  
-		 	# 	tscale_root+"/tscaleV2/toposcale/tscale_run.py",
-		 	# 	wd + "/forcing/", 
-		 	# 	home,
-		 	# 	home+"/out/",
-				# config['main']['startDate'],
-				# config['main']['endDate'],
-				# windCor
-				# ]
+				if interp == '1D':
+			 		cmd = [
+					"python",  
+			 		tscale_root+"/tscaleV2/toposcale/tscale_run.py",
+			 		wd + "/forcing/", 
+			 		home,
+			 		home+"/out/",
+					config['main']['startDate'],
+					config['main']['endDate'],
+					windCor
+					]
 
 
 
 				# logging.info( "Run TopoSCALE points reanalysis")
 
 				# #3d
+				if interp == '3D':
+					cmd = [
+					"python",  
+					tscale_root+"/tscaleV2/toposcale/tscale3D.py",
+					wd , 
+					config['main']['runmode'],
+					config['main']['startDate'],
+					config['main']['endDate'],
+					"HRES",
+					'1'
 
-				cmd = [
-				"python",  
-				tscale_root+"/tscaleV2/toposcale/tscale3D.py",
-				wd , 
-				config['main']['runmode'],
-				config['main']['startDate'],
-				config['main']['endDate'],
-				"HRES",
-				'1'
-
-				]
+					]
 
 
 		subprocess.check_output(cmd)

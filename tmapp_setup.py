@@ -96,8 +96,17 @@ logging.info("Simulation directory: " + wd  )
 #===============================================================================
 
 # control statement to skip if "asp.tif" exist - indicator fileNOT ROBUST
-fname = wd + "/predictors/asp.tif"
-if os.path.isfile(fname) == False:		
+# fname = wd + "/predictors/asp.tif"
+# if os.path.isfile(fname) == False:	
+
+fname1 = wd + "/predictors/asp.tif"
+fname2 = wd + "/predictors/slp.tif"
+fname3 = wd + "/predictors/ele.tif"
+
+if os.path.isfile(fname1) == False or os.path.isfile(fname2) == False or os.path.isfile(fname3) == False: #NOT ROBUST	
+
+	if not os.path.exists(wd + "predictors/ndvi.tif"):
+		sys.exit("No NDVI file found! please download from  https://clim-engine.appspot.com/")
 
 		# copy preexisting dem
 	if config["main"]["demexists"] == "TRUE":
