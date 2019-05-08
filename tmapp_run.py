@@ -214,7 +214,9 @@ def main(wd, simdir, member, model="SNOWPACK"):
 			logging.info( "Toposcale 1 already run "+ config['toposub']['nclust']+ " meteo files found" )
 
 		# list of toposcale generated forcing files
-		files = os.listdir(home+"/forcing/")
+
+		files = glob.glob(home+"/forcing/*.csv")
+
 #===============================================================================
 #	Prepare SNOWPACK SMET INI and SNO
 #===============================================================================
@@ -498,7 +500,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 
 		subprocess.check_output(cmd)
 		logging.info( "Convert met to geotop")
-		files = os.listdir(home+"/forcing/")
+		files = glob.glob(home+"/forcing/*.csv")
 
 		for file in files:
 			cmd = ["Rscript",  "./rsrc/met2geotop.R",home+"/forcing/"+file]
