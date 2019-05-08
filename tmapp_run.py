@@ -263,7 +263,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 
 
 		if model=="GEOTOP":
-			files = glob.glob(home+"/forcing/*.csv")
+			
 			''' check for geotop run complete files'''
 			runCounter = 0
 			foundsims = []
@@ -283,10 +283,11 @@ def main(wd, simdir, member, model="SNOWPACK"):
 				# case of no sims and likely no setup done
 				if runCounter ==0:
 
+					tsfiles = glob.glob(home+"/forcing/*.csv")
 					# make geotop met files
-					for file in files:
+					for tsfile in tsfiles:
 						logging.info( "Generating Toposcale 1 geotop met files")
-						cmd = ["Rscript",  "./rsrc/met2geotop.R",file]
+						cmd = ["Rscript",  "./rsrc/met2geotop.R",tsfile]
 						subprocess.check_output(cmd)
 
 					logging.info( "prepare cluster sim directories")
@@ -530,15 +531,15 @@ def main(wd, simdir, member, model="SNOWPACK"):
 #	Prepare inputs 2
 #===============================================================================
 	logging.info( "Generating Toposcale 2 geotop met files")
-	files = glob.glob(home+"/forcing/*.csv")
+	tsfiles = glob.glob(home+"/forcing/*.csv")
 
-	for file in files:
-		cmd = ["Rscript",  "./rsrc/met2geotop.R",file]
+	for tsfile in tsfiles:
+		cmd = ["Rscript",  "./rsrc/met2geotop.R",tsfile]
 		subprocess.check_output(cmd)
 
 	fname1 = home + "/SUCCESS_SIM2"
 	if os.path.isfile(fname1) == False: #NOT ROBUST
-		logging.info( "Run SIM 2")
+		
 
 		''' check for geotop run complete files - we check for .old files as
 		this shows geotop has run successfully twice, 
@@ -565,7 +566,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 		if runCounter ==0:
 
 
-			logging.info( "prepare cluster sim directories")
+			logging.info( "prepare sim directories")
 			cmd = ["Rscript",  "./rsrc/setupSim.R", home]
 			subprocess.check_output(cmd)
 
