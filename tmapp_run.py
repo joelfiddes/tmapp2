@@ -34,7 +34,13 @@ import time
 from configobj import ConfigObj
 
 def main(wd, simdir, member, model="SNOWPACK"):
-
+	
+#===============================================================================
+#	CAtch complete runs
+#===============================================================================
+	fname = home + "SUCCESS_SIM2"
+	if os.path.isfile(fname) == True:
+		sys.exit(simdir+" already done!")
 #===============================================================================
 #	Config setup
 #===============================================================================
@@ -99,10 +105,13 @@ def main(wd, simdir, member, model="SNOWPACK"):
 #===============================================================================
 #	Compute svf
 #===============================================================================
-		logging.info( "Calculating SVF layer " +simdir)
-		cmd = ["Rscript", "./rsrc/computeSVF.R", home,str(6), str(500)]
-		subprocess.check_output(cmd)
-
+		fname = home + "/predictors/surface.tif"
+		if os.path.isfile(fname) == False:
+			logging.info( "Calculating SVF layer " +simdir)
+			cmd = ["Rscript", "./rsrc/computeSVF.R", home,str(6), str(500)]
+			subprocess.check_output(cmd)
+		else:
+			logging.info("SVF computed!")
 #===============================================================================
 #	Compute surface
 #===============================================================================
