@@ -99,7 +99,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 #===============================================================================
 #	Compute svf
 #===============================================================================
-		logging.info( "Calculating SVF layer")
+		logging.info( "Calculating SVF layer " +simdir)
 		cmd = ["Rscript", "./rsrc/computeSVF.R", home,str(6), str(500)]
 		subprocess.check_output(cmd)
 
@@ -109,7 +109,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 		fname = home + "/predictors/surface.tif"
 		if os.path.isfile(fname) == False:
 
-			logging.info( "Calculating surface layer")
+			logging.info( "Calculating surface layer " +simdir)
 			cmd = ["Rscript",  "./rsrc/makeSurface.R",home,str(0.3)]
 			subprocess.check_output(cmd)
 		else:
@@ -120,12 +120,12 @@ def main(wd, simdir, member, model="SNOWPACK"):
 		fname = home + "/listpoints.txt"
 		if os.path.isfile(fname) == False:
 
-			logging.info( "Run TopoSUB 1 ")
+			logging.info( "Run TopoSUB 1  " +simdir)
 			cmd = ["Rscript",  "./rsrc/toposub.R",home,str(config['toposub']['nclust']), "TRUE"]
 			subprocess.check_output(cmd)
 			f = open(home + "/SUCCESS_TSUB1", "w")
 		else:
-			logging.info("TopoSUB already run!")
+			logging.info("TopoSUB already run! " +simdir)
 #===============================================================================
 #	Run toposcale 1 - only 1 year
 #===============================================================================
@@ -134,7 +134,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 		if (dateDiff.days > 368):
 			end = start+relativedelta(months=+12)
 			endDate= str('{0:04}'.format(end.year))+"-"+str('{0:02}'.format(end.month))+"-"+str('{0:02}'.format(end.day))
-			logging.info("Running short Toposcale from: " + config["main"]["startDate"] + " to " + endDate)
+			logging.info("Running short Toposcale from: " + config["main"]["startDate"] + " to " + endDate   +" "+simdir)
 		else:
 			endDate= str('{0:04}'.format(end.year))+"-"+str('{0:02}'.format(end.month))+"-"+str('{0:02}'.format(end.day))
 		
@@ -169,7 +169,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 
 			if config["forcing"]["product"]=="ensemble_members":
 
-				logging.info( "Run TopoSCALE 1 ensembles")
+				logging.info( "Run TopoSCALE 1 ensembles " +simdir)
 
 				cmd = [
 				"python",  
@@ -185,7 +185,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 
 			if config["forcing"]["product"]=="reanalysis":
 
-				logging.info( "Run TopoSCALE 1 reanalysis")
+				logging.info( "Run TopoSCALE 1 reanalysis " +simdir)
 
 				cmd = [
 				"python",  
@@ -211,7 +211,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 			# report sucess
 			f = open(home + "/SUCCESS_TSCALE1", "w")
 		else:
-			logging.info( "Toposcale 1 already run "+ config['toposub']['nclust']+ " meteo files found" )
+			logging.info( "Toposcale 1 already run "+ config['toposub']['nclust']+ " meteo files found " +simdir )
 
 		# list of toposcale generated forcing files
 
@@ -286,7 +286,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 					tsfiles = glob.glob(home+"/forcing/*.csv")
 					# make geotop met files
 					for tsfile in tsfiles:
-						logging.info( "Generating Toposcale 1 geotop met files")
+						logging.info( "Generating Toposcale 1 geotop met files " +simdir)
 						cmd = ["Rscript",  "./rsrc/met2geotop.R",tsfile]
 						subprocess.check_output(cmd)
 
@@ -298,7 +298,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 					cmd = ["Rscript",  "./rsrc/modalSurface.R", home]
 					subprocess.check_output(cmd)
 
-					logging.info( "prepare geotop.inpts")
+					logging.info( "prepare geotop.inpts " +simdir)
 					cmd = [
 					"Rscript", 
 					 "./rsrc/makeGeotopInputs.R", 
@@ -324,7 +324,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 
 				# CASE OF incomplete sims to be restarted (prob interuppted by cluster runtime limit)
 				if runCounter != int(config['toposub']['nclust']) and runCounter >0:
-					logging.info("only " + str(runCounter)+ " complete sims found, finishing now...")
+					logging.info("only " + str(runCounter)+ " complete sims found, finishing now... " +simdir)
 					# all sims to run
 					sims = glob.glob(home+"/c0*")
 					sims = [i.split('/', 1)[1] for i in sims]
@@ -341,8 +341,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 				f = open(home + "/SUCCESS_SIM1", "w")
 
 			else:
-				logging.info( "Geotop 1 already run "+str(runCounter)+ 
-					" _SUCCESSFUL_RUN files found" )
+				logging.info( "Geotop 1 already run "+str(runCounter)+ 	" _SUCCESSFUL_RUN files found " +simdir )
 
 
 #===============================================================================
@@ -379,7 +378,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 
 					# set up sim directoroes #and write metfiles
 
-				logging.info( "postprocess results")
+				logging.info( "postprocess results " +simdir)
 				cmd = [
 				"Rscript",  
 				"./rsrc/toposub_post.R", 
@@ -394,7 +393,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 #	Run toposub 2
 #===============================================================================
 
-				logging.info( "Run toposub informed")
+				logging.info( "Run toposub informed " +simdir)
 				cmd = [
 				"Rscript",  
 				"./rsrc/toposub_inform.R", 
@@ -425,7 +424,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 				subprocess.check_output(cmd)
 				f = open(home + "/SUCCESS_TSUB2", "w")
 			else:
-				logging.info( "TopoSUB INFORM already run"  )
+				logging.info( "TopoSUB INFORM already run " +simdir  )
 
 
 #=========================   END of memeber 1 only section   ===============
@@ -477,7 +476,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 
 		if config["forcing"]["product"]=="ensemble_members":
 
-			logging.info( "Run TopoSCALE 2 ensembles")
+			logging.info( "Run TopoSCALE 2 ensembles " +simdir)
 
 			cmd = [
 			"python",  
@@ -509,7 +508,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 
 		f = open(home + "/SUCCESS_TSCALE2", "w")
 	else:
-		logging.info( "tscale2 already run")
+		logging.info( "tscale2 already run " +simdir)
 
 
 
@@ -530,16 +529,18 @@ def main(wd, simdir, member, model="SNOWPACK"):
 #===============================================================================
 #	Prepare inputs 2
 #===============================================================================
-	logging.info( "Generating Toposcale 2 geotop met files")
-	tsfiles = glob.glob(home+"/forcing/*.csv")
 
-	for tsfile in tsfiles:
-		cmd = ["Rscript",  "./rsrc/met2geotop.R",tsfile]
-		subprocess.check_output(cmd)
 
 	fname1 = home + "/SUCCESS_SIM2"
 	if os.path.isfile(fname1) == False: #NOT ROBUST
 		
+		logging.info( "Generating Toposcale 2 geotop met files " +simdir)
+		tsfiles = glob.glob(home+"/forcing/*.csv")
+
+		for tsfile in tsfiles:
+			cmd = ["Rscript",  "./rsrc/met2geotop.R",tsfile]
+			subprocess.check_output(cmd)
+
 
 		''' check for geotop run complete files - we check for .old files as
 		this shows geotop has run successfully twice, 
@@ -614,26 +615,31 @@ def main(wd, simdir, member, model="SNOWPACK"):
  
 		logging.info("Simulation finished!")
 		logging.info(" %f minutes for total run" % round((time.time()/60 - start_time/60),2) )
+
+
+		#===============================================================================
+		#	Generate aggregated results
+		#===============================================================================
+		logging.info( "Generate spatial mean " +simdir)
+		cmd = [
+		"Rscript",  
+		"./rsrc/toposub_spatial_mean.R", 
+		home , 
+		config["toposub"]["nclust"],
+		'surface.txt',
+		'snow_water_equivalent.mm.',
+		config["main"]["startDate"],
+		config["main"]["endDate"] 
+		]
+		subprocess.check_output(cmd)
+
+
 		f = open(home + "/SUCCESS_SIM2", "w")
 	else:
-		logging.info( "SIM2 already run")
-		logging.info("Simulation finished!")
+		logging.info( "SIM2 already run  " +simdir)
+		logging.info("Simulation finished! " +simdir)
 
-#===============================================================================
-#	Generate aggregated results
-#===============================================================================
-	logging.info( "Generate spatial mean")
-	cmd = [
-	"Rscript",  
-	"./rsrc/toposub_spatial_mean.R", 
-	home , 
-	config["toposub"]["nclust"],
-	'surface.txt',
-	'snow_water_equivalent.mm.',
-	config["main"]["startDate"],
-	config["main"]["endDate"] 
-	]
-	subprocess.check_output(cmd)
+
 
 #===============================================================================
 #	Calling Main
