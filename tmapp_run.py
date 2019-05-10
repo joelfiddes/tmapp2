@@ -105,7 +105,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 #===============================================================================
 #	Compute svf
 #===============================================================================
-		fname = home + "/predictors/surface.tif"
+		fname = home + "/predictors/svf.tif"
 		if os.path.isfile(fname) == False:
 			logging.info( "Calculating SVF layer " +simdir)
 			cmd = ["Rscript", "./rsrc/computeSVF.R", home,str(6), str(500)]
@@ -500,7 +500,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 
 		if config["forcing"]["product"]=="reanalysis":
 
-			logging.info( "Run TopoSCALE 1 reanalysis")
+			logging.info("Run TopoSCALE 2 ensembles " +simdir)
 
 			cmd = [
 			"python",  
