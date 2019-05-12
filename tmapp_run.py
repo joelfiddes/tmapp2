@@ -35,12 +35,7 @@ from configobj import ConfigObj
 
 def main(wd, simdir, member, model="SNOWPACK"):
 	
-#===============================================================================
-#	CAtch complete runs
-#===============================================================================
-	fname = home + "SUCCESS_SIM2"
-	if os.path.isfile(fname) == True:
-		sys.exit(simdir+" already done!")
+
 #===============================================================================
 #	Config setup
 #===============================================================================
@@ -75,6 +70,12 @@ def main(wd, simdir, member, model="SNOWPACK"):
 	if not os.path.exists(home + "/forcing"):
 		os.makedirs(home + "/forcing")
 
+#===============================================================================
+#	CAtch complete runs
+#===============================================================================
+	fname = home + "SUCCESS_SIM2"
+	if os.path.isfile(fname) == True:
+		sys.exit(simdir+" already done!")
 #===============================================================================
 #	Init ensemble memebers from memeber =1
 #===============================================================================
