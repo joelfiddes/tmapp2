@@ -5,7 +5,7 @@
 
 Example:
 
-	joel@joel-ThinkPad-T440p:~/src/tmapp2$ python tmapp_run.py /home/joel/sim/topomapptest/ g1m3 3
+	joel@joel-ThinkPad-T440p:~/src/tmapp2$ python tmapp_run_evo.py /home/joel/sim/amu_evo/ g1
 
 
 ARGS:
@@ -34,7 +34,7 @@ import sys
 import time
 from configobj import ConfigObj
 
-def main(wd, simdir, member, model="GEOTOP"):
+def main(wd, simdir, model="GEOTOP"):
 	
 
 #===============================================================================
@@ -89,24 +89,24 @@ def main(wd, simdir, member, model="GEOTOP"):
 #===============================================================================
 #	Compute svf
 #===============================================================================
-		fname = home + "/predictors/svf.tif"
-		if os.path.isfile(fname) == False:
-			logging.info( "Calculating SVF layer " +simdir)
-			cmd = ["Rscript", "./rsrc/computeSVF.R", home,str(6), str(500)]
-			subprocess.check_output(cmd)
-		else:
-			logging.info("SVF computed!")
+	fname = home + "/predictors/svf.tif"
+	if os.path.isfile(fname) == False:
+		logging.info( "Calculating SVF layer " +simdir)
+		cmd = ["Rscript", "./rsrc/computeSVF.R", home,str(6), str(500)]
+		subprocess.check_output(cmd)
+	else:
+		logging.info("SVF computed!")
 #===============================================================================
 #	Compute surface
 #===============================================================================
-		fname = home + "/predictors/surface.tif"
-		if os.path.isfile(fname) == False:
+	fname = home + "/predictors/surface.tif"
+	if os.path.isfile(fname) == False:
 
-			logging.info( "Calculating surface layer " +simdir)
-			cmd = ["Rscript",  "./rsrc/makeSurface.R",home,str(0.3)]
-			subprocess.check_output(cmd)
-		else:
-			logging.info("Surface already computed!")
+		logging.info( "Calculating surface layer " +simdir)
+		cmd = ["Rscript",  "./rsrc/makeSurface.R",home,str(0.3)]
+		subprocess.check_output(cmd)
+	else:
+		logging.info("Surface already computed!")
 
 
 #===============================================================================
@@ -126,42 +126,42 @@ def main(wd, simdir, member, model="GEOTOP"):
 #===============================================================================
 #	Run toposub 
 #===============================================================================
-		fname = home + "/SUCCESS_TSUB"
-		if os.path.isfile(fname) == False:
+	fname = home + "/SUCCESS_TSUB"
+	if os.path.isfile(fname) == False:
 
 
-			logging.info( "Run TopoSUB! " +simdir)
-			cmd = [
-			"Rscript",  
-			"./rsrc/toposub_evoR", 
-			home , 
-			config['toposub']['nclust'] , 
-			config['geotop']['targV'] , 
-			"TRUE", 
-			"TRUE"
-			]
-			subprocess.check_output(cmd)
+		logging.info( "Run TopoSUB! " +simdir)
+		cmd = [
+		"Rscript",  
+		"./rsrc/toposub_evoR", 
+		home , 
+		config['toposub']['nclust'] , 
+		config['geotop']['targV'] , 
+		"TRUE", 
+		"TRUE"
+		]
+		subprocess.check_output(cmd)
 
-			logging.info( "TopoSUB complete"  )
+		logging.info( "TopoSUB complete"  )
 
-			# sample dist plots
-			src = "./rsrc/sampleDistributions.R"
-			arg1 = home
-			arg2 = config['toposcale']['svfCompute']
-			arg3 = "sampDistInfm.pdf"
-			cmd = "Rscript %s %s %s %s"%(src,arg1,arg2,arg3)
-			os.system(cmd)
+		# sample dist plots
+		src = "./rsrc/sampleDistributions.R"
+		arg1 = home
+		arg2 = config['toposcale']['svfCompute']
+		arg3 = "sampDistInfm.pdf"
+		cmd = "Rscript %s %s %s %s"%(src,arg1,arg2,arg3)
+		os.system(cmd)
 
-			logging.info( "Assign surface types")
-			cmd = [
-			"Rscript",  
-			"./rsrc/modalSurface.R", 
-			home
-			]
-			subprocess.check_output(cmd)
-			f = open(home + "/SUCCESS_TSUB", "w")
-		else:
-			logging.info( "TopoSUB already run " +simdir  )
+		logging.info( "Assign surface types")
+		cmd = [
+		"Rscript",  
+		"./rsrc/modalSurface.R", 
+		home
+		]
+		subprocess.check_output(cmd)
+		f = open(home + "/SUCCESS_TSUB", "w")
+	else:
+		logging.info( "TopoSUB already run " +simdir  )
 
 
 #=========================   END of memeber 1 only section   ===============
