@@ -54,7 +54,7 @@ gridmaps<- as(rstack, 'SpatialGridDataFrame')
 #decompose aspect
 res=aspect_decomp(gridmaps$asp)
 gridmaps$aspC<-res$aspC
-#gridmaps$aspS<-res$aspS
+gridmaps$aspS<-res$aspS
 
 # remove unecessary dimensions
 gridmaps$asp<-NULL
