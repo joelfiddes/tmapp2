@@ -34,14 +34,9 @@ import sys
 import time
 from configobj import ConfigObj
 
-def main(wd, simdir, member, model="SNOWPACK"):
+def main(wd, simdir, member, model="GEOTOP"):
 	
-#===============================================================================
-#	CAtch complete runs
-#===============================================================================
-	fname = home + "SUCCESS_SIM2"
-	if os.path.isfile(fname) == True:
-		sys.exit(simdir+" already done!")
+
 #===============================================================================
 #	Config setup
 #===============================================================================
@@ -77,31 +72,19 @@ def main(wd, simdir, member, model="SNOWPACK"):
 		os.makedirs(home + "/forcing")
 
 #===============================================================================
-#	Init ensemble memebers from memeber =1
+#	CAtch complete runs
 #===============================================================================
-	'''copy 
-	-listpoints
+	fname = home + "SUCCESS_SIM2"
+	if os.path.isfile(fname) == True:
+		sys.exit(simdir+" already done!")
 
-	'''
+#===============================================================================
+#	Copy coeffs.txt - to be placed in config
+#===============================================================================
+	src=config['main']['srcdir'] +"/coeffs.txt" 
+	dst= home+"/coeffs.txt"
+	copyfile(src,dst)
 
-	if int(member) > 1:
-		ngrid = simdir.split("m")[0]
-		master= wd + '/sim/' + ngrid + 'm1'
-		src=master +"/listpoints.txt" 
-		dst= home+"/listpoints.txt"
-		copyfile(src,dst)
-		src=master +"/landcoverZones.txt" 
-		dst= home+"/landcoverZones.txt"
-		copyfile(src,dst)
-		src=master +"/landform.tif" 
-		dst= home+"/landform.tif"
-		copyfile(src,dst)
-
-
-
-
-	if int(member) == 1:
-#=========================  start of memeber 1 only section   ==================
 
 #===============================================================================
 #	Compute svf
@@ -124,14 +107,6 @@ def main(wd, simdir, member, model="SNOWPACK"):
 			subprocess.check_output(cmd)
 		else:
 			logging.info("Surface already computed!")
-
-
-
-
-
-
-
-
 
 
 #===============================================================================
@@ -158,7 +133,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 			logging.info( "Run TopoSUB! " +simdir)
 			cmd = [
 			"Rscript",  
-			"./rsrc/toposub_inform.R", 
+			"./rsrc/toposub_evoR", 
 			home , 
 			config['toposub']['nclust'] , 
 			config['geotop']['targV'] , 
@@ -193,7 +168,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 
 
 #===============================================================================		
-# Define start/endtime
+# Define start/endtime - still need this?
 #===============================================================================
 	start = datetime.strptime(config['main']['startDate'], "%Y-%m-%d")
 	end = datetime.strptime(config['main']['endDate'], "%Y-%m-%d")
@@ -230,25 +205,11 @@ def main(wd, simdir, member, model="SNOWPACK"):
 #===============================================================================
 
 #===============================================================================
-#	Run toposcale 2
+#	Run toposcale
 #===============================================================================
 	fname1 = home + "/SUCCESS_TSCALE"
 	if os.path.isfile(fname1) == False: #NOT ROBUST
 
-		if config["forcing"]["product"]=="ensemble_members":
-
-			logging.info( "Run TopoSCALE ensembles " +simdir)
-
-			cmd = [
-			"python",  
-			tscale_root+"/tscaleV2/toposcale/tscale_run_EDA_.py",
-			wd + "/forcing/", 
-			home,home+"/forcing/" ,
-			str(member),
-			startTime,
-			endTime,
-			windCor
-			]
 
 		if config["forcing"]["product"]=="reanalysis":
 
@@ -288,7 +249,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 #===============================================================================
 
 #===============================================================================
-#	Prepare inputs 2
+#	Prepare inputs
 #===============================================================================
 
 
@@ -318,7 +279,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 		foundsims = []
 		for root, dirs, files in os.walk(home):
 			for file in files:    
-				if file.endswith('_SUCCESSFUL_RUN.old'):
+				if file.endswith('_SUCCESSFUL_RUN'):
 					runCounter += 1
 					foundsims.append(os.path.join(root,file))
 
@@ -345,7 +306,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 
 
 	#===============================================================================
-	#	Simulate results 2
+	#	Simulate results
 	#	
 	#===============================================================================
 			sims = glob.glob(home+"/c0*")
@@ -395,9 +356,9 @@ def main(wd, simdir, member, model="SNOWPACK"):
 		subprocess.check_output(cmd)
 
 
-		f = open(home + "/SUCCESS_SIM2", "w")
+		f = open(home + "/SUCCESS_SIM", "w")
 	else:
-		logging.info( "SIM2 already run  " +simdir)
+		logging.info( "SIM already run  " +simdir)
 		logging.info("Simulation finished! " +simdir)
 
 

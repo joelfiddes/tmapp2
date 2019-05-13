@@ -1,7 +1,0 @@
-#!/bin/bash
-python tmapp_run.py /home/joel/sim/tmapp_sp/ g1 &
-python tmapp_run.py /home/joel/sim/tmapp_sp/ g2 &
-python tmapp_run.py /home/joel/sim/tmapp_sp/ g3 &
-python tmapp_run.py /home/joel/sim/tmapp_sp/ g4 &
-python tmapp_run.py /home/joel/sim/tmapp_sp/ g5 &
-python tmapp_run.py /home/joel/sim/tmapp_sp/ g6 &
