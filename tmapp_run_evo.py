@@ -133,7 +133,7 @@ def main(wd, simdir, model="GEOTOP"):
 		logging.info( "Run TopoSUB! " +simdir)
 		cmd = [
 		"Rscript",  
-		"./rsrc/toposub_evoR", 
+		"./rsrc/toposub_evo.R", 
 		home , 
 		config['toposub']['nclust'] , 
 		config['geotop']['targV'] , 
