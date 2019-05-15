@@ -4,6 +4,8 @@
 #INFO
 # new toposub May 2019: uses presribed coffs based on observation that these do not vary much from domain yet are costly to generate using informed routines
 # drop sin(asp) (eastness) as predictor - cos(asp) is enough (northness)
+# compute sin(asp) required to compute mean aspect for listpoints.txt
+
 #DEPENDENCY
 require(raster)
 require(FNN)

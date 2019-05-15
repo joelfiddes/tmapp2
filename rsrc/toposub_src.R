@@ -930,12 +930,13 @@ sampleResultsNow <- function(gridpath, sampleN, targV, date){
  
 
 	if(targV == "snow_water_equivalent.mm."){file1 <- "surface.txt"}
+	if(targV == "snow_depth.mm."){file1 <- "surface.txt"}
 	if(targV == "X100.000000"){file1 <- "ground.txt"}
 
 
 
 	#gsimindex=formatC(i, width=5,flag='0')
-	simindex <- paste0(gridpath, '/S',formatC(sampleN, width=5,flag='0'))
+	simindex <- paste0(gridpath, '/c',formatC(sampleN, width=5,flag='0'))
 
 	#read in lsm output
 	sim_dat <- read.table(paste(simindex,'/out/',file1,sep=''), sep=',', header=T)

@@ -342,18 +342,36 @@ def main(wd, simdir, model="GEOTOP"):
 		#===============================================================================
 		#	Generate aggregated results
 		#===============================================================================
-		logging.info( "Generate spatial mean " +simdir)
+		# logging.info( "Generate spatial mean " +simdir)
+		# cmd = [
+		# "Rscript",  
+		# "./rsrc/toposub_spatial_mean.R", 
+		# home , 
+		# config["toposub"]["nclust"],
+		# 'surface.txt',
+		# 'snow_water_equivalent.mm.',
+		# config["main"]["startDate"],
+		# config["main"]["endDate"] 
+		# ]
+		# subprocess.check_output(cmd)
+
+
+		#===============================================================================
+		#	Generate max results
+		#===============================================================================
+		logging.info( "Generate spatial max " +simdir)
 		cmd = [
 		"Rscript",  
-		"./rsrc/toposub_spatial_mean.R", 
+		"./rsrc/toposubSpatialNow.R", 
 		home , 
 		config["toposub"]["nclust"],
-		'surface.txt',
 		'snow_water_equivalent.mm.',
-		config["main"]["startDate"],
-		config["main"]["endDate"] 
+		"21/05/2014 00:00"
 		]
 		subprocess.check_output(cmd)
+
+
+
 
 
 		f = open(home + "/SUCCESS_SIM", "w")
@@ -361,7 +379,58 @@ def main(wd, simdir, model="GEOTOP"):
 		logging.info( "SIM already run  " +simdir)
 		logging.info("Simulation finished! " +simdir)
 
+#===============================================================================
+#	Make ensemble
+#===============================================================================
+	import tmapp_da
+	tmapp_da.main(wd,home)
 
+#===============================================================================
+#	Simulate results
+#===============================================================================
+	sims = glob.glob(home+"/ensemble/ensemble*/*")
+
+	for sim in sims:
+		print(sim)
+		logging.info( "run geotop" + sim)
+		cmd = ["./geotop/geotop1.226", sim]
+		subprocess.check_output(cmd)
+
+#===============================================================================
+#	DA - ensemble
+#===============================================================================
+	logging.info( "Generate results matrix " +simdir)
+	cmd = [
+	"Rscript",  
+	"./rsrc/resultsMatrix_pbs.R", 
+	home , 
+	config["toposub"]["nclust"],
+	'surface',
+	'snow_water_equivalent.mm.',
+	]
+	subprocess.check_output(cmd)
+
+
+#===============================================================================
+#	DA - run grid code
+#===============================================================================
+	logging.info( "Run PBS " +simdir)
+	cmd = [
+	"Rscript",  
+	"./rsrc/gridDA.R", 
+	home , 
+	config["ensemble"]["members"],
+	config["main"]["startDate"],
+	config["main"]["endDate"], 
+	config["da"]["startDate"],
+	config["da"]["endDate"] 	
+	]
+	subprocess.check_output(cmd)
+
+
+
+# crop out modis tile stack
+# run gridDA
 
 #===============================================================================
 #	Calling Main
