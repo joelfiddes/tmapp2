@@ -13,7 +13,7 @@ param=args[4]
 #			get results matrix
 #===============================================================================
 library(raster)
-sink(paste0(wd, "/da_logfile"), append = TRUE)
+
 rstStack=stack()
 for (i in 1: nens){ #python index
 	resMat=c()
@@ -30,7 +30,6 @@ rstStack=stack(rstStack, rst)
 ensembRes = as.array(rstStack)
 }
 save(ensembRes, file = paste0(simdir, "/ensembRes.rd"))
-sink()
 #keep ensembRes swe
 # ensembRes_swe <- ensembRes
 
