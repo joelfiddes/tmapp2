@@ -395,7 +395,7 @@ def main(wd, simdir, model="GEOTOP"):
 		logging.info( "run geotop" + sim)
 		cmd = ["./geotop/geotop1.226", sim]
 		subprocess.check_output(cmd)
-
+	f = open(home + "/SUCCESS_ENSEMBLE", "w")
 #===============================================================================
 #	DA - ensemble
 #===============================================================================
@@ -427,6 +427,8 @@ def main(wd, simdir, model="GEOTOP"):
 	]
 	subprocess.check_output(cmd)
 
+	f = open(home + "/SUCCESS_PBS", "w")
+
 
 
 # crop out modis tile stack
@@ -439,6 +441,5 @@ if __name__ == '__main__':
 	
 	wd = sys.argv[1]
 	simdir = sys.argv[2]
-	member = sys.argv[3]
-	main(wd, simdir, member)
+	main(wd, simdir)
 

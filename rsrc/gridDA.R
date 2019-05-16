@@ -155,12 +155,12 @@ obsind <- obsind[obsind > DSTART & obsind < DEND]
 naind = which (is.na(obs))	
 weight = PBS(HX[obsind,], OBS[obsind], R)
 	
-write.csv(as.vector(weight), paste0(home,"/weights.txt"), row.names=FALSE)
+write.csv(as.vector(weight), paste0(home,"/ensemble/weights.txt"), row.names=FALSE)
 	
 #===============================================================================
 #		PLOTTING fSCA
 #===============================================================================
-png(paste0(home,"daplot.png"), width=800, height=800)
+png(paste0(home,"/ensemble/daplot.png"), width=800, height=800)
 par(mfrow=c(2,2))
 
 OBS2PLOT <-OBS
