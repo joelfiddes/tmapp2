@@ -87,6 +87,13 @@ if (length(list.files(pattern = "MYD*")) > 0) {
     MYD = stack(list.files(pattern = "MYD*"))
     print("MYD stack crop complete")
     MYD.names = names(MYD)
+}else{
+
+# idea is that if MYD does not exist (quick download) then MOD is inserted purely for the script as only a single value (MOD) is used anyway 
+# - MYD is a gap filler, and in tests, not so significant    
+MYD<-MOD
+MYD.names<-MOD.names
+
 }
 
 
@@ -175,7 +182,8 @@ for (i in 1:nlayers(MOD.layerfill)) {
 MOD.fill <- rstack
 names(MOD.fill) <- names(MOD.layerfill)
 
-save(MOD.fill, file = "MOD.fill")
+# error prone during stack functions as not a MODIS file
+#save(MOD.fill, file = "MOD.fill")
 
 
 # count NA

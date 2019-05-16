@@ -366,7 +366,7 @@ def main(wd, simdir, model="GEOTOP"):
 		home , 
 		config["toposub"]["nclust"],
 		'snow_water_equivalent.mm.',
-		"21/05/2014 00:00"
+		"31/03/2014 00:00"
 		]
 		subprocess.check_output(cmd)
 
@@ -382,54 +382,78 @@ def main(wd, simdir, model="GEOTOP"):
 #===============================================================================
 #	Make ensemble
 #===============================================================================
-	import tmapp_da
-	tmapp_da.main(wd,home)
+	fname1 = home + "/SUCCESS_ENSEMBLE"
+	if os.path.isfile(fname1) == False: #NOT ROBUST
 
-#===============================================================================
-#	Simulate results
-#===============================================================================
-	sims = glob.glob(home+"/ensemble/ensemble*/*")
+		import tmapp_da
+		tmapp_da.main(wd,home)
 
-	for sim in sims:
-		print(sim)
-		logging.info( "run geotop" + sim)
-		cmd = ["./geotop/geotop1.226", sim]
-		subprocess.check_output(cmd)
-	f = open(home + "/SUCCESS_ENSEMBLE", "w")
+	#===============================================================================
+	#	Simulate results
+	#===============================================================================
+		sims = glob.glob(home+"/ensemble/ensemble*/*")
+
+		for sim in sims:
+			print(sim)
+			logging.info( "run geotop" + sim)
+			cmd = ["./geotop/geotop1.226", sim]
+			subprocess.check_output(cmd)
+		f = open(home + "/SUCCESS_ENSEMBLE", "w")
+
+	else:
+		logging.info( "Ensemble simulated already")
 #===============================================================================
 #	DA - ensemble
 #===============================================================================
-	logging.info( "Generate results matrix " +simdir)
-	cmd = [
-	"Rscript",  
-	"./rsrc/resultsMatrix_pbs.R", 
-	home , 
-	config["toposub"]["nclust"],
-	'surface',
-	'snow_water_equivalent.mm.',
-	]
-	subprocess.check_output(cmd)
-
+	fname1 = home + "/SUCCESS_PBS"
+	if os.path.isfile(fname1) == False: #NOT ROBUST
+		logging.info( "Generate results matrix " +simdir)
+		cmd = [
+		"Rscript",  
+		"./rsrc/resultsMatrix_pbs.R", 
+		home , 
+		config["ensemble"]["members"],
+		'surface',
+		'snow_water_equivalent.mm.',
+		]
+		subprocess.check_output(cmd)
 
 #===============================================================================
-#	DA - run PBS grid code
+#	Prepare MODIS obs
 #===============================================================================
-	logging.info( "Run PBS " +simdir)
-	cmd = [
-	"Rscript",  
-	"./rsrc/gridDA.R", 
-	home , 
-	config["ensemble"]["members"],
-	config["main"]["startDate"],
-	config["main"]["endDate"], 
-	config["da"]["startDate"],
-	config["da"]["endDate"] 	
-	]
-	subprocess.check_output(cmd)
+# requires that files exist in wd
+# downloaded MOD and MYD using MODIStsp tool
 
-	f = open(home + "/SUCCESS_PBS", "w")
+		logging.info( "prepare MODIS OBS")
+		cmd = [
+		"Rscript",  
+		"./rsrc/extractSCATimeseriesGRID.R", 
+		home,
+		wd+'/da', 
+	
+		]
+		subprocess.check_output(cmd)
 
+	#===============================================================================
+	#	DA - run PBS grid code
+	#===============================================================================
+		logging.info( "Run PBS " +simdir)
+		cmd = [
+		"Rscript",  
+		"./rsrc/gridDA.R", 
+		home , 
+		config["ensemble"]["members"],
+		config["main"]["startDate"],
+		config["main"]["endDate"], 
+		config["da"]["startDate"],
+		config["da"]["endDate"] 	
+		]
+		subprocess.check_output(cmd)
 
+		f = open(home + "/SUCCESS_PBS", "w")
+
+	else:
+		logging.info( "PBS already run")
 
 # crop out modis tile stack
 # run gridDA

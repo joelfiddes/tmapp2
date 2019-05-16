@@ -65,6 +65,8 @@ if not os.path.exists(wd + "/forcing"):
 if not os.path.exists(wd + "/predictors"):
 	os.makedirs(wd + "/predictors")
 
+if not os.path.exists(wd + "/da"):
+	os.makedirs(wd + "/da")
 #ndvi_wd=wd + "/modis/ndvi"
 #if not os.path.exists(ndvi_wd):
 	#os.makedirs(ndvi_wd)
