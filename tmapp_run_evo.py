@@ -400,7 +400,8 @@ def main(wd, simdir, model="GEOTOP"):
 	if os.path.isfile(fname1) == False: #NOT ROBUST
 
 		sims = glob.glob(home+"/ensemble/ensemble*/*")
-
+		sims = sorted(sims)
+		logging.info( "sims to run")
 		for sim in sims:
 			print(sim)
 
