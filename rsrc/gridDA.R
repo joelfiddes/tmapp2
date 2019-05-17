@@ -26,7 +26,8 @@ sdThresh=13
 R=0.016
 DSTART =  240
 DEND =  330
-
+param="snow_water_equivalent.mm." # for deterministic plot
+file="surface" # for determoinistic plot
 
 # load files
 rstack = brick(paste0(home,"/fsca_stack.tif"))
@@ -113,19 +114,8 @@ for (i in 1:nlayers(rstack)){
 dstack=disaggregate(rstack[[i]], fact=c(round(dim(r)[1]/dim(s)[1]),round(dim(r)[2]/dim(s)[2])), method='') #fact equals r/s for cols and rows
 estack=resample(dstack, landform,  method="ngb")
 newobs <- cellStats(estack, 'mean') /100	
-
 obs=c(obs,newobs)
 }
-
-
-
-
-
-#dstack=disaggregate(s, fact=c(round(dim(r)[1]/dim(s)[1]),round(dim(r)[2]/dim(s)[2])), method='') #fact equals r/s for cols and rows
-#estack=resample(dstack, r,  method="ngb")
-
-#rm(dstack)
-#gc()
 
 
 #obs <- cellStats(estack, 'mean') /100
@@ -157,6 +147,35 @@ weight = PBS(HX[obsind,], OBS[obsind], R)
 	
 write.csv(as.vector(weight), paste0(home,"/ensemble/weights.txt"), row.names=FALSE)
 	
+#===============================================================================
+#		Deterministic runs
+#===============================================================================	
+resMat=c()
+simpaths =list.files(paste0(home), pattern="c00*")
+
+for (j in simpaths){ 
+	#simindex=paste0('S',formatC(j, width=5,flag='0'))
+	dat = read.table(paste0(home,"/", j,"/out/",file,".txt"), sep=',', header=T)
+	tv <- dat[param]
+	resMat = cbind(resMat,tv[,1]) # this index collapse 1 column dataframe to vector
+	rst=raster(resMat)
+}
+
+#swe
+Vect = lp$members
+varr <- aperm(array(Vect, dim = c(dim(resMat)[2], dim(resMat)[1])), perm = c(2L, 1L))
+arr <- varr * resMat
+hx_swe <- apply(arr, FUN = "sum", MARGIN = c(1)) / sum(lp$members)
+
+# fsca
+# convert swe > sdThresh to snowcover = TRUE/1
+resMat[ resMat <= sdThresh ] <- 0
+resMat[ resMat > sdThresh ] <- 1
+
+Vect = lp$members
+varr <- aperm(array(Vect, dim = c(dim(resMat)[2], dim(resMat)[1])), perm = c(2L, 1L))
+arr <- varr * resMat
+hx_fsca <- apply(arr, FUN = "sum", MARGIN = c(1)) / sum(lp$members)
 #===============================================================================
 #		PLOTTING fSCA
 #===============================================================================
@@ -296,7 +315,8 @@ lines(date,med.pri, col='red', lwd=3)
 #lines(low.post, col='blue')
 lines(date,med.post, col='blue', lwd=3)
 points(date,OBS2PLOT, col='black', pch=3, lwd=4)
-legend("topright", c("prior", "posterior", "obs") , col=c("red", "blue", "black"), lty=c(1,1,NA),pch=c(NA,NA, 3))
+lines(date, hx_fsca, col='green', lwd=3)
+legend("topright", c("prior", "posterior", "obs", "open-loop") , col=c("red", "blue", "black", "green"), lty=c(1,1,NA),pch=c(NA,NA, 3))
 #abline(v=DSTART)
 #abline(v=DEND)
 #dev.off()
@@ -461,11 +481,20 @@ lines(date,med.pri*cfact, col='red', lwd=3)
 #lines(low.post*cfact, col='blue')
 lines(date, med.post*cfact, col='blue', lwd=3)
 #points(OBS2PLOT, col='green', lwd=4)
-legend("topright", c("prior", "posterior") , col=c("red", "blue"), lty=1)
+
 #abline(v=DSTART)
 #abline(v=DEND)
-print(max(med.pri) )
-print(max(med.post))
+#print(max(med.pri) )
+#print(max(med.post))
+
+
+
+
+
+lines(date, hx_swe*cfact, col='green', lwd=3)
+
+legend("topright", c("prior", "posterior", "open-loop") , col=c("red", "blue", "green"), lty=1)
+
 
 
 dev.off()

@@ -382,22 +382,35 @@ def main(wd, simdir, model="GEOTOP"):
 #===============================================================================
 #	Make ensemble
 #===============================================================================
-	fname1 = home + "/SUCCESS_ENSEMBLE"
+	fname1 = home + "/SUCCESS_PERTURB"
 	if os.path.isfile(fname1) == False: #NOT ROBUST
 
 		import tmapp_da
 		tmapp_da.main(wd,home)
 
+		f = open(home + "/SUCCESS_PERTURB", "w")
+
+	else:
+		logging.info( "Ensemble already generated")
 	#===============================================================================
 	#	Simulate results
 	#===============================================================================
+		
+	fname1 = home + "/SUCCESS_ENSEMBLE"
+	if os.path.isfile(fname1) == False: #NOT ROBUST
+
 		sims = glob.glob(home+"/ensemble/ensemble*/*")
 
 		for sim in sims:
 			print(sim)
-			logging.info( "run geotop" + sim)
-			cmd = ["./geotop/geotop1.226", sim]
-			subprocess.check_output(cmd)
+
+			fname1 = sim+"/out/_SUCCESSFUL_RUN.old"
+			if os.path.isfile(fname1) == False:
+				logging.info( "run geotop" + sim)
+				cmd = ["./geotop/geotop1.226", sim]
+				subprocess.check_output(cmd)
+			else:
+				logging.info( sim + "already run")
 		f = open(home + "/SUCCESS_ENSEMBLE", "w")
 
 	else:
