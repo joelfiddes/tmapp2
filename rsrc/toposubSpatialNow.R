@@ -42,4 +42,4 @@ resultsVec <- c(resultsVec, dat)
 
 landform<-raster(paste0(home, "/landform.tif")	)
 rst = crispSpatialNow(resultsVec, landform)
-writeRaster(rst, paste0(home, "/", targV, "maxSWE.tif"))
+writeRaster(rst, paste0(home, "/", targV, "maxSWE.tif"), overwrite=TRUE)
