@@ -25,14 +25,15 @@ ensembRes = as.array(rstStack)
 # weights file
 w= read.csv(paste0(home,"/ensemble/weights.txt"))
 
-varr <- aperm(array(w$x, dim = c(dim(ensembRes)[2], dim(ensembRes)[1], dim(ensembRes)[3])), perm = c(2L, 1L, 3L))
+varr <- aperm(array(w$x, dim = c(dim(ensembRes)[3], dim(ensembRes)[1], dim(ensembRes)[2])), perm = c(2L, 3L, 1L))
+
 
 x= ensembRes*varr
 y=apply(x, MARGIN=c(1,2), FUN=sum)
-lp=raster("/home/joel/sim/amu_evo/sim/g80/landform.tif")
+lf=raster(paste0(home,"/landform.tif"))
 
 # day 212 = 31 March on a non leap year
 l2 =data.frame(cbind((1:dim(ensembRes)[2]), y[day,] ))
 
-rst = subs(lp,l2 ,by=1, which=2)
-writeRaster(rst, "_da.tif")
+rst = subs(lf,l2 ,by=1, which=2)
+writeRaster(rst, paste0(home, param,"_da.tif"))

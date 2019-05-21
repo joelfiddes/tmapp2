@@ -92,6 +92,8 @@ ensembRes[ ensembRes > sdThresh ] <- 1
 # compute weighted  fsca by memebership
 #https://stackoverflow.com/questions/34520567/r-multiply-second-dimension-of-3d-array-by-a-vector-for-each-of-the-3rd-dimension
 Vect = lp$members
+
+# dimension that contains data first in making array, then reorder array using 'perm'
 varr <- aperm(array(Vect, dim = c(dim(ensembRes)[2], dim(ensembRes)[1], dim(ensembRes)[3])), perm = c(2L, 1L, 3L))
 arr <- varr * ensembRes
 
@@ -130,9 +132,11 @@ nNa = c(nNa, countNa)
 # find highNA scenes and set to NA
 index = which(nNa > 0.1)
 obs[index] <- NA
-glaciers = min(obs,na.rm=T)
 
-obs = obs - glaciers
+
+
+#glaciers = min(obs,na.rm=T)
+#obs = obs - glaciers
 
 
 	
@@ -179,8 +183,8 @@ hx_fsca <- apply(arr, FUN = "sum", MARGIN = c(1)) / sum(lp$members)
 #===============================================================================
 #		PLOTTING fSCA
 #===============================================================================
-png(paste0(home,"/ensemble/daplot.png"), width=800, height=800)
-par(mfrow=c(2,2))
+png(paste0(home,"/ensemble/daplot.png"), width=800, height=400)
+par(mfrow=c(1,2))
 
 OBS2PLOT <-OBS
 OBS2PLOT[naind]<-NA
