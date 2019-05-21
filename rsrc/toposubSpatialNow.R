@@ -27,4 +27,4 @@ resultsVec <- c(resultsVec, datpoint)
 
 landform<-raster(paste0(home, "/landform.tif")	)
 rst = crispSpatialNow(resultsVec, landform)
-writeRaster(rst, paste0(home, "/", targV, date,".tif"))
+writeRaster(rst, paste0(home, "/", targV, "maxSWE.tif"))
