@@ -385,7 +385,7 @@ def main(wd, simdir, model="GEOTOP"):
 #===============================================================================
 #	Make ensemble
 #===============================================================================
-	if config["ensemble"]["run"] == TRUE:
+	if config["ensemble"]["run"] == "TRUE":
 
 		fname1 = home + "/SUCCESS_PERTURB"
 		if os.path.isfile(fname1) == False: #NOT ROBUST
