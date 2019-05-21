@@ -372,7 +372,7 @@ def main(wd, simdir, model="GEOTOP"):
 		home , 
 		config["toposub"]["nclust"],
 		'snow_water_equivalent.mm.',
-		"31/03/2014 00:00"
+		config["toposub"]["spatialDate"]
 		]
 		subprocess.check_output(cmd)
 
@@ -385,7 +385,7 @@ def main(wd, simdir, model="GEOTOP"):
 #===============================================================================
 #	Make ensemble
 #===============================================================================
-	if config["ensemble"]["doEnsemble"] == TRUE:
+	if config["ensemble"]["run"] == TRUE:
 
 		fname1 = home + "/SUCCESS_PERTURB"
 		if os.path.isfile(fname1) == False: #NOT ROBUST
