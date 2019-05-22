@@ -221,9 +221,9 @@ def main(wd, simdir, model="GEOTOP"):
 				tscale_root+"/tscaleV2/toposcale/tscale3D.py",
 				wd, 
 				"point",
-				startTime,
-				endTime,
-				"reanalysis",
+				start,
+				end,
+				"HRES",
 				"1"
 				]
 
