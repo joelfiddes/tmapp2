@@ -219,12 +219,12 @@ def main(wd, simdir, model="GEOTOP"):
 				cmd = [
 				"python",  
 				tscale_root+"/tscaleV2/toposcale/tscale3D.py",
-				wd + "/forcing/", 
+				wd, 
 				"point",
 				startTime,
 				endTime,
 				"reanalysis",
-				1
+				"1"
 				]
 
 			subprocess.check_output(cmd)
