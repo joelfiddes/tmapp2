@@ -135,8 +135,7 @@ def main(wd, simdir, model="GEOTOP"):
 		"Rscript",  
 		"./rsrc/toposub_evo.R", 
 		home , 
-		config['toposub']['nclust'] , 
-		config['geotop']['targV'] , 
+		config['toposub']['nclust'] ,
 		"TRUE", 
 		"TRUE"
 		]
@@ -207,32 +206,59 @@ def main(wd, simdir, model="GEOTOP"):
 #===============================================================================
 #	Run toposcale
 #===============================================================================
-	fname1 = home + "/SUCCESS_TSCALE"
-	if os.path.isfile(fname1) == False: #NOT ROBUST
+	if config["toposcale"]["mode"] == "3d":
+
+		fname1 = home + "/SUCCESS_TSCALE"
+		if os.path.isfile(fname1) == False: #NOT ROBUST
 
 
-		if config["forcing"]["product"]=="reanalysis":
+			if config["forcing"]["product"]=="reanalysis":
 
-			logging.info("Run TopoSCALE " +simdir)
+				logging.info("Run TopoSCALE " +simdir)
 
-			cmd = [
-			"python",  
-			tscale_root+"/tscaleV2/toposcale/tscale_run.py",
-			wd + "/forcing/", 
-			home,home+"/forcing/",
-			startTime,
-			endTime,
-			windCor
-			]
+				cmd = [
+				"python",  
+				tscale_root+"/tscaleV2/toposcale/tscale3D.py",
+				wd + "/forcing/", 
+				"point",
+				startTime,
+				endTime,
+				"reanalysis",
+				1
+				]
 
-		subprocess.check_output(cmd)
-
-
-		f = open(home + "/SUCCESS_TSCALE", "w")
-	else:
-		logging.info( "TSCALE already run " +simdir)
+			subprocess.check_output(cmd)
 
 
+			f = open(home + "/SUCCESS_TSCALE", "w")
+		else:
+			logging.info( "TSCALE 3d already run " +simdir)
+
+	if config["toposcale"]["mode"] == "1d":
+		fname1 = home + "/SUCCESS_TSCALE"
+		if os.path.isfile(fname1) == False: #NOT ROBUST
+
+
+			if config["forcing"]["product"]=="reanalysis":
+
+				logging.info("Run TopoSCALE " +simdir)
+
+				cmd = [
+				"python",  
+				tscale_root+"/tscaleV2/toposcale/tscale_run.py",
+				wd + "/forcing/", 
+				home,home+"/forcing/",
+				startTime,
+				endTime,
+				windCor
+				]
+
+			subprocess.check_output(cmd)
+
+
+			f = open(home + "/SUCCESS_TSCALE", "w")
+		else:
+			logging.info( "TSCALE 1d already run " +simdir)
 
 
 
@@ -364,17 +390,17 @@ def main(wd, simdir, model="GEOTOP"):
 		logging.info( "SIM already run  " +simdir)
 
 
-		logging.info("Simulation finished! " +simdir)
-		logging.info( "Generate spatial max " +simdir)
-		cmd = [
-		"Rscript",  
-		"./rsrc/toposubSpatialNow.R", 
-		home , 
-		config["toposub"]["nclust"],
-		'snow_water_equivalent.mm.',
-		config["toposub"]["spatialDate"]
-		]
-		subprocess.check_output(cmd)
+	logging.info("Simulation finished! " +simdir)
+	logging.info( "Generate spatial max " +simdir)
+	cmd = [
+	"Rscript",  
+	"./rsrc/toposubSpatialNow.R", 
+	home , 
+	config["toposub"]["nclust"],
+	'snow_water_equivalent.mm.',
+	config["toposub"]["spatialDate"]
+	]
+	subprocess.check_output(cmd)
 
 
 

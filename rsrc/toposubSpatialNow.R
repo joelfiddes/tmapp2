@@ -22,7 +22,7 @@ date <- 	args[4]
 resultsVec <- c()
 
 for (i in 1:Nclust){
-
+print(i)
 # returns datapoint given sampleN and date and targV
 #datpoint = sampleResultsNow(gridpath = home, sampleN = i, targV = targV, date = date)
 

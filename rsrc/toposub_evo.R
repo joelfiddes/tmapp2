@@ -17,9 +17,8 @@ source("./rsrc/toposub_src.R")
 args = commandArgs(trailingOnly=TRUE)
 gridpath=args[1]
 Nclust=args[2]
-targV=args[3]
-svfCompute=args[4]
-lowmem=args[5]
+svfCompute=args[3]
+lowmem=args[4]
 #Nclust=args[2] #'/home/joel/sim/topomap_test/grid1' #
 
 #====================================================================
