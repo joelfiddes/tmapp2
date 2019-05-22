@@ -219,7 +219,7 @@ def main(wd, simdir, model="GEOTOP"):
 				cmd = [
 				"python",  
 				tscale_root+"/tscaleV2/toposcale/tscale3D.py",
-				wd, 
+				home, 
 				"point",
 				config['main']['startDate'],
 				config['main']['endDate'],
