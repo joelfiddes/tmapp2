@@ -221,8 +221,8 @@ def main(wd, simdir, model="GEOTOP"):
 				tscale_root+"/tscaleV2/toposcale/tscale3D.py",
 				wd, 
 				"point",
-				start,
-				end,
+				config['main']['startDate'],
+				config['main']['endDate'],
 				"HRES",
 				"1"
 				]
