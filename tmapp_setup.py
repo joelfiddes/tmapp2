@@ -148,7 +148,7 @@ if os.path.isfile(fname1) == False or os.path.isfile(fname2) == False or os.path
 
 
 	logging.info("Compute topo predictors")
-	cmd = ["Rscript", "./rsrc/computeTopo.R" , wd,]
+	cmd = ["Rscript", "./rsrc/computeTopo.R" , wd]
 	subprocess.check_output(cmd)
 
 else:
@@ -216,6 +216,18 @@ if config['main']['runmode']=='grid':
 		cmd = ["Rscript", "./rsrc/prepClust_HRES.R", wd, config['forcing']['grid']]
 		subprocess.check_output(cmd)
 
+if config['main']['runmode']=='basins':
+	if config["forcing"]["product"]=="reanalysis":
+		cmd = ["Rscript", "./rsrc/prepClust_BASINS.R", wd, wd+'/basins/basins.shp']
+		subprocess.check_output(cmd)
+
+
+#===============================================================================
+#	generate basin forcing
+#===============================================================================
+if config['main']['runmode']=='basins':
+	cmd = ["Rscript", tscale_root+"/tscaleV2/toposcale/grid2basin.R",wd]
+	subprocess.check_output(cmd)
 #===============================================================================
 #	Start sims
 #===============================================================================

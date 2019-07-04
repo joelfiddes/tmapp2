@@ -71,7 +71,7 @@ subsdf=data.frame(1,0)
 reclassVeg=subs(x=meanNDVIReclass,  y=subsdf, by=1, which=2, subsWithNA=TRUE) #values 1 (veg) become 2 , values 0 (no veg) become NA
 
 
-surf=resample(reclassVeg, slpModelReclass, method='ngb')
+surf= resample(reclassVeg, slpModelReclass, method='ngb') #resample done on main ndvi layer now to avoid geometry issues in basin clips
 
 surfaceModel=cover(surf, slpModelReclass) #0= veg, 1=debris , 2=steep bedrock
 

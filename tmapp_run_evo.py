@@ -256,7 +256,30 @@ def main(wd, simdir, model="GEOTOP"):
 
 			subprocess.check_output(cmd)
 
+	if config["toposcale"]["mode"] == "basin":
+		basinID=simdir.split('g', 1)[1]
+		
+		fname1 = home + "/SUCCESS_TSCALE"
+		if os.path.isfile(fname1) == False: #NOT ROBUST
 
+
+			if config["forcing"]["product"]=="reanalysis":
+
+				logging.info("Run TopoSCALE " +simdir)
+
+				cmd = [
+				"python",  
+				tscale_root+"/tscaleV2/toposcale/tscale_run_basin.py",
+				wd + "/forcing/", 
+				home,
+				home+"/forcing/",
+				startTime,
+				endTime,
+				windCor,
+				basinID
+				]
+
+			subprocess.check_output(cmd)
 			f = open(home + "/SUCCESS_TSCALE", "w")
 		else:
 			logging.info( "TSCALE 1d already run " +simdir)

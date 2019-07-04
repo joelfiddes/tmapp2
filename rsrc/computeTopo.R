@@ -28,6 +28,8 @@ dem=raster('predictors/ele.tif')
 #================================================================= ==
 slp=terrain(dem, opt="slope", unit="degrees", neighbors=8, filename='')
 asp=terrain(dem, opt="aspect", unit="degrees", neighbors=8, filename='')
+slp[is.na(asp)==T]<-0 # pads raster with 0 so dimension of valid vals same as dem (eg when passed to trim in generating sim files dimension remain the same)
+asp[is.na(asp)==T]<-0
 
 #====================================================================
 # WRITE OUTPUTS
@@ -38,5 +40,8 @@ writeRaster(round(asp,0), "predictors/asp.tif", overwrite=TRUE) #write and reduc
 
 
 ndvi=raster('predictors/ndvi.tif')
-ndvi2 = crop(ndvi,dem)
-writeRaster(ndvi2, "predictors/ndvi.tif", overwrite=TRUE)
+ncrop = crop(ndvi,dem, snap='out')
+nresamp = resample(ncrop,dem) # resample to ensure no geometry issues in basin cookiecuts
+
+
+writeRaster(nresamp, "predictors/ndvi.tif", overwrite=TRUE)

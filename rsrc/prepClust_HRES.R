@@ -9,7 +9,7 @@ rst = raster(grid) # crop era5 footprint grid to domain
 #aoi=shapefile(paste0(wd,"/spatial/extent.shp"))
 #aoi=raster(paste0(wd,"/predictors/ele.tif"))
 aoi=raster(paste0(wd,"/forcing/SURF.nc")) # defines domain
-eraExtent=crop(rst,aoi, snap='in')
+eraExtent=crop(rst,aoi, snap='out')
 ncells=ncell(eraExtent)
 idRst = setValues(eraExtent , 1:ncells )
 poly = rasterToPolygons(idRst)
@@ -44,7 +44,6 @@ for (i in 1:ncells){
 			}
 		
 
-poly@data[1,]
 
 
 
