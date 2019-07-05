@@ -120,32 +120,41 @@ if os.path.isfile(fname1) == False or os.path.isfile(fname2) == False or os.path
 		cmd = "cp -r %s %s"%(src,dst)
 		os.system(cmd) 
 
-	'''makes domain.shp that is used to download dem only, could alos now pass ccord directly to getDEM.R. 
-	If DEM is present missing or incorrect coords is not a problem'''
-	if config['main']['runmode']=='grid':
-		logging.info("create shp")
-		cmd = ["Rscript", "./rsrc/makePoly.R" ,config["main"]["latN"],config["main"]["latS"],config["main"]["lonE"],config["main"]["lonW"], wd +"/spatial/domain.shp"] # n,s,e,w
-		subprocess.check_output(cmd)
+	if config["main"]["demexists"] == "FALSE":
 
-		fname = wd + "/predictors/ele.tif"
-		if os.path.isfile(fname) == False:	
-			logging.info("Downloading DEM")
-			cmd = ["Rscript", "./rsrc/getDEM.R" , wd, config["main"]["demdir"] , wd +"/spatial/domain.shp"]
+		'''makes domain.shp that is used to download dem only, could alos now pass ccord directly to getDEM.R. 
+		If DEM is present missing or incorrect coords is not a problem'''
+		if config['main']['runmode']=='grid':
+			logging.info("create shp")
+			cmd = ["Rscript", "./rsrc/makePoly.R" ,config["main"]["latN"],config["main"]["latS"],config["main"]["lonE"],config["main"]["lonW"], wd +"/spatial/domain.shp"] # n,s,e,w
 			subprocess.check_output(cmd)
-		else:
-			logging.info("DEM already downloaded")
+
+			fname = wd + "/predictors/ele.tif"
+			if os.path.isfile(fname) == False:	
+				logging.info("Downloading DEM")
+				cmd = ["Rscript", "./rsrc/getDEM.R" , wd, config["main"]["demdir"] , wd +"/spatial/domain.shp"]
+				subprocess.check_output(cmd)
+			else:
+				logging.info("DEM already downloaded")
 
 
-	if config['main']['runmode']=='points':
-		fname = wd + "/predictors/ele.tif"
-		if os.path.isfile(fname) == False:	
-			logging.info("Downloading DEM")
-			cmd = ["Rscript", "./rsrc/getDEM.R" , wd, config["main"]["demdir"] , config["main"]["pointsShp"]]
-			subprocess.check_output(cmd)
-		else:
-			logging.info("DEM already downloaded")
+		if config['main']['runmode']=='points':
+			fname = wd + "/predictors/ele.tif"
+			if os.path.isfile(fname) == False:	
+				logging.info("Downloading DEM")
+				cmd = ["Rscript", "./rsrc/getDEM.R" , wd, config["main"]["demdir"] , config["main"]["pointsShp"]]
+				subprocess.check_output(cmd)
+			else:
+				logging.info("DEM already downloaded")
 
-
+		if config['main']['runmode']=='basin':
+			fname = wd + "/predictors/ele.tif"
+			if os.path.isfile(fname) == False:	
+				logging.info("Downloading DEM")
+				cmd = ["Rscript", "./rsrc/getDEM.R" , wd, config["main"]["demdir"] , wd +"/basins/basins.shp"]
+				subprocess.check_output(cmd)
+			else:
+				logging.info("DEM already downloaded")
 
 	logging.info("Compute topo predictors")
 	cmd = ["Rscript", "./rsrc/computeTopo.R" , wd]
