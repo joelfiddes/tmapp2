@@ -496,15 +496,17 @@ def main(wd, simdir, model="GEOTOP"):
 	# requires that files exist in wd
 	# downloaded MOD and MYD using MODIStsp tool
 
-			logging.info( "prepare MODIS OBS")
-			cmd = [
-			"Rscript",  
-			"./rsrc/extractSCATimeseriesGRID.R", 
-			home,
-			wd+'/da', 
-		
-			]
-			subprocess.check_output(cmd)
+			fname1 = home + "/fsca_stack.tif "
+			if os.path.isfile(fname1) == False: #NOT ROBUST
+				logging.info( "prepare MODIS OBS")
+				cmd = [
+				"Rscript",  
+				"./rsrc/extractSCATimeseriesGRID.R", 
+				home,
+				wd+'/da', 
+			
+				]
+				subprocess.check_output(cmd)
 
 		#===============================================================================
 		#	DA - run PBS grid code

@@ -38,7 +38,7 @@ from configobj import ConfigObj
 config = ConfigObj(sys.argv[1])
 #config = ConfigObj("/home/joel/sim/topomapptest/config.ini")	
 wd = config["main"]["wd"]
-
+tscale_root=config['main']['tscale_root'] 
 #===============================================================================
 #	Logging
 #===============================================================================
@@ -226,6 +226,7 @@ if config['main']['runmode']=='grid':
 		subprocess.check_output(cmd)
 
 if config['main']['runmode']=='basins':
+	logging.info("Setup basin sim directories")
 	if config["forcing"]["product"]=="reanalysis":
 		cmd = ["Rscript", "./rsrc/prepClust_BASINS.R", wd, wd+'/basins/basins.shp']
 		subprocess.check_output(cmd)
@@ -233,8 +234,10 @@ if config['main']['runmode']=='basins':
 
 #===============================================================================
 #	generate basin forcing
+#  todo: calc p gradient here
 #===============================================================================
 if config['main']['runmode']=='basins':
+	logging.info("Generate basin forcing")
 	cmd = ["Rscript", tscale_root+"/tscaleV2/toposcale/grid2basin.R",wd]
 	subprocess.check_output(cmd)
 #===============================================================================
