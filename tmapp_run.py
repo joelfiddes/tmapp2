@@ -109,7 +109,7 @@ def main(wd, simdir, member, model="SNOWPACK"):
 		fname = home + "/predictors/svf.tif"
 		if os.path.isfile(fname) == False:
 			logging.info( "Calculating SVF layer " +simdir)
-			cmd = ["Rscript", "./rsrc/computeSVF.R", home,str(6), str(500)]
+			cmd = ["Rscript", "./rsrc/computeSVF.R", home,str(8), str(5000)]
 			subprocess.check_output(cmd)
 		else:
 			logging.info("SVF computed!")

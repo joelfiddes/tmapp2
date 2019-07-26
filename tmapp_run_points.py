@@ -35,6 +35,10 @@ import pandas as pd
 from configobj import ConfigObj
 import re
 
+# for config
+svf_sectors=str(8) # sectors to search)
+svf_dist=str(5000) # search distance m
+
 def main(wd, model="SNOWPACK" , interp='1D'):
 	print("Toposcale= "+ interp)
 	print("Model= "+ model)
@@ -109,7 +113,7 @@ def main(wd, model="SNOWPACK" , interp='1D'):
 #	Compute svf
 #===============================================================================
 	logging.info( "Calculating SVF layer")
-	cmd = ["Rscript", "./rsrc/computeSVF.R", home,str(6), str(500)]
+	cmd = ["Rscript", "./rsrc/computeSVF.R", home,svf_sectors, svf_dist]
 	subprocess.check_output(cmd)
 
 #===============================================================================

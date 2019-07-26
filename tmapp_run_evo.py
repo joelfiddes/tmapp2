@@ -34,6 +34,10 @@ import sys
 import time
 from configobj import ConfigObj
 
+# for config
+svf_sectors=str(8) # sectors to search
+svf_dist=str(5000) # search distance m
+
 def main(wd, simdir, model="GEOTOP"):
 	
 
@@ -92,7 +96,7 @@ def main(wd, simdir, model="GEOTOP"):
 	fname = home + "/predictors/svf.tif"
 	if os.path.isfile(fname) == False:
 		logging.info( "Calculating SVF layer " +simdir)
-		cmd = ["Rscript", "./rsrc/computeSVF.R", home,str(6), str(500)]
+		cmd = ["Rscript", "./rsrc/computeSVF.R", home,svf_sectors, svf_dist]
 		subprocess.check_output(cmd)
 	else:
 		logging.info("SVF computed!")

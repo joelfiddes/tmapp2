@@ -24,6 +24,7 @@ import glob
 #import joblib
 import numpy
 
+
 #===============================================================================
 #	Timer
 #===============================================================================
@@ -39,6 +40,12 @@ config = ConfigObj(sys.argv[1])
 #config = ConfigObj("/home/joel/sim/topomapptest/config.ini")	
 wd = config["main"]["wd"]
 tscale_root=config['main']['tscale_root'] 
+
+#===============================================================================
+#	DEM res
+#===============================================================================
+demRes = config["main"]["demRes"] # 1=30m 3=90m
+
 #===============================================================================
 #	Logging
 #===============================================================================
@@ -132,7 +139,7 @@ if os.path.isfile(fname1) == False or os.path.isfile(fname2) == False or os.path
 			fname = wd + "/predictors/ele.tif"
 			if os.path.isfile(fname) == False:	
 				logging.info("Downloading DEM")
-				cmd = ["Rscript", "./rsrc/getDEM.R" , wd, config["main"]["demdir"] , wd +"/spatial/domain.shp"]
+				cmd = ["Rscript", "./rsrc/getDEM.R" , wd, config["main"]["demdir"] , wd +"/spatial/domain.shp", demRes]
 				subprocess.check_output(cmd)
 			else:
 				logging.info("DEM already downloaded")
@@ -142,16 +149,16 @@ if os.path.isfile(fname1) == False or os.path.isfile(fname2) == False or os.path
 			fname = wd + "/predictors/ele.tif"
 			if os.path.isfile(fname) == False:	
 				logging.info("Downloading DEM")
-				cmd = ["Rscript", "./rsrc/getDEM.R" , wd, config["main"]["demdir"] , config["main"]["pointsShp"]]
+				cmd = ["Rscript", "./rsrc/getDEM.R" , wd, config["main"]["demdir"] , config["main"]["pointsShp"], demRes]
 				subprocess.check_output(cmd)
 			else:
 				logging.info("DEM already downloaded")
 
-		if config['main']['runmode']=='basin':
+		if config['main']['runmode']=='basins':
 			fname = wd + "/predictors/ele.tif"
 			if os.path.isfile(fname) == False:	
 				logging.info("Downloading DEM")
-				cmd = ["Rscript", "./rsrc/getDEM.R" , wd, config["main"]["demdir"] , wd +"/basins/basins.shp"]
+				cmd = ["Rscript", "./rsrc/getDEM.R" , wd, config["main"]["demdir"] , wd +"/basins/basins.shp", demRes]
 				subprocess.check_output(cmd)
 			else:
 				logging.info("DEM already downloaded")
@@ -162,7 +169,7 @@ if os.path.isfile(fname1) == False or os.path.isfile(fname2) == False or os.path
 
 else:
 	logging.info("DEM downloaded and Topo predictors computed")
-
+	print("DEM downloaded and Topo predictors computed")
 #===============================================================================
 #	Retrieve ERA
 #===============================================================================
@@ -238,7 +245,8 @@ if config['main']['runmode']=='basins':
 #===============================================================================
 if config['main']['runmode']=='basins':
 	logging.info("Generate basin forcing")
-	cmd = ["Rscript", tscale_root+"/tscaleV2/toposcale/grid2basin.R",wd]
+	print("Generate basin forcing")
+	cmd = ["Rscript", tscale_root+"/tscaleV2/toposcale/grid2basin_memSafe.R",wd]
 	subprocess.check_output(cmd)
 #===============================================================================
 #	Start sims
@@ -253,3 +261,4 @@ if config['main']['runmode']=='basins':
 
 logging.info("Setup complete!")
 logging.info(" %f minutes for setup" % round((time.time()/60 - start_time/60),2) )
+print(" %f minutes for setup" % round((time.time()/60 - start_time/60),2) )

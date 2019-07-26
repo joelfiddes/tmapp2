@@ -16,7 +16,10 @@ args = commandArgs(trailingOnly=TRUE)
 wd= args[1] #"/home/joel/sim/testDem" #args[1]
 demDir= args[2] #"/home/joel/data/DEM/srtm" 
 shp= args[3] #"/home/joel/data/GCOS/wfj_poly.shp"
+demRes=args[4] #1=30m 3=90m
 
+if ( demRes == '30m' ){demRes<-1}
+if ( demRes == '90m' ){demRes<-3}
 #====================================================================
 # PARAMETERS FIXED
 #====================================================================
@@ -74,7 +77,7 @@ df= data.frame(lon,lat)
 		if (sign(df$lon[i])==1){LONVAL<-"E"}
 		lon_pretty=formatC(abs(df$lon[i]),width=3,flag="0")
 		#get tile
-		filetoget=paste0(LATVAL,abs(df$lat[i]),LONVAL,lon_pretty,".SRTMGL3.hgt.zip")
+		filetoget=paste0(LATVAL,abs(df$lat[i]),LONVAL,lon_pretty,".SRTMGL",demRes,".hgt.zip")
 		filetogetUNZIP=paste0(LATVAL,abs(df$lat[i]),LONVAL,lon_pretty,".hgt")
 
 	if (file.exists(filetoget)){ #dont download again
@@ -83,7 +86,7 @@ df= data.frame(lon,lat)
 		system(paste0("gdal_translate -q -co TILED=YES -co COMPRESS=DEFLATE -co ZLEVEL=9 -co PREDICTOR=2 ", filetogetUNZIP, " SRTMDAT",i,".tif"))
 		} else {
 		 
-			system(paste0("wget --user ", USER ,  " --password " ,PWD, " http://e4ftl01.cr.usgs.gov//MODV6_Dal_D/SRTM/SRTMGL3.003/2000.02.11/",filetoget))
+			system(paste0("wget --user ", USER ,  " --password " ,PWD, " http://e4ftl01.cr.usgs.gov//MODV6_Dal_D/SRTM/SRTMGL",demRes,".003/2000.02.11/",filetoget))
 			# extract
 			system(paste0("unzip ", filetoget))
 			system(paste0("gdal_translate -q -co TILED=YES -co COMPRESS=DEFLATE -co ZLEVEL=9 -co PREDICTOR=2 ", filetogetUNZIP, " SRTMDAT",i,".tif"))

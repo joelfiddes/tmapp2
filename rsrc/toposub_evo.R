@@ -16,7 +16,7 @@ source("./rsrc/toposub_src.R")
 #====================================================================
 args = commandArgs(trailingOnly=TRUE)
 gridpath=args[1]
-Nclust=args[2]
+Nclust=as.numeric(args[2])
 svfCompute=args[3]
 lowmem=args[4]
 #Nclust=args[2] #'/home/joel/sim/topomap_test/grid1' #
@@ -49,7 +49,8 @@ predictors=list.files( pattern='*.tif$')
 
 print(predictors)
 rstack=stack(predictors)
-
+if(nRand>ncell(rstack) ){nRand<-ncell(rstack)} # check for small ncell (eg era5 and 100m SRTM has only 9^4 cells < nRAND!)
+if(Nclust>ncell(rstack) ){Nclust<-ncell(rstack)} # check for small ncell and force Nclust to be less than Ncell
 gridmaps<- as(rstack, 'SpatialGridDataFrame')
 
 #decompose aspect
@@ -77,6 +78,8 @@ informScaleDat1=informScale(data=samp_dat, pnames=predNames2,weights=weightsMean
 informScaleDat_samp=na.omit(informScaleDat1)
 
 #kmeans on sample
+print(dim(informScaleDat_samp))
+print((Nclust))
 clust1=Kmeans(scaleDat=informScaleDat_samp,iter.max=iter.max,centers=Nclust, nstart=nstart1)
 
 #scale whole dataset

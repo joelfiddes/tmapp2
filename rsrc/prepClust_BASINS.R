@@ -37,7 +37,7 @@ for (i in 1:length(basin)){
 		
 		for (p in 1:Npreds){
 			setwd(paste0(wd,'/predictors'))	
-			rst1=crop(raster(predictors[p]) ,basin[i,])
+			rst1=crop(raster(predictors[p]) ,basin[i,], snap='out')
 			#rst = mask(raster(predictors[p]) ,basin[i,]) v slow!
 			rst <- trim(rasterize(basin[i,], rst1, mask=TRUE))  # fast
 
