@@ -34,7 +34,7 @@ import sys
 import time
 from configobj import ConfigObj
 
-# for config
+# add to config
 svf_sectors=str(8) # sectors to search
 svf_dist=str(5000) # search distance m
 
@@ -137,7 +137,7 @@ def main(wd, simdir, model="GEOTOP"):
 		logging.info( "Run TopoSUB! " +simdir)
 		cmd = [
 		"Rscript",  
-		"./rsrc/toposub_evo.R", 
+		"./rsrc/toposub_evo_chirps.R", 
 		home , 
 		config['toposub']['nclust'] ,
 		"TRUE", 
@@ -276,7 +276,7 @@ def main(wd, simdir, model="GEOTOP"):
 
 				cmd = [
 				"python",  
-				tscale_root+"/tscaleV2/toposcale/tscale_run_basin.py",
+				tscale_root+"/tscaleV2/toposcale/tscale_run_basin2.py",
 				wd + "/forcing/", 
 				home,
 				home+"/forcing/",

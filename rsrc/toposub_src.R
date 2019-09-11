@@ -153,7 +153,7 @@ return(clust_obj)
 
 #correct asp
 meanAspect <- function(dat,agg){
-	class.asp <- aggregate(dat[c("aspC", "aspS")], by=list(agg), FUN="sum")
+	class.asp <- aggregate(dat[c("aspC", "aspS")], by=list(agg), FUN="sum",na.rm=T)
 	aspMean<-atan2(class.asp$aspS, class.asp$aspC)	
 	aspMean <- aspMean*(180/pi )
 	aspMean<-ifelse(aspMean<0,aspMean+360, aspMean)# correct negative values

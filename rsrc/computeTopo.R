@@ -13,7 +13,7 @@ require(raster)
 #====================================================================
 args = commandArgs(trailingOnly=TRUE)
 wd=args[1]
-
+chirpsP=args[2]
 #====================================================================
 # PARAMETERS FIXED
 #====================================================================
@@ -42,6 +42,21 @@ writeRaster(round(asp,0), "predictors/asp.tif", overwrite=TRUE) #write and reduc
 ndvi=raster('predictors/ndvi.tif')
 ncrop = crop(ndvi,dem, snap='out')
 nresamp = resample(ncrop,dem) # resample to ensure no geometry issues in basin cookiecuts
-
-
 writeRaster(nresamp, "predictors/ndvi.tif", overwrite=TRUE)
+
+if (chirpsP==TRUE){
+	chirps=raster('predictors/chirps.tif')
+if(res(chirps)[1]!=res(dem)[1]){ # in case resampling already done
+
+	myfact = res(chirps)[1]/res(dem)[1]
+	ncrop = crop(chirps,dem, snap='out')
+	chirps_dis = disaggregate(ncrop,fact=myfact, 'bilinear')	
+	nresamp = resample(chirps_dis,dem) # resample to ensure no geometry issues in basin cookiecuts
+	writeRaster(nresamp, "predictors/chirps.tif", overwrite=TRUE)
+}
+coord=coordinates(dem)
+lonRst = setValues(dem,coord[,1])
+latRst = setValues(dem,coord[,2])
+writeRaster(lonRst, "predictors/lonRst.tif", overwrite=TRUE)
+writeRaster(latRst, "predictors/latRst.tif", overwrite=TRUE)
+}

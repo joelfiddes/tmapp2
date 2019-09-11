@@ -1,4 +1,4 @@
-"tv","ele","slp","svf","aspC","aspS","r2"
-snow_water_equivalent.mm.,0.17,-4.94,-54,-10.29,7.17,0.92
+"tv","ele","slp","svf","aspC","aspS","chirps","r2"
+snow_water_equivalent.mm.,0.17,-4.94,-54,-10.29,7.17,0.5,0.92
 
 

@@ -45,7 +45,7 @@ tscale_root=config['main']['tscale_root']
 #	DEM res
 #===============================================================================
 demRes = config["main"]["demRes"] # 1=30m 3=90m
-
+chirpsP=config["main"]["chirpsP"]
 #===============================================================================
 #	Logging
 #===============================================================================
@@ -164,7 +164,7 @@ if os.path.isfile(fname1) == False or os.path.isfile(fname2) == False or os.path
 				logging.info("DEM already downloaded")
 
 	logging.info("Compute topo predictors")
-	cmd = ["Rscript", "./rsrc/computeTopo.R" , wd]
+	cmd = ["Rscript", "./rsrc/computeTopo.R" , wd, chirpsP]
 	subprocess.check_output(cmd)
 
 else:
