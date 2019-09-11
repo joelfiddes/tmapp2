@@ -248,6 +248,12 @@ if config['main']['runmode']=='basins':
 	print("Generate basin forcing")
 	cmd = ["Rscript", tscale_root+"/tscaleV2/toposcale/grid2basin_memSafe.R",wd]
 	subprocess.check_output(cmd)
+
+if config['main']['runmode']=='basinsBLIN':
+	logging.info("Generate basin forcing")
+	print("Generate basin forcing")
+	cmd = ["Rscript", tscale_root+"/tscaleV2/toposcale/grid2basin2.R",wd]
+	subprocess.check_output(cmd)
 #===============================================================================
 #	Start sims
 #===============================================================================
