@@ -183,7 +183,8 @@ hx_fsca <- apply(arr, FUN = "sum", MARGIN = c(1)) / sum(lp$members)
 #===============================================================================
 #		PLOTTING fSCA
 #===============================================================================
-png(paste0(home,"/ensemble/daplot.png"), width=800, height=400)
+gridname=unlist(strsplit(home,"/"))[length(unlist(strsplit(home,"/")))]
+png(paste0(home,"/ensemble/daplot_",gridname,".png"), width=800, height=400)
 par(mfrow=c(1,2))
 
 OBS2PLOT <-OBS

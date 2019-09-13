@@ -238,7 +238,11 @@ if config['main']['runmode']=='basins':
 		cmd = ["Rscript", "./rsrc/prepClust_BASINS.R", wd, wd+'/basins/basins.shp']
 		subprocess.check_output(cmd)
 
-
+if config['main']['runmode']=='basinsBLIN':
+	logging.info("Setup basin sim directories")
+	if config["forcing"]["product"]=="reanalysis":
+		cmd = ["Rscript", "./rsrc/prepClust_BASINS.R", wd, wd+'/basins/basins.shp']
+		subprocess.check_output(cmd)
 #===============================================================================
 #	generate basin forcing
 #  todo: calc p gradient here

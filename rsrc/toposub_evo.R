@@ -171,7 +171,8 @@ members<-mem[,1]
 colnames(samp_mean)[1] <- "id"
 lsp<-data.frame(members,samp_mean)
 
-# Add long lat of gridbox for each sample (which are positionless) in order to satisfy toposcale_sw.R (FALSE)-> solarCompute()
+# Add long lat of gridbox for each sample (which are positionless) in order to satisfy toposcale_sw.R (FALSE)-> solarCompute() 
+#this is used to extract gridbox also
 e=extent(rst)
 lonbox=e@xmin + (e@xmax-e@xmin)/2
 latbox=e@ymin + (e@ymax-e@ymin)/2

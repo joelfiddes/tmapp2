@@ -538,10 +538,16 @@ def main(wd, simdir, model="GEOTOP"):
 			
 				]
 				subprocess.check_output(cmd)
+			f = open(home + "/SUCCESS_PBS", "w")
 
+		else:
+			logging.info( "PBS already run")
 		#===============================================================================
 		#	DA - run PBS grid code
 		#===============================================================================
+		fname1 = home + "/SUCCESS_PBS2"
+		if os.path.isfile(fname1) == False: #NOT ROBUST
+
 			logging.info( "Run PBS " +simdir)
 			cmd = [
 			"Rscript",  
@@ -555,10 +561,25 @@ def main(wd, simdir, model="GEOTOP"):
 			]
 			subprocess.check_output(cmd)
 
-			f = open(home + "/SUCCESS_PBS", "w")
+			cmd = [
+			"Rscript",  
+			"./rsrc/mapDaResults.R", 
+			home , 
+			config["ensemble"]["members"],
+			'surface',
+			'snow_water_equivalent.mm.',
+			263
+			]
+
+
+
+			subprocess.check_output(cmd)
+
+
+			f = open(home + "/SUCCESS_PBS2", "w")
 
 		else:
-			logging.info( "PBS already run")
+			logging.info( "PBS2 already run")
 
 # crop out modis tile stack
 # run gridDA

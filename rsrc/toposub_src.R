@@ -788,7 +788,7 @@ crispSpatial2<-function(col,Nclust,esPath, landform){
 		as.vector(seq)->seq
 		data.frame(seq,meanX)->meanXdf
 		subs(land, meanXdf,by=1, which=2)->rst
-rst=round(rst,2)
+		rst=round(rst,2)
 		writeRaster(rst, paste(esPath,'/crisp_',col,'_',l,'.tif', sep=''),overwrite=T)
 }
 
