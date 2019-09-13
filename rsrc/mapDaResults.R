@@ -6,6 +6,7 @@ file=args[3] # "surface" or "ground"
 param=args[4]
 day = as.numeric(args[5]) # 212 = March 31 on non leap year
 
+require(raster)
 rstStack=stack()
 for (i in 1: nens){ #python index
 	resMat=c()

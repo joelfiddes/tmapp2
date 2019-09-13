@@ -568,7 +568,7 @@ def main(wd, simdir, model="GEOTOP"):
 			config["ensemble"]["members"],
 			'surface',
 			'snow_water_equivalent.mm.',
-			263
+			'263'
 			]
 
 

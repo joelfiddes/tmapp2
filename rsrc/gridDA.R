@@ -2,7 +2,7 @@
 # dependency
 
 
-source("/home/joel/src/topoMAPP/rsrc/PBS.R") 
+source("./rsrc/PBS.R") 
 require(raster) 
 require(zoo)
 args <- 	commandArgs(trailingOnly=TRUE)

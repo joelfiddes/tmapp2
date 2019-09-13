@@ -39,7 +39,7 @@ draws <- rlogitnorm(n , mu, sigma)
 #alpha=lognormDraws(N,0.2,0.01)	# SoilAlbVisDry	
 # henerate multiplicative perturbation factors for ensembleGen	
 pbias=lognormDraws(N,1,0.7)
-tbias=normDraws(N,1,0.005) # this is for K only, we convert C to K then multiply bias then K to C
+tbias=normDraws(N,1,0.01) # this is for K only, we convert C to K then multiply bias then K to C (roughly +/- 4 degrees)
 swbias=normDraws(N,1,0.2)	
 lwbias=normDraws(N,1,0.1)
 
