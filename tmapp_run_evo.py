@@ -517,7 +517,13 @@ def main(wd, simdir, model="GEOTOP"):
 					fname1 = sim + "/meteo0001.txt.old" # look for possible meteo old files
 					if os.path.isfile(fname1) == True: #NOT ROBUST
 						os.remove(fname1)
-				
+					fname1 = sim + "/out/discharge.txt" # look for possible discharge files
+					if os.path.isfile(fname1) == True: #NOT ROBUST
+						os.remove(fname1)	
+						
+					fname1 = sim + "/out/RS_Tmean.txt" # look for possible discharge files
+					if os.path.isfile(fname1) == True: #NOT ROBUST
+						os.remove(fname1)		
 					os.remove(sim + "/meteo0001.txt")
 					os.remove(sim + "/listpoints.txt")
 					os.remove(sim + "/geotop.inpts")
