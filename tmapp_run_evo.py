@@ -518,9 +518,10 @@ def main(wd, simdir, model="GEOTOP"):
 
 				sims = glob.glob(home+"/ensemble/ensemble"+str(i)+"/*")
 				sims = sorted(sims)
-				logging.info( "sims to run= "+ sims)
+				logging.info( "sims to run= ")
+				print(sims)
 				for sim in sims:
-					print(sim)
+					print("Now running "+sim)
 					# check for sim thats completed
 					fname1 = sim+"/out/_SUCCESSFUL_RUN.old"
 					if os.path.isfile(fname1) == False:

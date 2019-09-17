@@ -16,7 +16,7 @@ def main(wd, home, ensembleN):
 
 	config = ConfigObj(wd+"/config.ini")
 	root = home+"/ensemble"
-	N = config['ensemble']['members']
+	#N = config['ensemble']['members']
 
 	#	Logging
 	logging.basicConfig(level=logging.DEBUG, filename=home +"/logfile", filemode="a+",format="%(asctime)-15s %(levelname)-8s %(message)s")
@@ -39,7 +39,6 @@ def main(wd, home, ensembleN):
 	# Loop Timer
 	start_time = time.time()
 
-	logging.info("----- Start ensemble member: " + str(i) + "-----")
 	pbias = df['pbias'][i]
 	tbias = df['tbias'][i]
 	lwbias = df['lwbias'][i]
@@ -74,10 +73,9 @@ def main(wd, home, ensembleN):
 
 		sim_dirs = glob.glob(config["main"]["wd"]+"/c0*")
 		logging.info("Perturburbing simulation meteo files" + config["main"]["wd"])
-
 		# loop through sim dirs
 		for s in sim_dirs:			
-			logging.info("Perturburbing simulation meteo files" + s)
+			
 			df = pd.read_csv( s +"/meteo0001.txt")
 			
 
