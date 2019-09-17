@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """ 
-This module scale meteo0001.txt files directly with ensemble perturbations. And then runs LSM
+This module scale meteo0001.txt files directly with ensemble perturbations. 
  
 
 """

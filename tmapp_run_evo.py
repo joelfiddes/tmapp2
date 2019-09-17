@@ -491,8 +491,8 @@ def main(wd, simdir, model="GEOTOP"):
 		fname1 = home + "/SUCCESS_PERTURB"
 		if os.path.isfile(fname1) == False: #NOT ROBUST
 
-			import tmapp_da
-			tmapp_da.main(wd,home)
+			import tmapp_da_gen
+			tmapp_da_gen.main(wd,home)
 
 			f = open(home + "/SUCCESS_PERTURB", "w")
 
@@ -504,41 +504,52 @@ def main(wd, simdir, model="GEOTOP"):
 			
 		fname1 = home + "/SUCCESS_ENSEMBLE"
 		if os.path.isfile(fname1) == False: #NOT ROBUST
+			
 
-			sims = glob.glob(home+"/ensemble/ensemble*/*")
-			sims = sorted(sims)
-			logging.info( "sims to run")
-			for sim in sims:
-				print(sim)
+			# loop through ensemble members
+			for i in range(0, int(config['ensemble']['members'])):
+				
+				logging.info("----- START ENSEMBLE RUN "+i+" -----")
+				
+				# run ensemble directory create and perturb code on ensemble i
+				import tmapp_da_setup
+				tmapp_da_setup.main(wd,home, i)
 
-				fname1 = sim+"/out/_SUCCESSFUL_RUN.old"
-				if os.path.isfile(fname1) == False:
-					logging.info( "run geotop" + sim)
-					cmd = ["./geotop/geotop1.226", sim]
-					subprocess.check_output(cmd)
 
-					# clean up sim dirs for space efficiency
-					fname1 = sim + "/meteo0001.txt.old" # look for possible meteo old files
-					if os.path.isfile(fname1) == True: #NOT ROBUST
-						os.remove(fname1)
-					fname1 = sim + "/out/discharge.txt" # look for possible discharge files
-					if os.path.isfile(fname1) == True: #NOT ROBUST
-						os.remove(fname1)	
-						
-					fname1 = sim + "/out/RS_Tmean.txt" # look for possible discharge files
-					if os.path.isfile(fname1) == True: #NOT ROBUST
-						os.remove(fname1)		
-					os.remove(sim + "/meteo0001.txt")
-					os.remove(sim + "/listpoints.txt")
-					os.remove(sim + "/geotop.inpts")
-					os.remove(sim+"/geotop.log") # rm log
-					shutil.rmtree(sim+"/hor") # rm unused rec folder
-					if  os.path.exists(sim+"/rec"):
-						shutil.rmtree(sim+"/rec") # rm unused rec folder
+				sims = glob.glob(home+"/ensemble/ensemble"+i+"/*")
+				sims = sorted(sims)
+				logging.info( "sims to run= "+ sims)
+				for sim in sims:
+					print(sim)
+					# check for sim thats completed
+					fname1 = sim+"/out/_SUCCESSFUL_RUN.old"
+					if os.path.isfile(fname1) == False:
+						logging.info( "run geotop" + sim)
+						cmd = ["./geotop/geotop1.226", sim]
+						subprocess.check_output(cmd)
+
+						# clean up sim dirs for space efficiency
+						fname1 = sim + "/meteo0001.txt.old" # look for possible meteo old files
+						if os.path.isfile(fname1) == True: #NOT ROBUST
+							os.remove(fname1)
+						fname1 = sim + "/out/discharge.txt" # look for possible discharge files
+						if os.path.isfile(fname1) == True: #NOT ROBUST
+							os.remove(fname1)	
+							
+						fname1 = sim + "/out/RS_Tmean.txt" # look for possible discharge files
+						if os.path.isfile(fname1) == True: #NOT ROBUST
+							os.remove(fname1)		
+						os.remove(sim + "/meteo0001.txt")
+						os.remove(sim + "/listpoints.txt")
+						os.remove(sim + "/geotop.inpts")
+						os.remove(sim+"/geotop.log") # rm log
+						shutil.rmtree(sim+"/hor") # rm unused rec folder
+						if  os.path.exists(sim+"/rec"):
+							shutil.rmtree(sim+"/rec") # rm unused rec folder
 
 
 				else:
-					logging.info( sim + "already run")
+					logging.info( sim + " already run")
 			f = open(home + "/SUCCESS_ENSEMBLE", "w")
 
 		else:
