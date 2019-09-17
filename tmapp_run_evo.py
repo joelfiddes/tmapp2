@@ -516,7 +516,7 @@ def main(wd, simdir, model="GEOTOP"):
 				tmapp_da_setup.main(wd,home, i)
 
 
-				sims = glob.glob(home+"/ensemble/ensemble"+i+"/*")
+				sims = glob.glob(home+"/ensemble/ensemble"+str(i)+"/*")
 				sims = sorted(sims)
 				logging.info( "sims to run= "+ sims)
 				for sim in sims:
