@@ -462,16 +462,20 @@ def main(wd, simdir, model="GEOTOP"):
 
 
 	logging.info("Simulation finished! " +simdir)
-	logging.info( "Generate spatial max " +simdir)
-	cmd = [
-	"Rscript",  
-	"./rsrc/toposubSpatialNow.R", 
-	home , 
-	config["toposub"]["nclust"],
-	'snow_water_equivalent.mm.',
-	config["toposub"]["spatialDate"]
-	]
-	subprocess.check_output(cmd)
+
+	fname1 =home + "/snow_water_equivalent.mm.maxSWE.tif"
+	if os.path.isfile(fname1) == False: #NOT ROBUST
+
+		logging.info( "Generate spatial max " +simdir)
+		cmd = [
+		"Rscript",  
+		"./rsrc/toposubSpatialNow.R", 
+		home , 
+		config["toposub"]["nclust"],
+		'snow_water_equivalent.mm.',
+		config["toposub"]["spatialDate"]
+		]
+		subprocess.check_output(cmd)
 
 
 
