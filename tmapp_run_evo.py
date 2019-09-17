@@ -509,7 +509,7 @@ def main(wd, simdir, model="GEOTOP"):
 			# loop through ensemble members
 			for i in range(0, int(config['ensemble']['members'])):
 				
-				logging.info("----- START ENSEMBLE RUN "+i+" -----")
+				logging.info("----- START ENSEMBLE RUN "+str(i)+" -----")
 				
 				# run ensemble directory create and perturb code on ensemble i
 				import tmapp_da_setup
