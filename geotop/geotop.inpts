@@ -209,7 +209,7 @@ LateralHydrConductivity       =1
 
 !--- STRUCTURE ------------
 SoilAveragedTempProfileFileWriteend = "out/ground"
-SoilPlotDepths = 100, 200, 500,5000,9999
+SoilPlotDepths = 100,5000,9999
 
 !--- VARIABLES ------------
 DefaultSoil = 0
@@ -217,7 +217,7 @@ DateSoil    = 1
 PeriodSoil  = 2
 RunSoil     = 3
 IDPointSoil = 4 
-TempSoil    = 5,6,7,8,9
+TempSoil    = 5,6,7
 
 
 !=============================================================================
@@ -234,22 +234,23 @@ PeriodPoint                 =  2
 RunPoint                    =  3
 IDPointPoint                =  4
 AirTempPoint                =  5
-TsurfPoint                  =  6
-PrainPoint                  =  7
-PsnowPoint                  =  8
-SnowDepthPoint              =  9
-SWEPoint                    = 10
-SnowMeltedPoint             = 11
-SWinPoint                   = 12
-SWupPoint                   = 13
-SoilHeatFluxPoint           = 14
+SnowDepthPoint              =  6
+SWEPoint                    = 7
+SnowMeltedPoint             = 8
 
+
+!SWinPoint                   = 12
+!SWupPoint                   = 13
+!SoilHeatFluxPoint           = 14
+!TsurfPoint                  =  6
+!PrainPoint                  =  7
+!PsnowPoint                  =  8
 !=============================================================================
 !   RUN AVERAGED OUTPUT
 !=============================================================================
-RunSoilAveragedTemperatureFile         = "out/RS_Tmean"
+!RunSoilAveragedTemperatureFile         = "out/RS_Tmean"
 
-DischargeFile = "out/discharge"
+!DischargeFile = "out/discharge"
 
 !CONTINUOUS RECOVERY
 !ContinuousRecovery = 50

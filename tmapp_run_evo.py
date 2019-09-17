@@ -30,6 +30,7 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import *
 import glob
 from shutil import copyfile
+import shutil
 import sys
 import time
 from configobj import ConfigObj
@@ -358,6 +359,9 @@ def main(wd, simdir, model="GEOTOP"):
 
 		_SUCCESSFUL_RUN + _SUCCESSFUL_RUN.old = SIM2 SUCCEEDED
 		_SUCCESSFIL_RUN.old + _FAILED_RUN = SIM2 FAILED
+
+		If sims failing clear all _SUCCESSFUL_RUN files to start over:
+		find . -maxdepth 4 -name "_SUCCESSFUL_RUN" |xargs rm 
 		'''
 		runCounter = 0
 		foundsims = []
@@ -399,6 +403,15 @@ def main(wd, simdir, model="GEOTOP"):
 				logging.info( "run geotop" + sim)
 				cmd = ["./geotop/geotop1.226", sim]
 				subprocess.check_output(cmd)
+
+				# clean up sim dirs for efficiency
+				fname1 = sim + "/meteo0001.txt.old" # look for possible meteo old files
+				if os.path.isfile(fname1) == True: #NOT ROBUST
+					os.remove(fname1)
+
+				os.remove(sim+"/geotop.log") # rm log
+				shutil.rmtree(sim+"/rec") # rm unused rec folder
+
 		
 		# case of incomplete sims
 		if runCounter != int(config['toposub']['nclust']) and runCounter >0:
@@ -499,6 +512,21 @@ def main(wd, simdir, model="GEOTOP"):
 					logging.info( "run geotop" + sim)
 					cmd = ["./geotop/geotop1.226", sim]
 					subprocess.check_output(cmd)
+
+					# clean up sim dirs for space efficiency
+					fname1 = sim + "/meteo0001.txt.old" # look for possible meteo old files
+					if os.path.isfile(fname1) == True: #NOT ROBUST
+						os.remove(fname1)
+				
+					os.remove(sim + "/meteo0001.txt")
+					os.remove(sim + "/listpoints.txt")
+					os.remove(sim + "/geotop.inpts")
+					os.remove(sim+"/geotop.log") # rm log
+					shutil.rmtree(sim+"/hor") # rm unused rec folder
+					if  os.path.exists(sim+"/rec"):
+						shutil.rmtree(sim+"/rec") # rm unused rec folder
+
+
 				else:
 					logging.info( sim + "already run")
 			f = open(home + "/SUCCESS_ENSEMBLE", "w")
