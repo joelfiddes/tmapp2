@@ -519,13 +519,13 @@ def main(wd, simdir, model="GEOTOP"):
 				sims = glob.glob(home+"/ensemble/ensemble"+str(i)+"/*")
 				sims = sorted(sims)
 				logging.info( "sims to run= ")
-				print(sims)
+				logging.info(sims)
 				for sim in sims:
-					print("Now running "+sim)
+					
 					# check for sim thats completed
 					fname1 = sim+"/out/_SUCCESSFUL_RUN.old"
 					if os.path.isfile(fname1) == False:
-						logging.info( "run geotop" + sim)
+						logging.info("Now running "+sim)
 						cmd = ["./geotop/geotop1.226", sim]
 						subprocess.check_output(cmd)
 

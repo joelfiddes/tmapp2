@@ -6,8 +6,6 @@ import time
 import sys
 from configobj import ConfigObj
 import logging
-
-
 import glob
 
 # tmapp_darun
@@ -56,72 +54,57 @@ def main(wd, home, ensembleN):
 	logging.info("Config settings used")
 	logging.info(config)
 
-	# check if runSucess exists and skip if true
-	fname1 = config['main']['wd'] + "/.runSuccess"
-	if os.path.isfile(fname1) == False: 
+	# make new dierectory
+	dst = config['main']['wd']
+	cmd = "mkdir  %s"%(dst)
+	os.system(cmd)
+
+	# copy sim dirs only
+	src = home+"/c0*"
+	dst = config['main']['wd']
+	cmd = "cp -r  %s %s"%(src,dst)
+	os.system(cmd)
+
+	sim_dirs = glob.glob(config["main"]["wd"]+"/c0*")
+	logging.info("Perturburbing meteo files for Ensemble " + str(ensembleN))
+	# loop through sim dirs
+	for s in sim_dirs:			
 		
-		# make new dierectory
-		dst = config['main']['wd']
-		cmd = "mkdir  %s"%(dst)
-		os.system(cmd)
-
-		# copy sim dirs only
-		src = home+"/c0*"
-		dst = config['main']['wd']
-		cmd = "cp -r  %s %s"%(src,dst)
-		os.system(cmd)
-
-		sim_dirs = glob.glob(config["main"]["wd"]+"/c0*")
-		logging.info("Perturburbing simulation meteo files" + config["main"]["wd"])
-		# loop through sim dirs
-		for s in sim_dirs:			
-			
-			df = pd.read_csv( s +"/meteo0001.txt")
-			
-
-			if config["da"]["PPARS"] == "P":
-				df['Prec'] = df['Prec'] * config['da']['pscale'] #multiplicative
-
-			if config["da"]["PPARS"] == "PT":
-				df['Prec'] = df['Prec'] * config['da']['pscale'] #multiplicative
-				# convert to K
-				taK = df['Tair'] + 273.15
-				# peturb and back to celcius
-				df['Tair'] = (taK*config['da']['tscale']) - 273.15
-				logging.info(config['da']['pscale'])
-
-			if config["da"]["PPARS"] == "PTS":
-				df['Prec'] = df['Prec'] * config['da']['pscale'] #multiplicative
-				df['SW'] = df['SW'] * config['da']['swscale']##multiplicative
-				# convert to K
-				taK = df['Tair'] + 273.15
-				# peturb and back to celcius
-				df['Tair'] = (taK*config['da']['tscale']) - 273.15
-
-			if config["da"]["PPARS"] == "PTSL":
-				df['Prec'] = df['Prec'] * config['da']['pscale'] #multiplicative
-				df['LW'] = df['LW'] * config['da']['lwscale']##multiplicative
-				df['SW'] = df['SW'] * config['da']['swscale']##multiplicative
-				# convert to K
-				taK = df['Tair'] + 273.15
-				# peturb and back to celcius
-				df['Tair'] = (taK*config['da']['tscale']) - 273.15		# scale meteo
-
-			#MULTIPAR CROSS CORELATION": https://www.the-cryosphere.net/10/103/2016/tc-10-103-2016.pdf
-
-			#write meteo
-			df.to_csv( s +"/meteo0001.txt", index = False)
-		#=================================
-
-		#f= open(config['main']['wd'] + "/.runSuccess","w+")
-		#f.close() 
-		#logging.info("%f minutes for setup of ensemble member" % round((time.time()/60 - start_time/60),2))
-
-	else:
-		logging.info(config['main']['wd'] + " already exists")	
-		# report time of run
+		df = pd.read_csv( s +"/meteo0001.txt")
 		
 
+		if config["da"]["PPARS"] == "P":
+			df['Prec'] = df['Prec'] * config['da']['pscale'] #multiplicative
+
+		if config["da"]["PPARS"] == "PT":
+			df['Prec'] = df['Prec'] * config['da']['pscale'] #multiplicative
+			# convert to K
+			taK = df['Tair'] + 273.15
+			# peturb and back to celcius
+			df['Tair'] = (taK*config['da']['tscale']) - 273.15
+			logging.info(config['da']['pscale'])
+
+		if config["da"]["PPARS"] == "PTS":
+			df['Prec'] = df['Prec'] * config['da']['pscale'] #multiplicative
+			df['SW'] = df['SW'] * config['da']['swscale']##multiplicative
+			# convert to K
+			taK = df['Tair'] + 273.15
+			# peturb and back to celcius
+			df['Tair'] = (taK*config['da']['tscale']) - 273.15
+
+		if config["da"]["PPARS"] == "PTSL":
+			df['Prec'] = df['Prec'] * config['da']['pscale'] #multiplicative
+			df['LW'] = df['LW'] * config['da']['lwscale']##multiplicative
+			df['SW'] = df['SW'] * config['da']['swscale']##multiplicative
+			# convert to K
+			taK = df['Tair'] + 273.15
+			# peturb and back to celcius
+			df['Tair'] = (taK*config['da']['tscale']) - 273.15		# scale meteo
+
+		#MULTIPAR CROSS CORELATION": https://www.the-cryosphere.net/10/103/2016/tc-10-103-2016.pdf
+
+		#write meteo
+		df.to_csv( s +"/meteo0001.txt", index = False)
 
 #====================================================================
 #	Calling MAIN
@@ -132,4 +115,3 @@ if __name__ == '__main__':
 	home      = sys.argv[2]
 	ensembleN =sys.argv[3]
 	main(config)
-
