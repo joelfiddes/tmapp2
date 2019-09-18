@@ -4,12 +4,12 @@
 args = commandArgs(trailingOnly=TRUE)
 N=as.numeric(args[1])
 wd= args[2]
-lhc=args[3] #latin-hypercube TRUE or FALSE
+sampling=args[3] #latin-hypercube TRUE or FALSE
 
 #================================================================================
 # Random sampling
 #================================================================================
-if (lhc=="FALSE"){
+if (sampling=="random"){
 	require(MASS)
 	# source: https://msalganik.wordpress.com/2017/01/21/making-sense-of-the-rlnorm-function-in-r/
 
@@ -137,7 +137,7 @@ if (lhc=="FALSE"){
 #================================================================================
 # Latin hypercube sampling
 #================================================================================
-	if (lhc=="TRUE"){
+	if (sampling=="lhc"){
 
 
 	pbias=c(0.4,0.6,0.8, 1.2,1.4,1.6,1.8,2,3)

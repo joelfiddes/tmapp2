@@ -37,7 +37,7 @@ def main(wd, home):
 	logging.info("Generating ensemble distributions" )
 
 	#generate ensemble
-	subprocess.call(["Rscript", "rsrc/ensemGen.R" , str(N) , root])
+	subprocess.call(["Rscript", "rsrc/ensemGen.R" , str(N) , root, config['ensemble']['sampling'] ])
 
 	
 
