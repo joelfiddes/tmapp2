@@ -64,6 +64,13 @@ def main(wd, simdir, model="GEOTOP"):
 	logging.basicConfig(level=logging.DEBUG, filename=logfile, filemode="a+",
 	                        format="%(asctime)-15s %(levelname)-8s %(message)s")
 
+
+#===============================================================================
+#	Check ele rules
+#===============================================================================
+#minEle = config['main']['minEle'] 
+#cmd = ["Rscript", "./rsrc/computeSVF.R", home,svf_sectors, svf_dist]
+#subprocess.check_output(cmd)
 #===============================================================================
 #	Timer
 #===============================================================================

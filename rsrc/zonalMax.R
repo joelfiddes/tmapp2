@@ -1,0 +1,61 @@
+poly = shapefile(zone.in)
+s=raster(raster.in)
+ex <- extract(s, poly, fun=max, na.rm=TRUE, df=TRUE)
+
+# get index based on threshold ele, then write out
+newshp = r[c(1:4,9),]
+
+
+myZonal <- function (x, z, stat, digits = 0, na.rm = TRUE, 
+                     ...) { 
+  # source: https://stat.ethz.ch/pipermail/r-sig-geo/2013-February/017475.html
+  library(data.table)
+  fun <- match.fun(stat) 
+  vals <- getValues(x) 
+  zones <- round(getValues(z), digits = digits) 
+  rDT <- data.table(vals, z=zones) 
+  setkey(rDT, z) 
+  rDT[, lapply(.SD, fun, na.rm = TRUE), by=z] 
+} 
+ 
+ZonalPipe<- function (zone.in, raster.in, shp.out=NULL, stat){
+  require(raster)
+  require(rgdal)
+  require(plyr)
+ 
+  # Load raster
+  r <- stack(raster.in)
+  # Load zone shapefile
+  shp <- readOGR(zone.in)
+  # Project 'zone' shapefile into the same coordinate system than the input raster
+  shp <- spTransform(shp, crs(r))
+ 
+  # Add ID field to Shapefile
+  shp@data$ID<-c(1:length(shp@data[,1]))
+ 
+  # Crop raster to 'zone' shapefile extent
+  r <- crop(r, extent(shp))	
+  # Rasterize shapefile
+  zone <- rasterize(shp, r, field="ID", dataType = "INT1U") # Change dataType if nrow(shp) > 255 to INT2U or INT4U
+ 
+  # Zonal stats
+  Zstat<-data.frame(myZonal(r, zone, stat))
+  colnames(Zstat)<-c("ID", paste0(names(r), "_", c(1:(length(Zstat)-1)), "_",stat))
+ 
+  # Merge data in the shapefile and write it
+  shp@data <- plyr::join(shp@data, Zstat, by="ID")
+ 
+  if (is.null(shp.out)){
+    return(shp)
+  }else{
+    writeOGR(shp, shp.out, layer= sub("^([^.]*).*", "\\1", basename(zone.in)), driver="ESRI Shapefile")
+  }
+}
+ 
+zone.in <- "/home/joel/data/HMA_SNO/input_hyperion/amu_shp7_all.shp" # Shapefile with zone (INPUT)
+raster.in <- "/home/joel/data/HMA_SNO/input_hyperion/ele.tif" #or list.files("/home/, pattern=".tif$") # Raster from which the stats have to be computed (INPUT)
+shp.out <- "/home/joel/zone_with_Zstat.shp" # Shapefile with zone + Zonal Stat (OUTPUT)
+ 
+ZonalPipe(zone.in, raster.in, shp.out, stat="max")
+ 
+shp <- ZonalPipe(zone.in, raster.in, stat="max")
