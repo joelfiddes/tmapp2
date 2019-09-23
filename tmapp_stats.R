@@ -3,15 +3,15 @@ source("./rsrc/toposub_src.R")
 args <- 	commandArgs(trailingOnly=TRUE)
 gridpath <- args[1]
 mode <-	args[2]
-targV <- 	args[4]
-beg <- 		args[5] #"%Y-%m-%d"
-end <- 		args[6] #"%Y-%m-%d"
+targV <- 	args[3]
+beg <- 		args[4] #"%Y-%m-%d"
+end <- 		args[5] #"%Y-%m-%d"
 
-gridpath <-"/home/joel/sim/tsub_PCLUST/sim/g1"
-mode <- "average"
-targV <- 	"X100.000000"#"snow_water_equivalent.mm."
-beg <- 		"2013-09-01"
-end <- 		"2014-09-01" #"%Y-%m-%d"
+# gridpath <-"/home/joel/sim/tsub_PCLUST/sim/g1"
+# mode <- "average"
+# targV <- 	"X100.000000"#"snow_water_equivalent.mm."
+# beg <- 		"2013-09-01"
+# end <- 		"2014-09-01" #"%Y-%m-%d"
 
 	
 
