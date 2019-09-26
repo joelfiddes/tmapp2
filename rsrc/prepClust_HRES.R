@@ -6,9 +6,11 @@ grid = args[2]
 
 
 rst = raster(grid) # crop era5 footprint grid to domain
-#aoi=shapefile(paste0(wd,"/spatial/extent.shp"))
-#aoi=raster(paste0(wd,"/predictors/ele.tif"))
-aoi=raster(paste0(wd,"/forcing/SURF.nc")) # defines domain
+
+# what do you want to define domain? ERA5? DEM? This will extract the required ERA5 gridcells
+#aoi=shapefile(paste0(wd,"/spatial/domain.shp"))
+aoi=raster(paste0(wd,"/predictors/ele.tif"))
+#aoi=raster(paste0(wd,"/forcing/SURF.nc")) # defines domain BUT maybe NOT!
 eraExtent=crop(rst,aoi, snap='out')
 ncells=ncell(eraExtent)
 idRst = setValues(eraExtent , 1:ncells )
