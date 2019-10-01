@@ -63,7 +63,13 @@ if (!file.exists(fscacrop)) {
     # analyse missing days
     actualDays <- seq(as.Date(startda), as.Date(endda), 1)
     NactualDays <- length(actualDays)
-   # writeRaster(rstack, fscacrop, overwrite = TRUE)
+   writeRaster(rstack, fscacrop, overwrite = TRUE)
+
+    # crop spatial
+    rstack =crop(rstack,landform)
+
+    # write out
+    writeRaster(rstack, fscacrop, overwrite = TRUE)
 
 } else {
     print(paste0(fscacrop, " already exists."))
@@ -113,6 +119,7 @@ r = landform
 
 obs=c()
 for (i in 1:nlayers(rstack)){
+    print(i)
 dstack=disaggregate(rstack[[i]], fact=c(round(dim(r)[1]/dim(s)[1]),round(dim(r)[2]/dim(s)[2])), method='') #fact equals r/s for cols and rows
 estack=resample(dstack, landform,  method="ngb")
 newobs <- cellStats(estack, 'mean') /100	

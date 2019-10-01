@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/tmapp2.iml" filepath="$PROJECT_DIR$/.idea/tmapp2.iml" />
+      <module fileurl="file://$USER_HOME$/sim/tmapp_val/.idea/tmapp_val.iml" filepath="$USER_HOME$/sim/tmapp_val/.idea/tmapp_val.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../tscaleV2/.idea/tscaleV2.iml" filepath="$PROJECT_DIR$/../tscaleV2/.idea/tscaleV2.iml" />
     </modules>
   </component>
 </project>

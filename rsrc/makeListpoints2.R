@@ -33,6 +33,7 @@ if (length(shp$Name) >0){name=shp$Name}
 id= 1:length(lat)
 name=id
 if (length(shp$Name) >0){name=shp$Name}
+if (length(shp$IMIS_ST) >0){name=shp$IMIS_ST}
 surfRough=0.002
 tz=0
 lp = data.frame(id,lp, lon,lat, surfRough,tz, name)

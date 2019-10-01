@@ -53,7 +53,8 @@ PointSim      = 1
 WaterBalance  = 1
 EnergyBalance = 1
 StandardTimeSimulation = 0
-FlagSkyViewFactor      = 0 !this is important as ensures we dont decrease longwave twice, cannot be declared in listpoints
+FlagSkyViewFactor      = 0 !this is important as ensures we dont decrease longwave twice, cannot be declared in listpoints 'If not present, the sky view factor
+! can be calculated (=1), or just be considered only equal to 1 (=0)
 CalculateCastShadow    = 1
 
 
