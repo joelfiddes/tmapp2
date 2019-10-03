@@ -7,6 +7,10 @@ dir.create(paste0(wd,"/sim/"), showWarnings=FALSE)
 
 nfiles=list.files(paste0(wd, "/predictors/"), pattern='ele')
 
+ndvi = raster(paste0(wd, "/predictors/ndvi.tif"))
+
+
+
 for (file in 1:length(nfiles)){
 
 	ele=raster(paste0(wd,"/predictors/ele",file,".tif"))
@@ -15,6 +19,10 @@ for (file in 1:length(nfiles)){
 	dir.create(paste0(wd,"/sim/",simdir,"/predictors"), showWarnings=FALSE)
 	setwd(paste0(wd,'/sim/', simdir,"/predictors"))
 	writeRaster(ele, 'ele.tif', overwrite=TRUE)
+
+	ndvicut=crop(ndvi,ele)
+	writeRaster(ndvicut, 'ndvi.tif', overwrite=TRUE)
+
 			
 	}
 		
