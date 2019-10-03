@@ -120,7 +120,7 @@ def main(wd, model="SNOWPACK", interp='1D'):
     if not os.path.isfile(fname):
 
         logging.info("Calculating surface layer")
-        cmd = ["Rscript", "./rsrc/makeSurface.R", home, str(0.3)]
+        cmd = ["Rscript", "./rsrc/makeSurface_points.R", home, str(0.3)]
         subprocess.check_output(cmd)
     else:
         logging.info("Surface already computed!")
@@ -131,7 +131,7 @@ def main(wd, model="SNOWPACK", interp='1D'):
     if not os.path.isfile(fname):
 
         logging.info("Compute listpoints")
-        cmd = ["Rscript", "./rsrc/makeListpoints2.R", home, config['main']['pointsShp']]
+        cmd = ["Rscript", "./rsrc/makeListpoints2_points.R", home, config['main']['pointsShp']]
         subprocess.check_output(cmd)
         f = open(home + "/SUCCESS_LISTPOINTS", "w")
     else:
