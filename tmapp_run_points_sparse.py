@@ -134,7 +134,7 @@ def main(wd, simdir, model="SNOWPACK", interp='1D'):
     if not os.path.isfile(fname):
 
         logging.info("Compute listpoints")
-        cmd = ["Rscript", "./rsrc/makeListpoints2.R", home, config['main']['pointsShp']]
+        cmd = ["Rscript", "./rsrc/makeListpoints2_points.R", home, config['main']['pointsShp'], simdir]
         subprocess.check_output(cmd)
         f = open(home + "/SUCCESS_LISTPOINTS", "w")
     else:
