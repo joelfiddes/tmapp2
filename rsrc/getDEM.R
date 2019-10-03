@@ -18,8 +18,7 @@ demDir= args[2] #"/home/joel/data/DEM/srtm"
 shp= args[3] #"/home/joel/data/GCOS/wfj_poly.shp"
 demRes=args[4] #1=30m 3=90m
 
-if ( demRes == '30m' ){demRes<-1}
-if ( demRes == '90m' ){demRes<-3}
+
 #====================================================================
 # PARAMETERS FIXED
 #====================================================================

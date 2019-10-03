@@ -14,11 +14,11 @@ args = commandArgs(trailingOnly=TRUE)
 wd=args[1]
 demDir=args[2]
 myshp=args[3]
+demRes=args[4]
+buffer=args[5]# how much to pad the point in lon/lat degrees
 
-buffer=0.2 # how much to pad the point in lon/lat degrees
-demRes=1
-if ( demRes == '30m' ){demRes<-1}
-if ( demRes == '90m' ){demRes<-3}
+#buffer should be computed dymnamically based on 'maxdist' from svf. Complicated as varies depending on lat
+
 #====================================================================
 # PARAMETERS FIXED
 #====================================================================

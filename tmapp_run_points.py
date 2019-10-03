@@ -35,7 +35,7 @@ import re
 
 # for config
 svf_sectors = str(8)  # sectors to search)
-svf_dist = str(5000)  # search distance m
+svf_dist = str(3000)  # search distance m
 
 
 def main(wd, model="SNOWPACK", interp='1D'):
@@ -112,7 +112,7 @@ def main(wd, model="SNOWPACK", interp='1D'):
     fname = home + "/predictors/svf.tif"
     if not os.path.isfile(fname):
         logging.info("Calculating SVF layer ")
-        cmd = ["Rscript", "./rsrc/computeSVF.R", home, svf_sectors, svf_dist]
+        cmd = ["Rscript", "./rsrc/computeTopo_SVF_points.R", home, svf_sectors, svf_dist]
         subprocess.check_output(cmd)
     else:
         logging.info("SVF computed!")
