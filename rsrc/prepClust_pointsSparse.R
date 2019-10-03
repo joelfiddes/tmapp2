@@ -7,7 +7,7 @@ dir.create(paste0(wd,"/sim/"), showWarnings=FALSE)
 
 nfiles=list.files(paste0(wd, "/predictors/"), pattern='ele')
 
-for (i in 1:length(nfiles)){
+for (file in 1:length(nfiles)){
 
 	ele=raster(paste0(wd,"/predictors/ele",file,".tif"))
 	ic=i #formatC(i, width=5, flag='0')
