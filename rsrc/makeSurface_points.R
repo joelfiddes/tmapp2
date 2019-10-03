@@ -40,7 +40,7 @@ smax=55
 nfiles=list.files(paste0(home, "/predictors/"), pattern='ele')
 
 for (file in 1:length(nfiles)){
-
+	if(!file.exists(paste0(home,'/predictors/surface',file,'.tif'))){
 #====================================================================
 #	fetch and compute MODIS NDVI
 #====================================================================
@@ -92,6 +92,7 @@ writeRaster(surfaceModel, paste0(home,'/predictors/surface',file,'.tif'), overwr
 #plot(surfaceModel, col=color, axis.arg=arg, main='Surface class distribution')
 #hist(surfaceModel, main='Surface class frequency')
 #dev.off()
+}
 }
 #====================================================================
 #	zonal stats
