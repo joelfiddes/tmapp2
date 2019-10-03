@@ -150,6 +150,15 @@ if os.path.isfile(fname1) == False or os.path.isfile(fname2) == False or os.path
 			fname = wd + "/predictors/ele.tif"
 			if os.path.isfile(fname) == False:	
 				logging.info("Downloading DEM")
+				cmd = ["Rscript", "./rsrc/getDEM.R" , wd, config["main"]["demdir"] , config["main"]["pointsShp"], demRes]
+				subprocess.check_output(cmd)
+			else:
+				logging.info("DEM already downloaded")
+
+		if config['main']['runmode']=='points_sparse':
+			fname = wd + "/predictors/ele.tif"
+			if os.path.isfile(fname) == False:	
+				logging.info("Downloading DEM")
 				cmd = ["Rscript", "./rsrc/getDEM_points.R" , wd, config["main"]["demdir"] , config["main"]["pointsShp"], demRes, config["main"]["pointsBuffer"]]
 				subprocess.check_output(cmd)
 			else:
@@ -166,9 +175,10 @@ if os.path.isfile(fname1) == False or os.path.isfile(fname2) == False or os.path
 	
 	# points topo is handled in main run routine now.
 	if config['main']['runmode']!='points':
-		logging.info("Compute topo predictors")
-		cmd = ["Rscript", "./rsrc/computeTopo.R" , wd, chirpsP]
-		subprocess.check_output(cmd)
+		if config['main']['runmode']!='points_sparse':
+			logging.info("Compute topo predictors")
+			cmd = ["Rscript", "./rsrc/computeTopo.R" , wd, chirpsP]
+			subprocess.check_output(cmd)
 
 	else:
 		logging.info("DEM downloaded and Topo predictors computed")
@@ -234,6 +244,11 @@ if config['main']['runmode']=='grid':
 	if config["forcing"]["product"]=="reanalysis":
 		cmd = ["Rscript", "./rsrc/prepClust_HRES.R", wd, config['forcing']['grid']]
 		subprocess.check_output(cmd)
+
+if config['main']['runmode']=='points_sparse':
+	logging.info("Setup point sim directories")
+	cmd = ["Rscript", "./rsrc/prepClust_pointsSparse.R", wd, config['forcing']['grid']]
+	subprocess.check_output(cmd)
 
 if config['main']['runmode']=='basins':
 	logging.info("Setup basin sim directories")
