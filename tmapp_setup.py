@@ -46,6 +46,7 @@ tscale_root=config['main']['tscale_root']
 #===============================================================================
 demRes = config["main"]["demRes"] # 1=30m 3=90m
 chirpsP=config["main"]["chirpsP"]
+pointsBuffer=0.08 # determines size of dem section in lon/lat for point runs
 #===============================================================================
 #	Logging
 #===============================================================================
@@ -149,7 +150,7 @@ if os.path.isfile(fname1) == False or os.path.isfile(fname2) == False or os.path
 			fname = wd + "/predictors/ele.tif"
 			if os.path.isfile(fname) == False:	
 				logging.info("Downloading DEM")
-				cmd = ["Rscript", "./rsrc/getDEM_points.R" , wd, config["main"]["demdir"] , config["main"]["pointsShp"], demRes]
+				cmd = ["Rscript", "./rsrc/getDEM_points.R" , wd, config["main"]["demdir"] , config["main"]["pointsShp"], demRes, pointsBuffer]
 				subprocess.check_output(cmd)
 			else:
 				logging.info("DEM already downloaded")
@@ -162,14 +163,16 @@ if os.path.isfile(fname1) == False or os.path.isfile(fname2) == False or os.path
 				subprocess.check_output(cmd)
 			else:
 				logging.info("DEM already downloaded")
+	
+	# points topo is handled in main run routine now.
+	if config['main']['runmode']!='points':
+		logging.info("Compute topo predictors")
+		cmd = ["Rscript", "./rsrc/computeTopo.R" , wd, chirpsP]
+		subprocess.check_output(cmd)
 
-	logging.info("Compute topo predictors")
-	cmd = ["Rscript", "./rsrc/computeTopo.R" , wd, chirpsP]
-	subprocess.check_output(cmd)
-
-else:
-	logging.info("DEM downloaded and Topo predictors computed")
-	print("DEM downloaded and Topo predictors computed")
+	else:
+		logging.info("DEM downloaded and Topo predictors computed")
+		print("DEM downloaded and Topo predictors computed")
 #===============================================================================
 #	Retrieve ERA
 #===============================================================================
