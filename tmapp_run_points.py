@@ -33,9 +33,7 @@ import pandas as pd
 from configobj import ConfigObj
 import re
 
-# for config
-svf_sectors = str(8)  # sectors to search)
-svf_dist = str(3000)  # search distance m
+
 
 
 def main(wd, model="SNOWPACK", interp='1D'):
@@ -47,7 +45,6 @@ def main(wd, model="SNOWPACK", interp='1D'):
     # os.system("python writeConfig.py") # update config DONE IN run.sh file
 
     config = ConfigObj(wd + "/config.ini")
-
     tscale_root = config['main']['tscale_root']  # path to tscaleV2 directory
 
     # config start and end date
@@ -112,7 +109,7 @@ def main(wd, model="SNOWPACK", interp='1D'):
     fname = home + "/predictors/svf.tif"
     if not os.path.isfile(fname):
         logging.info("Calculating SVF layer ")
-        cmd = ["Rscript", "./rsrc/computeTopo_SVF_points.R", home, svf_sectors, svf_dist]
+        cmd = ["Rscript", "./rsrc/computeTopo_SVF_points.R", home, config['toposcale']['svfSectors'], config['toposcale']['svfMaxDist']]
         subprocess.check_output(cmd)
     else:
         logging.info("SVF computed!")
