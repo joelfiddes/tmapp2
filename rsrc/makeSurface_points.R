@@ -37,13 +37,16 @@ smax=55
 
 #**********************  SCRIPT BEGIN *******************************
 
+nfiles=list.files(paste0(home, "/predictors/"), pattern='ele')
 
+for (file in 1:length(nfiles)){
 
 #====================================================================
 #	fetch and compute MODIS NDVI
 #====================================================================
 ndvi = raster(paste0(home, "/predictors/ndvi.tif"))
-myextent=raster(paste0(home,'/predictors/ele.tif')) # output is projected and clipped to this extent
+myextent=raster(paste0(home,'/predictors/ele',file,'.tif')) # output is projected and clipped to this extent
+ndvi=crop(ndvi,myextent)
 
 from=c(0, ndviThreshold)
 to=c(ndviThreshold, 1)
@@ -54,7 +57,7 @@ meanNDVIReclass = reclassify(ndvi, rcl) #1=veg 0=no veg
 #	compute bedrock debris slope model (Boeckli 2012)
 #====================================================================
 
-slp=raster(paste0(home,'/predictors/slp.tif'))
+slp=raster(paste0(home,'/predictors/slp',file,'.tif'))
 slpModel = calc(slp, fun=function(x){(x - smin) / (smax-smin)})
 
 #crisp classes ie split by 45 degree slope
@@ -79,19 +82,17 @@ surfaceModel=cover(surf, slpModelReclass) #0= veg, 1=debris , 2=steep bedrock
 #	output
 #====================================================================
 
-writeRaster(surfaceModel, paste0(home,'/predictors/surface.tif'), overwrite=TRUE)
+writeRaster(surfaceModel, paste0(home,'/predictors/surface',file,'.tif'), overwrite=TRUE)
 
-#remove ndvi from predictors director
-system(paste0('rm ',home,'/predictors/ndvi.tif'))
 
-pdf(paste0(home,'/surfaceClassMap.pdf'), width=6, height =12)
-par(mfrow=c(2,1))
-arg <- list(at=seq(0,2,1), labels=c("Vegetation (0)","Debris (1)","Steep bedrock (2)")) #these are the class names
-color=c("lightgreen","grey","red") #and color representation
-plot(surfaceModel, col=color, axis.arg=arg, main='Surface class distribution')
-hist(surfaceModel, main='Surface class frequency')
-dev.off()
-
+#pdf(paste0(home,'/surfaceClassMap.pdf'), width=6, height =12)
+#par(mfrow=c(2,1))
+#arg <- list(at=seq(0,2,1), labels=c("Vegetation (0)","Debris (1)","Steep bedrock (2)")) #these are the class names
+#color=c("lightgreen","grey","red") #and color representation
+#plot(surfaceModel, col=color, axis.arg=arg, main='Surface class distribution')
+#hist(surfaceModel, main='Surface class frequency')
+#dev.off()
+}
 #====================================================================
 #	zonal stats
 #====================================================================
