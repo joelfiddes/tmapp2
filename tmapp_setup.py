@@ -149,7 +149,7 @@ if os.path.isfile(fname1) == False or os.path.isfile(fname2) == False or os.path
 			fname = wd + "/predictors/ele.tif"
 			if os.path.isfile(fname) == False:	
 				logging.info("Downloading DEM")
-				cmd = ["Rscript", "./rsrc/getDEM.R" , wd, config["main"]["demdir"] , config["main"]["pointsShp"], demRes]
+				cmd = ["Rscript", "./rsrc/getDEM_points.R" , wd, config["main"]["demdir"] , config["main"]["pointsShp"], demRes]
 				subprocess.check_output(cmd)
 			else:
 				logging.info("DEM already downloaded")
