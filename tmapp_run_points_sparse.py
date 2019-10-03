@@ -147,34 +147,34 @@ def main(wd, simdir, model="SNOWPACK", interp='1D'):
 
     if meteoCounter != len(lp.name):
 
-                # 2d
-                if interp == '1D':
-                    cmd = [
-                        "python",
-                        tscale_root + "/tscaleV2/toposcale/tscale_run.py",
-                        wd + "/forcing/",
-                        home,
-                        home + "/forcing/",
-                        config['main']['startDate'],
-                        config['main']['endDate'],
-                        windCor
-                    ]
+        # 2d
+        if interp == '1D':
+            cmd = [
+                "python",
+                tscale_root + "/tscaleV2/toposcale/tscale_run.py",
+                wd + "/forcing/",
+                home,
+                home + "/forcing/",
+                config['main']['startDate'],
+                config['main']['endDate'],
+                windCor
+            ]
 
-                # logging.info( "Run TopoSCALE points reanalysis")
+        # logging.info( "Run TopoSCALE points reanalysis")
 
-                # #3d
-                if interp == '3D':
-                    cmd = [
-                        "python",
-                        tscale_root + "/tscaleV2/toposcale/tscale3D.py",
-                        wd,
-                        config['main']['runmode'],
-                        config['main']['startDate'],
-                        config['main']['endDate'],
-                        "HRES",
-                        '1'
+        # #3d
+        if interp == '3D':
+            cmd = [
+                "python",
+                tscale_root + "/tscaleV2/toposcale/tscale3D.py",
+                wd,
+                config['main']['runmode'],
+                config['main']['startDate'],
+                config['main']['endDate'],
+                "HRES",
+                '1'
 
-                    ]
+            ]
 
         subprocess.check_output(cmd)
 
