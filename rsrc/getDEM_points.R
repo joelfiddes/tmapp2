@@ -42,6 +42,9 @@ shp=shapefile(myshp)
 
 # loop through points
 for (mypoint in 1:length(shp$lat)){
+
+
+if(!file.exists(paste0(wd, '/predictors/ele',mypoint,'.tif'))){
 print(mypoint)
 eraExtent = extent(shp[mypoint,])+(buffer*2)
 
@@ -117,5 +120,6 @@ ele <- crop(dem, eraExtent)
 
 #outputs
 writeRaster(ele, paste0(wd, '/predictors/ele',mypoint,'.tif'), overwrite=TRUE)
+}
 }
 

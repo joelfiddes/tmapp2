@@ -3,7 +3,7 @@ require(raster)
 args = commandArgs(trailingOnly=TRUE)
 wd=args[1]
 
-dir.create(paste0(wd,"/sim/",), showWarnings=FALSE)
+dir.create(paste0(wd,"/sim/"), showWarnings=FALSE)
 
 nfiles=list.files(paste0(wd, "/predictors/"), pattern='ele')
 
