@@ -109,7 +109,7 @@ def main(wd, model="SNOWPACK", interp='1D'):
     fname = home + "/predictors/svf.tif"
     if not os.path.isfile(fname):
         logging.info("Calculating SVF layer ")
-        cmd = ["Rscript", "./rsrc/computeTopoSVF.R", home, config['toposcale']['svfSectors'], config['toposcale']['svfMaxDist']]
+        cmd = ["Rscript", "./rsrc/computeSVF.R", home, config['toposcale']['svfSectors'], config['toposcale']['svfMaxDist']]
         subprocess.check_output(cmd)
     else:
         logging.info("SVF computed!")

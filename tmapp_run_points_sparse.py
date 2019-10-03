@@ -36,14 +36,14 @@ import re
 
 
 
-def main(wd, model="SNOWPACK", interp='1D'):
+def main(wd, simdir, model="SNOWPACK", interp='1D'):
     print("Toposcale= " + interp)
     print("Model= " + model)
     # ===============================================================================
     # Config setup
     # ===============================================================================
     # os.system("python writeConfig.py") # update config DONE IN run.sh file
-
+    home=wd+'/'+simdir	
     config = ConfigObj(wd + "/config.ini")
     tscale_root = config['main']['tscale_root']  # path to tscaleV2 directory
 
@@ -55,7 +55,7 @@ def main(wd, model="SNOWPACK", interp='1D'):
     # Log
     # ===============================================================================
     # logfile=wd+"/sim/"+ simdir+"/logfile"
-    logfile = wd + "/logfile"
+    logfile = home + "/logfile"
     if os.path.isfile(logfile):
         os.remove(logfile)
     logging.basicConfig(level=logging.DEBUG, filename=logfile, filemode="a+",
@@ -69,7 +69,7 @@ def main(wd, model="SNOWPACK", interp='1D'):
     # ===============================================================================
     #	make dirs
     # ===============================================================================
-    home = wd  # +"/sim/"+simdir
+
     if not os.path.exists(home + "/forcing"):
         os.makedirs(home + "/forcing")
 
@@ -108,6 +108,7 @@ def main(wd, model="SNOWPACK", interp='1D'):
 
 
     logging.info("Calculating SVF layer ")
+    # new routiner here as slp/asp not computed in setup
     cmd = ["Rscript", "./rsrc/computeTopo_SVF_points.R", home, config['toposcale']['svfSectors'], config['toposcale']['svfMaxDist']]
     subprocess.check_output(cmd)
  
@@ -118,7 +119,7 @@ def main(wd, model="SNOWPACK", interp='1D'):
 
 
     logging.info("Calculating surface layer")
-    cmd = ["Rscript", "./rsrc/makeSurface_points.R", home, str(0.3)]
+    cmd = ["Rscript", "./rsrc/makeSurface.R", home, str(0.3)]
     subprocess.check_output(cmd)
 
     logging.info("Surface already computed!")
@@ -129,7 +130,7 @@ def main(wd, model="SNOWPACK", interp='1D'):
     if not os.path.isfile(fname):
 
         logging.info("Compute listpoints")
-        cmd = ["Rscript", "./rsrc/makeListpoints2_points.R", home, config['main']['pointsShp']]
+        cmd = ["Rscript", "./rsrc/makeListpoints2.R", home, config['main']['pointsShp']]
         subprocess.check_output(cmd)
         f = open(home + "/SUCCESS_LISTPOINTS", "w")
     else:
@@ -145,10 +146,6 @@ def main(wd, model="SNOWPACK", interp='1D'):
     lp = pd.read_csv(home + "/listpoints.txt")
 
     if meteoCounter != len(lp.name):
-
-        if config['main']['runmode'] == 'points':
-
-            if config["forcing"]["product"] == "reanalysis":
 
                 # 2d
                 if interp == '1D':
