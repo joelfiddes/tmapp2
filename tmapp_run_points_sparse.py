@@ -43,7 +43,7 @@ def main(wd, simdir, model="SNOWPACK", interp='1D'):
     # Config setup
     # ===============================================================================
     # os.system("python writeConfig.py") # update config DONE IN run.sh file
-    home=wd+'/'+simdir	
+    home=wd+'/sim/'+simdir	
     config = ConfigObj(wd + "/config.ini")
     tscale_root = config['main']['tscale_root']  # path to tscaleV2 directory
 
@@ -61,7 +61,8 @@ def main(wd, simdir, model="SNOWPACK", interp='1D'):
     logging.basicConfig(level=logging.DEBUG, filename=logfile, filemode="a+",
                         format="%(asctime)-15s %(levelname)-8s %(message)s")
 
-    # ===============================================================================
+
+     # ===============================================================================
     #	Timer
     # ===============================================================================
     start_time = time.time()
