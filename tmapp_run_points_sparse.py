@@ -107,23 +107,26 @@ def main(wd, simdir, model="SNOWPACK", interp='1D'):
     #	Compute svf
     # ===============================================================================
 
-
-    logging.info("Calculating SVF layer ")
-    # new routiner here as slp/asp not computed in setup
-    cmd = ["Rscript", "./rsrc/computeTopo_SVF_points.R", home, config['toposcale']['svfSectors'], config['toposcale']['svfMaxDist']]
-    subprocess.check_output(cmd)
- 
-    logging.info("SVF computed!")
+    fname = home + "/predictors/svf.tif"
+    if not os.path.isfile(fname):
+        logging.info("Calculating SVF layer ")
+        # new routiner here as slp/asp not computed in setup
+        cmd = ["Rscript", "./rsrc/computeTopo_SVF_points.R", home, config['toposcale']['svfSectors'], config['toposcale']['svfMaxDist']]
+        subprocess.check_output(cmd)
+    else:
+        logging.info("SVF already computed!")
     # ===============================================================================
     #	Compute surface
     # ===============================================================================
 
 
-    logging.info("Calculating surface layer")
-    cmd = ["Rscript", "./rsrc/makeSurface.R", home, str(0.3)]
-    subprocess.check_output(cmd)
-
-    logging.info("Surface already computed!")
+    fname = home + "/predictors/surface.tif"
+    if not os.path.isfile(fname):
+        logging.info("Calculating surface layer")
+        cmd = ["Rscript", "./rsrc/makeSurface.R", home, str(0.3)]
+        subprocess.check_output(cmd)
+    else:
+        logging.info("Surface already computed!")
     # ===============================================================================
     #	Run compute listpoints
     # ===============================================================================
