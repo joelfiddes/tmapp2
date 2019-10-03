@@ -38,8 +38,7 @@ dir.create(paste0(wd,'/spatial'), showWarnings=FALSE)
 
 setwd(demDir)
 shp=shapefile(myshp)
-aoi=shapefile(shp)
-eraExtent=extent(aoi)
+
 
 # loop through points
 for (mypoint in 1:length(shp$lat)){
