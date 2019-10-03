@@ -184,8 +184,12 @@ def main(wd, simdir, model="SNOWPACK", interp='1D'):
 
         # report sucess
         f = open(home + "/SUCCESS_TSCALE1", "w")
-    else:
+    else:  
         logging.info("Toposcale 1 already run " + str(len(lp.name)) + " meteo files found")
+
+    if config['toposcale']['tscaleOnly']=='TRUE': # exit here 
+        logging.info("TopoSCALE only run"+simdir+ "complete!")
+        exit(0)
 
     # list of toposcale generated forcing files with full path
     files = glob.glob(home + "/forcing/*.csv")
