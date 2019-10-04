@@ -191,156 +191,156 @@ def main(wd, simdir, model="SNOWPACK", interp='1D'):
         logging.info("TopoSCALE only run"+simdir+ "complete!")
 
 
-	    # list of toposcale generated forcing files with full path
-	    files = glob.glob(home + "/forcing/*.csv")
-	    print(files)
-	    # ===============================================================================
-	    #	Prepare GEOTOP meteo file
-	    # ===============================================================================
-	    if model == "GEOTOP":
-		logging.info("Convert met to geotop format...")
-		# make geotop met files
-		for file in files:
-		    file = os.path.basename(file)  # remove path
-		    cmd = ["Rscript", "./rsrc/met2geotop.R", home + "/forcing/" + file] # has to write to forcing so setupSim can work
-		    subprocess.check_output(cmd)
+        # list of toposcale generated forcing files with full path
+        files = glob.glob(home + "/forcing/*.csv")
+        print(files)
+        # ===============================================================================
+        #	Prepare GEOTOP meteo file
+        # ===============================================================================
+        if model == "GEOTOP":
+        logging.info("Convert met to geotop format...")
+        # make geotop met files
+        for file in files:
+            file = os.path.basename(file)  # remove path
+            cmd = ["Rscript", "./rsrc/met2geotop.R", home + "/forcing/" + file] # has to write to forcing so setupSim can work
+            subprocess.check_output(cmd)
 
-	    # ===============================================================================
-	    #	Prepare SNOWPACK SMET INI and SNO - use direct confiobj inserts here
-	    # ===============================================================================
-	    if model == "SNOWPACK":
-		logging.info("Preparing snowpack inputs...")
+        # ===============================================================================
+        #	Prepare SNOWPACK SMET INI and SNO - use direct confiobj inserts here
+        # ===============================================================================
+        if model == "SNOWPACK":
+        logging.info("Preparing snowpack inputs...")
 
-		# parse listpoints to get metadata
-		lp = pd.read_csv(home + "/listpoints.txt")
+        # parse listpoints to get metadata
+        lp = pd.read_csv(home + "/listpoints.txt")
 
-		# make smet ini here
-		# configure any additional / resampling /  QC here
-		for file in files:
-		    file = os.path.basename(file)  # remove path
-		    logging.info("Now running " + file)
-		    # parse the file name to get id, -1 to get py index
-		    res = os.path.basename(file).split('.')[0]
-		    id = int(os.path.basename(res).split('meteoc')[1]) - 1
+        # make smet ini here
+        # configure any additional / resampling /  QC here
+        for file in files:
+            file = os.path.basename(file)  # remove path
+            logging.info("Now running " + file)
+            # parse the file name to get id, -1 to get py index
+            res = os.path.basename(file).split('.')[0]
+            id = int(os.path.basename(res).split('meteoc')[1]) - 1
 
-		    cmd = ["Rscript", "./rsrc/sp_makeInputs.R",
-		           config["main"]["srcdir"] + "/snowpack/",
-		           home + '/forcing/',
-		           file,
-		           config['main']['startDate'], 'dummy']  # test to see if overidden by below - NOW redundent??
-		    subprocess.check_output(cmd)
+            cmd = ["Rscript", "./rsrc/sp_makeInputs.R",
+                   config["main"]["srcdir"] + "/snowpack/",
+                   home + '/forcing/',
+                   file,
+                   config['main']['startDate'], 'dummy']  # test to see if overidden by below - NOW redundent??
+            subprocess.check_output(cmd)
 
-		    # quick fix to ensure second meteopath correctly configured
-		    # todo: cover all ini settins like this
+            # quick fix to ensure second meteopath correctly configured
+            # todo: cover all ini settins like this
 
-		    fileini = home + '/forcing/' + os.path.basename(file).split('.')[0] + ".ini"
-		    print(fileini)
-		    configini = ConfigObj(fileini)
-		    configini['Output']['METEOPATH'] = home + '/forcing/'
-		    configini['Input']['POSITION1'] = "latlon " + str(lp.lat[id]) + ", " + str(lp.lon[id]) + " " + str(
-		        lp.ele[id])
-		    configini['Input']['CSV_NAME'] = lp.name[id]
-		    configini['Input']['CSV_AZI'] = lp.asp[id]
-		    configini['Input']['CSV_SLOPE'] = lp.slp[id]
-		    configini['Output']['EXPERIMENT'] = lp.name[id]
-		    configini.write()
+            fileini = home + '/forcing/' + os.path.basename(file).split('.')[0] + ".ini"
+            print(fileini)
+            configini = ConfigObj(fileini)
+            configini['Output']['METEOPATH'] = home + '/forcing/'
+            configini['Input']['POSITION1'] = "latlon " + str(lp.lat[id]) + ", " + str(lp.lon[id]) + " " + str(
+                lp.ele[id])
+            configini['Input']['CSV_NAME'] = lp.name[id]
+            configini['Input']['CSV_AZI'] = lp.asp[id]
+            configini['Input']['CSV_SLOPE'] = lp.slp[id]
+            configini['Output']['EXPERIMENT'] = lp.name[id]
+            configini.write()
 
-		    # stip out any quotations that stop snowpack parser
-		    with open(fileini, "r") as sources:
-		        lines = sources.readlines()
-		    with open(fileini, "w") as sources:
-		        for line in lines:
-		            sources.write(re.sub(r'"', '', line))
+            # stip out any quotations that stop snowpack parser
+            with open(fileini, "r") as sources:
+                lines = sources.readlines()
+            with open(fileini, "w") as sources:
+                for line in lines:
+                    sources.write(re.sub(r'"', '', line))
 
-		    filesno = home + '/forcing/' + os.path.basename(file).split('.')[0] + ".sno"
-		    # replace date in sno file
-		    with open(filesno, "r") as sources:
-		        lines = sources.readlines()
-		    with open(filesno, "w") as sources:
-		        for line in lines:
-		            sources.write(re.sub(r'1997-09-01T00:00', config['main']['startDate'] + 'T00:00', line))
+            filesno = home + '/forcing/' + os.path.basename(file).split('.')[0] + ".sno"
+            # replace date in sno file
+            with open(filesno, "r") as sources:
+                lines = sources.readlines()
+            with open(filesno, "w") as sources:
+                for line in lines:
+                    sources.write(re.sub(r'1997-09-01T00:00', config['main']['startDate'] + 'T00:00', line))
 
-		# run meteoio
-		for file in files:
-		    fileini = os.path.basename(file).split('.')[0] + ".ini"
-		    cmd = [config["main"]["srcdir"] + "snowpack/data_converter " +
-		           config['main']['startDate'] +
-		           " " + config['main']['endDate'] +
-		           " " + config['meteoio']['timestep'] + " " +
-		           home + "/forcing/" + fileini]
-		    logging.info(cmd)
-		    subprocess.check_output(cmd, shell=True)
-	    # cleanup
-	    # meteotoremove = glob.glob("*.csv")
-	    # os.remove(meteotoremove)
+        # run meteoio
+        for file in files:
+            fileini = os.path.basename(file).split('.')[0] + ".ini"
+            cmd = [config["main"]["srcdir"] + "snowpack/data_converter " +
+                   config['main']['startDate'] +
+                   " " + config['main']['endDate'] +
+                   " " + config['meteoio']['timestep'] + " " +
+                   home + "/forcing/" + fileini]
+            logging.info(cmd)
+            subprocess.check_output(cmd, shell=True)
+        # cleanup
+        # meteotoremove = glob.glob("*.csv")
+        # os.remove(meteotoremove)
 
-	    # ===============================================================================
-	    #	Prepare GEOTOP sims
-	    # ===============================================================================
-	    if model == "GEOTOP":
-		''' check for geotop run complete files'''
-		runCounter = 0
-		foundsims = []
-		for root, dirs, files in os.walk(home):
-		    for file in files:
-		        if file.endswith('_SUCCESSFUL_RUN'):
-		            runCounter += 1
-		            foundsims.append(os.path.join(root, file))
+        # ===============================================================================
+        #	Prepare GEOTOP sims
+        # ===============================================================================
+        if model == "GEOTOP":
+        ''' check for geotop run complete files'''
+        runCounter = 0
+        foundsims = []
+        for root, dirs, files in os.walk(home):
+            for file in files:
+                if file.endswith('_SUCCESSFUL_RUN'):
+                    runCounter += 1
+                    foundsims.append(os.path.join(root, file))
 
-		fsims = [i.split('/', 2)[1] for i in foundsims]
+        fsims = [i.split('/', 2)[1] for i in foundsims]
 
-		fname1 = home + "/SUCCESS_SIM1"
-		if os.path.isfile(fname1) == False:  # NOT ROBUST
+        fname1 = home + "/SUCCESS_SIM1"
+        if os.path.isfile(fname1) == False:  # NOT ROBUST
 
-		    # case of no sims and probably no setup done
-		    if runCounter == 0:
+            # case of no sims and probably no setup done
+            if runCounter == 0:
 
-		        logging.info("prepare cluster sim directories")
-		        cmd = ["Rscript", "./rsrc/setupSim.R", home]
-		        subprocess.check_output(cmd)
+                logging.info("prepare cluster sim directories")
+                cmd = ["Rscript", "./rsrc/setupSim.R", home]
+                subprocess.check_output(cmd)
 
-		        logging.info("Assign surface types")
-		        cmd = ["Rscript", "./rsrc/modalSurface_points.R", home]
-		        subprocess.check_output(cmd)
+                logging.info("Assign surface types")
+                cmd = ["Rscript", "./rsrc/modalSurface_points.R", home]
+                subprocess.check_output(cmd)
 
-		        logging.info("prepare geotop.inpts")
-		        cmd = [
-		            "Rscript",
-		            "./rsrc/makeGeotopInputs.R",
-		            home,
-		            config["main"]["srcdir"] + "/geotop/geotop.inpts",
-		            config["main"]["startDate"],
-		            config["main"]["endDate"]
-		        ]
-		        subprocess.check_output(cmd)
+                logging.info("prepare geotop.inpts")
+                cmd = [
+                    "Rscript",
+                    "./rsrc/makeGeotopInputs.R",
+                    home,
+                    config["main"]["srcdir"] + "/geotop/geotop.inpts",
+                    config["main"]["startDate"],
+                    config["main"]["endDate"]
+                ]
+                subprocess.check_output(cmd)
 
-		        sims = glob.glob(home + "/c0*")
+                sims = glob.glob(home + "/c0*")
 
-		        for sim in sims:
-		            logging.info("run geotop" + sim)
-		            cmd = ["./geotop/geotop1.226", sim]
-		            subprocess.check_output(cmd)
+                for sim in sims:
+                    logging.info("run geotop" + sim)
+                    cmd = ["./geotop/geotop1.226", sim]
+                    subprocess.check_output(cmd)
 
-		    # CASE OF incomplete sims to be restarted (prob interuppted by cluster runtime limit)
-		    if runCounter != len(lp.name) and runCounter > 0:
-		        logging.info("only " + str(runCounter) + " complete sims found, finishing now...")
-		        # all sims to run
-		        sims = glob.glob(home + "/c0*")
-		        sims = [i.split('/', 1)[1] for i in sims]
-		        # fsims = found complemete sims
-		        # list only files that dont exist
-		        sims2do = [x for x in sims if x not in fsims]
+            # CASE OF incomplete sims to be restarted (prob interuppted by cluster runtime limit)
+            if runCounter != len(lp.name) and runCounter > 0:
+                logging.info("only " + str(runCounter) + " complete sims found, finishing now...")
+                # all sims to run
+                sims = glob.glob(home + "/c0*")
+                sims = [i.split('/', 1)[1] for i in sims]
+                # fsims = found complemete sims
+                # list only files that dont exist
+                sims2do = [x for x in sims if x not in fsims]
 
-		        for sim in sims2do:
-		            logging.info("run geotop " + sim)
-		            cmd = ["./geotop/geotop1.226", sim]
-		            subprocess.check_output(cmd)
+                for sim in sims2do:
+                    logging.info("run geotop " + sim)
+                    cmd = ["./geotop/geotop1.226", sim]
+                    subprocess.check_output(cmd)
 
-		    f = open(home + "/SUCCESS_SIM1", "w")
+            f = open(home + "/SUCCESS_SIM1", "w")
 
-		else:
-		    logging.info("Geotop 1 already run " + str(runCounter) +
-		                 " _SUCCESSFUL_RUN files found")
+        else:
+            logging.info("Geotop 1 already run " + str(runCounter) +
+                         " _SUCCESSFUL_RUN files found")
 
     # ===============================================================================
     #	Prepare Snowpack sims - need to add all restart stuff
