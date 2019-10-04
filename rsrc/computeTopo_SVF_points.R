@@ -8,7 +8,7 @@ dist = as.numeric(args[3])
 require(horizon)
 nfiles=list.files(paste0(home, "/predictors/"), pattern='ele')
 
-if(!file.exists(paste0(home, "/predictors/svf.tif"))){
+#if(!file.exists(paste0(home, "/predictors/svf.tif"))){ In case of restart this causes possible mising slp/asp - needs to check for all files
 
 		ele=raster(paste0(home, "/predictors/ele.tif"))
 		s <- svf(ele, nAngles=angles, maxDist=dist, ll=TRUE)
@@ -19,5 +19,5 @@ if(!file.exists(paste0(home, "/predictors/svf.tif"))){
 		writeRaster(round(slp,0), paste0(home, "/predictors/slp.tif"), overwrite=TRUE) #write and reduce precision
 		writeRaster(round(asp,0),paste0(home, "/predictors/asp.tif"), overwrite=TRUE) #write and reduce precision
 
-		}
+		#}
 

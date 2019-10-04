@@ -13,14 +13,14 @@ require(raster)
 # PARAMETERS/ARGS
 #====================================================================
 args = commandArgs(trailingOnly=TRUE)
-wd=args[1] 
+home=args[1] 
 shp.in=args[2]
 simdir=args[3]
 #====================================================================
 # PARAMETERS FIXED
 #====================================================================
 
-setwd(paste0(wd,'/predictors'))
+setwd(paste0(home,'/predictors'))
 shpIndex = as.numeric(unlist(strsplit(simdir,'g'))[2])
 
 
@@ -43,7 +43,7 @@ tz=0
 lp = data.frame(id,lp, lon,lat, surfRough,tz, name)
 lp = na.omit(lp)
 
-write.csv(lpvec, '../listpoints.txt', row.names=FALSE)
+write.csv(lp, '../listpoints.txt', row.names=FALSE)
 
 # if there is no point in gridbox, remove it
 # if (length(lon) < 1){
