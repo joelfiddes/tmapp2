@@ -251,7 +251,8 @@ def main(wd, simdir, model="GEOTOP"):
                     home, home + "/forcing/",
                     startTime,
                     endTime,
-                    windCor
+                    windCor,
+                    config['forcing']['dataset']
                 ]
 
             subprocess.check_output(cmd)
