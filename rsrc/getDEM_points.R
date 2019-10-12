@@ -40,8 +40,10 @@ setwd(demDir)
 shp=shapefile(myshp)
 
 
+npoints = length(shp@coords[,1])
 # loop through points
-for (mypoint in 1:length(shp$lat)){
+for (mypoint in 1:npoints){
+
 
 
 if(!file.exists(paste0(wd, '/predictors/ele',mypoint,'.tif'))){
