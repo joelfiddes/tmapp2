@@ -173,9 +173,11 @@ if os.path.isfile(fname1) == False or os.path.isfile(fname2) == False or os.path
 			else:
 				logging.info("DEM already downloaded")
 	
+	
 	# points topo is handled in main run routine now.
-	if config['main']['runmode']!='points':
-		if config['main']['runmode']!='points_sparse':
+	
+	#if config['main']['runmode']!='points': WHY THIS LINE?
+	if config['main']['runmode']!='points_sparse':
 			logging.info("Compute topo predictors")
 			cmd = ["Rscript", "./rsrc/computeTopo.R" , wd, chirpsP]
 			subprocess.check_output(cmd)
