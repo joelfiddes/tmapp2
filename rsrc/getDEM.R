@@ -75,9 +75,10 @@ df= data.frame(lon,lat)
 		if (sign(df$lon[i])==-1){LONVAL<-"W"}
 		if (sign(df$lon[i])==1){LONVAL<-"E"}
 		lon_pretty=formatC(abs(df$lon[i]),width=3,flag="0")
+		lat_pretty=formatC(abs(df$lat[i]),width=2,flag="0")
 		#get tile
-		filetoget=paste0(LATVAL,abs(df$lat[i]),LONVAL,lon_pretty,".SRTMGL",demRes,".hgt.zip")
-		filetogetUNZIP=paste0(LATVAL,abs(df$lat[i]),LONVAL,lon_pretty,".hgt")
+		filetoget=paste0(LATVAL,lat_pretty,LONVAL,lon_pretty,".SRTMGL",demRes,".hgt.zip")
+		filetogetUNZIP=paste0(LATVAL,lat_pretty,LONVAL,lon_pretty,".hgt")
 
 	if (file.exists(filetoget)){ #dont download again
 	   print(paste0(filetoget, " exists"))
@@ -85,7 +86,7 @@ df= data.frame(lon,lat)
 		system(paste0("gdal_translate -q -co TILED=YES -co COMPRESS=DEFLATE -co ZLEVEL=9 -co PREDICTOR=2 ", filetogetUNZIP, " SRTMDAT",i,".tif"))
 		} else {
 		 
-			system(paste0("wget --user ", USER ,  " --password " ,PWD, " http://e4ftl01.cr.usgs.gov//MODV6_Dal_D/SRTM/SRTMGL",demRes,".003/2000.02.11/",filetoget))
+			system(paste0("wget --user ", USER ,  " --password " ,PWD, " http://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL",demRes,".003/2000.02.11/",filetoget))
 			# extract
 			system(paste0("unzip ", filetoget))
 			system(paste0("gdal_translate -q -co TILED=YES -co COMPRESS=DEFLATE -co ZLEVEL=9 -co PREDICTOR=2 ", filetogetUNZIP, " SRTMDAT",i,".tif"))

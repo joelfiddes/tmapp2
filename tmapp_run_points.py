@@ -74,7 +74,7 @@ def main(wd, model="SNOWPACK", interp='1D'):
         os.makedirs(home + "/forcing")
 
     # make out path for results
-    out = home + "/out/"
+    out = home + "/out/" + model
     if not os.path.exists(out):
         os.makedirs(out)
 
@@ -192,6 +192,58 @@ def main(wd, model="SNOWPACK", interp='1D'):
     # list of toposcale generated forcing files with full path
     files = glob.glob(home + "/forcing/*.csv")
     print(files)
+
+    # ===============================================================================
+    #   Prepare FSM (SSM) meteo file
+    # ===============================================================================
+    if model == "FSM":
+        logging.info("Convert met to FSM format...")
+        # make geotop met files
+        for file in files:
+            file = os.path.basename(file)  # remove path
+            cmd = ["Rscript", "./rsrc/met2fsm.R", home + "/forcing/" + file] # has to write to forcing so setupSim can work
+            subprocess.check_output(cmd)
+
+            for i in range(0,32):
+                nconfig=str(i)
+            # write namelist
+                nlst = open(home+"nlst_tmapp.txt","w") 
+
+                str1="! namelists for running FSM with the Col de Porte example"
+                str2="\n&config"
+                str18="\n  nconfig="+nconfig
+                str3="\n/"
+                str4="\n&drive"
+                str5="\n  met_file ='"+home+"forcing/"+file+"_fsm.txt'"
+                str6="\n  zT = 1.5"
+                str7="\n  zvar = .FALSE."
+                str8="\n/"
+                str9="\n&params"
+                str10="\n/"
+                str11="\n&initial"
+                str12="\n  Tsoil = 282.98 284.17 284.70 284.70"
+                str13="\n/"
+                str14="\n&outputs"
+                str15="\n  out_file = '"+home+"out/"+model+"/"+file+nconfig+"out.txt'"
+                str16="\n  Nave=8"
+                str17="\n/\n"
+
+                logging.info(str15)
+                logging.info(str5)
+                L = [str1, str2, str18, str3, str4, str5, str6, str7, str8, str9, str10, str11,str12,str13,str14,str15,str16,str17] 
+                nlst.writelines(L)
+                nlst.close() 
+
+                logging.info(str15)
+                # run model
+                fsm="/home/joel/src/tmapp2/fsm/FSM"
+                cmd=fsm+ " < " +home+"nlst_tmapp.txt"
+                logging.info(cmd)
+                os.system(cmd)
+
+
+
+
     # ===============================================================================
     #	Prepare GEOTOP meteo file
     # ===============================================================================
@@ -273,10 +325,11 @@ def main(wd, model="SNOWPACK", interp='1D'):
     # os.remove(meteotoremove)
 
     # ===============================================================================
-    #	Prepare GEOTOP sims
+    #	Prepare and run GEOTOP sims
     # ===============================================================================
     if model == "GEOTOP":
         ''' check for geotop run complete files'''
+
         runCounter = 0
         foundsims = []
         for root, dirs, files in os.walk(home):
@@ -341,7 +394,7 @@ def main(wd, model="SNOWPACK", interp='1D'):
                          " _SUCCESSFUL_RUN files found")
 
     # ===============================================================================
-    #	Prepare Snowpack sims - need to add all restart stuff
+    #	Prepare and run Snowpack sims - need to add all restart stuff
     # ===============================================================================
     if model == "SNOWPACK":
         logging.info("Running SNOWPACK!")
