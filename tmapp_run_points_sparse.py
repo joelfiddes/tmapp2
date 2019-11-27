@@ -5,13 +5,14 @@
 
 Example:
 
-	joel@joel-ThinkPad-T440p:~/src/tmapp2$ python tmapp_run_points.py /home/joel/sim/imis/ SNOWPACK
+	python tmapp_run_points_sparse.py /home/joel/sim/barandunPaper/sim/ g9 'FSM' '1D'
 
 
 ARGS:
-	wd: workdir
-	model= SNOWPACK or GEOTOP
-	interp:
+	wd
+    simdir 
+	model= SNOWPACK or GEOTOP or FSM
+	interp:1D or 3D
 Todo:
 
 
@@ -74,8 +75,9 @@ def main(wd, simdir, model="SNOWPACK", interp='1D'):
     if not os.path.exists(home + "/forcing"):
         os.makedirs(home + "/forcing")
 
+
     # make out path for results
-    out = home + "/out/"
+    out = home + "/out/" + model
     if not os.path.exists(out):
         os.makedirs(out)
 
@@ -162,7 +164,8 @@ def main(wd, simdir, model="SNOWPACK", interp='1D'):
                 config['main']['startDate'],
                 config['main']['endDate'],
                 windCor,
-                config['forcing']['dataset']
+                config['forcing']['dataset'],
+                config['toposcale']['plapse']
 
             ]
 
@@ -181,7 +184,7 @@ def main(wd, simdir, model="SNOWPACK", interp='1D'):
                 '1'
 
             ]
-
+        logging.info("Run tscale")
         subprocess.check_output(cmd)
 
         # report sucess
@@ -196,6 +199,57 @@ def main(wd, simdir, model="SNOWPACK", interp='1D'):
         # list of toposcale generated forcing files with full path
         files = glob.glob(home + "/forcing/*.csv")
         print(files)
+
+
+        # ===============================================================================
+        #   Prepare FSM (SSM) meteo file
+        # ===============================================================================
+        if model == "FSM":
+            logging.info("Convert met to FSM format...")
+            # make geotop met files
+            for file in files:
+                file = os.path.basename(file)  # remove path
+                cmd = ["Rscript", "./rsrc/met2fsm.R", home + "/forcing/" + file] # has to write to forcing so setupSim can work
+                subprocess.check_output(cmd)
+
+                for i in range(0,32):
+                    nconfig=str(i)
+                # write namelist
+                    nlst = open(home+"nlst_tmapp.txt","w") 
+
+                    str1="! namelists for running FSM with the Col de Porte example"
+                    str2="\n&config"
+                    str18="\n  nconfig="+nconfig
+                    str3="\n/"
+                    str4="\n&drive"
+                    str5="\n  met_file ='"+home+"/forcing/"+file+"_fsm.txt'"
+                    str6="\n  zT = 1.5"
+                    str7="\n  zvar = .FALSE."
+                    str8="\n/"
+                    str9="\n&params"
+                    str10="\n/"
+                    str11="\n&initial"
+                    str12="\n  Tsoil = 282.98 284.17 284.70 284.70"
+                    str13="\n/"
+                    str14="\n&outputs"
+                    str15="\n  out_file = '"+home+"/out/"+model+"/"+file+nconfig+"out.txt'"
+                    str16="\n  Nave=4"
+                    str17="\n/\n"
+
+                    logging.info(str15)
+                    logging.info(str5)
+                    L = [str1, str2, str18, str3, str4, str5, str6, str7, str8, str9, str10, str11,str12,str13,str14,str15,str16,str17] 
+                    nlst.writelines(L)
+                    nlst.close() 
+
+                    logging.info(str15)
+                    # run model
+                    fsm="/home/joel/src/tmapp2/fsm/FSM"
+                    cmd=fsm+ " < " +home+"nlst_tmapp.txt"
+                    logging.info(cmd)
+                    os.system(cmd)
+
+
         # ===============================================================================
         #	Prepare GEOTOP meteo file
         # ===============================================================================

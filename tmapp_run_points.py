@@ -163,7 +163,8 @@ def main(wd, model="SNOWPACK", interp='1D'):
                         config['main']['startDate'],
                         config['main']['endDate'],
                         windCor,
-                        config['forcing']['dataset']
+                        config['forcing']['dataset'],
+                        config['toposcale']['plapse']
                     ]
 
                 # logging.info( "Run TopoSCALE points reanalysis")

@@ -252,7 +252,8 @@ def main(wd, simdir, model="GEOTOP"):
                     startTime,
                     endTime,
                     windCor,
-                    config['forcing']['dataset']
+                    config['forcing']['dataset'],
+                    config['toposcale']['plapse']
                 ]
 
             subprocess.check_output(cmd)
@@ -278,7 +279,8 @@ def main(wd, simdir, model="GEOTOP"):
                     startTime,
                     endTime,
                     windCor,
-                    basinID
+                    basinID,
+                    config['toposcale']['plapse']
                 ]
 
             subprocess.check_output(cmd)
@@ -304,7 +306,8 @@ def main(wd, simdir, model="GEOTOP"):
                     startTime,
                     endTime,
                     windCor,
-                    basinID
+                    basinID,
+                    config['toposcale']['plapse']
                 ]
 
             subprocess.check_output(cmd)
