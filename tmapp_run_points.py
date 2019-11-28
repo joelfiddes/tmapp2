@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-"""tmapp_run.py
+"""tmapp_run_points.py
 
 
 Example:
 
-	joel@joel-ThinkPad-T440p:~/src/tmapp2$ python tmapp_run_points.py /home/joel/sim/imis/ SNOWPACK
+	joel@joel-ThinkPad-T440p:~/src/tmapp2$ python tmapp_run_points.py /home/joel/sim/imis/ SNOWPACK 1D
 
 
 ARGS:
