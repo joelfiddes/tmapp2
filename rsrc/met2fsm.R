@@ -41,4 +41,9 @@ Ps<- round(dat$P, 1)
 #Prec <- round(dat$PINT, 3)
 
 fmet<- data.frame(year,month,day, hour, SW, LW, Sf, Rf, TA, RH, Ua, Ps)
-write.table(fmet, paste0(file,"_fsm.txt"),row.names=FALSE, quote=FALSE, col.names=FALSE, sep='\t')
+
+a = unlist(strsplit(file, "[.]"))[1]
+id =unlist(strsplit(a, "meteoc"))[2]
+idpad =formatC(as.numeric(id), width=3, flag='0')
+path= unlist(strsplit(a, "meteoc"))[1]
+write.table(fmet, paste0(path,"/fsm",idpad,".txt"),row.names=FALSE, quote=FALSE, col.names=FALSE, sep='\t')

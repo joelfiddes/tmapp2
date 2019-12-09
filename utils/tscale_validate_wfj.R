@@ -169,7 +169,7 @@ sum(imis_daily$PSUM, na.rm = T)
 
 
 
-plot((imis_daily$HS) , main = paste(imisID, "PSUM rmse="), xlab = "time", ylab = "cumsum mm", type = 'l')
+plot((imis_daily$HS) , main = paste(imisID, "HS rmse="), xlab = "time", ylab = "cm", type = 'l')
 lines( (simout$HS_mod), col = 'red')
 legend('bottomright', c('WFJ OBS', 'MODEL'), col=c('black', 'red'), lty=1) 
 

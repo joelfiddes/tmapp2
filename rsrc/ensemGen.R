@@ -44,10 +44,10 @@ if (sampling=="random"){
 
 	#alpha=lognormDraws(N,0.2,0.01)	# SoilAlbVisDry	
 	# henerate multiplicative perturbation factors for ensembleGen	
-	pbias=lognormDraws(N,1,0.7)
-	tbias=normDraws(N,1,0.01) # this is for K only, we convert C to K then multiply bias then K to C (roughly +/- 4 degrees)
-	swbias=normDraws(N,1,0.2)	
-	lwbias=normDraws(N,1,0.1)
+	pbias=lognormDraws(N,0.8,1)
+	tbias=normDraws(N,1.01,0.01) # this is for K only, we convert C to K then multiply bias then K to C (roughly +/- 4 degrees)
+	swbias=normDraws(N,1.2,0.2)	
+	lwbias=normDraws(N,1.2,0.2)
 
 	# uncorrelated
 	df=data.frame(pbias,tbias,swbias,lwbias)
@@ -92,7 +92,7 @@ if (sampling=="random"){
 	stopifnot( eigen( covmat )$values > 0 )
 
 	# empirical = true gives exact correlations in result eg https://stats.stackexchange.com/questions/82261/generating-correlated-distributions-with-a-certain-mean-and-standard-deviation
-	res = mvrnorm(n=100, m=mean_vec, Sigma=covmat, empirical = TRUE)
+	res = mvrnorm(n=N, m=mean_vec, Sigma=covmat, empirical = TRUE)
 
 	#lognorm transform on P
 	plogN = exp(res[,2])

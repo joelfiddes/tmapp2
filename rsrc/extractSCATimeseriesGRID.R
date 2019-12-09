@@ -1,7 +1,7 @@
 # ==================================================================== SETUP
 # ==================================================================== INFO
 # extract timeseries of fSCA at coarse grid level
-
+ # update Nov 2019 to handle no crop of scene
 # DEPENDENCY
 require(raster)
 # require(MODIStsp)
@@ -19,21 +19,25 @@ sca_wd = args[2]
 # tempsubset = year = substr(list.files(pattern='MOD*'),13,16) doy =
 # substr(list.files(pattern='MOD*'),18,20)
 
-sink(paste0(simdir, "/modisprocess.log"), append = TRUE)
+#sink(paste0(simdir, "/modisprocess.log"), append = TRUE)
 
 cloudThreshold <- 100  # max cloud % to be considered 'cloudfree'
 
 # shpname = '/home/joel/sim/topomap_points/spatial/points.shp'
 dir.create(paste0(simdir,"/modis"))
 # landform
-lf = raster(paste0(simdir,"/landform.tif"))
+
+if (file.exists(paste0(simdir,"/landform.tif"))){
+    lf = raster(paste0(simdir,"/landform.tif"))
+    }
+
 # Set the input paths to raster and shape file
 setwd(sca_wd)
 
-
-if (length(list.files(pattern = "MOD*")) > 0) {
-    print(paste0(length(list.files(pattern = "MOD*")), " MOD files found"))
-    MOD = stack(list.files(pattern = "MOD*"))
+mypattern="Snow_Cover"
+if (length(list.files(pattern = mypattern, recursive=T)) > 0) {
+    print(paste0(length(list.files(pattern = mypattern, recursive=T)), " MOD files found"))
+    MOD = stack(list.files(pattern = mypattern,  recursive=T))
     print("MOD stack complete")
     MOD.names = names(MOD)  # explicitly capture names to avoid loss
     # MOD [MOD >100]<-NA# filter non-ndsi values - this was hanging for some unknown
@@ -42,7 +46,14 @@ if (length(list.files(pattern = "MOD*")) > 0) {
     for (i in 1:dim(MOD)[3]) {
         MOD[[i]][MOD[[i]] > 100] <- NA
         print(MOD[[i]])
+
+        if (file.exists(paste0(simdir,"/landform.tif"))){
         rst = crop(MOD[[i]], lf)
+        }
+
+         if (!file.exists(paste0(simdir,"/landform.tif"))){
+        rst=MOD[[i]]
+        }
         writeRaster(rst, paste0(simdir,"/modis/", names(MOD[[i]] ) ,".tif") ,overwrite=T)
         print(i)
     }
@@ -52,10 +63,10 @@ if (length(list.files(pattern = "MOD*")) > 0) {
     # MOD_MEAN <- cellStats(MOD, 'mean') #fSCA for whole domain
 }
 
-
-if (length(list.files(pattern = "MYD*")) > 0) {
-    print(paste0(length(list.files(pattern = "MYD*")), " MYD files found"))
-    MYD = stack(list.files(pattern = "MYD*"))
+mypattern = "MYD*"
+if (length(list.files(pattern =mypattern, recursive=T)) > 0) {
+    print(paste0(length(list.files(pattern =mypattern, recursive=T)), " MYD files found"))
+    MYD = stack(list.files(pattern =mypattern, recursive=T))
     print("MYD stack complete")
     MYD.names = names(MYD)
     # MYD [MYD >100]<-NA # filter non-ndsi values - this was hanging for some unknown
@@ -64,7 +75,14 @@ if (length(list.files(pattern = "MYD*")) > 0) {
     for (i in 1:dim(MYD)[3]) {
         MYD[[i]][MYD[[i]] > 100] <- NA
         print(i)
+        
+        if (file.exists(paste0(simdir,"/landform.tif")){
         rst = crop(MYD[[i]], lf)
+        }
+        
+         if (!file.exists(paste0(simdir,"/landform.tif")){
+        rst=MYD[[i]]
+        }
         writeRaster(rst, paste0(simdir,"/modis/", names(MYD[[i]] ) ,".tif") ,overwrite=T)
     }
 

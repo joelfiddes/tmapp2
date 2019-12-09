@@ -36,7 +36,7 @@ https://docs.google.com/spreadsheets/d/1cDXIQRZK0_gT1BKH9TqVX7dWb68o0wwGaJaTCi7_
 |  toposcale | svfSectors | 8 |  |  |  |  | sectors for svf algo |
 |  toposcale | svfMaxDist | 3000 |  | m |  |  | max search dist for svf algo (m) |
 |  toposcale | windCor | FALSE |  |  |  |  |  |
-|  toposcale | mode | basins |  |  |  |  |  |
+|  toposcale | mode | basins | "basins" "1d" "3d" |  |  |  |  |
 |  toposcale | plapse | FALSE | TRUE FALSE |  |  |  | use Liston scaling (T/F) Ok in moderate topo eg Alps, often nonsense in extreme topo such as HMA |
 |   |  |  |  |  |  |  |  |
 |   | [toposub] |  |  |  |  |  |  |
