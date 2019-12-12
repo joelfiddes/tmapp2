@@ -653,16 +653,17 @@ def main(wd, simdir, model):
 
 
                     ipad=   '%03d' % (int(i),)
-                    fname1 = home + "/ensemble/ensemble" + str(ipad) + "/"
+                    successFile = home + "/ensemble/ensemble" + str(ipad) + "/.runsucces"
 
-                    if not os.path.isdir(fname1):  # NOT ROBUST
+                    if not os.path.isfile(successFile):  # NOT ROBUST
                         logging.info("----- START ENSEMBLE RUN " + str(i) + " -----")
 
                         # run ensemble directory create and perturb code on ensemble i
-                        
                         tmapp_da_FSM.main(wd, home, i)
 
-                    
+                        # write success file if ensemble completes
+                        f= open(successFile,"w+")
+                        f.close() 
 
 
                 f = open(home + "/SUCCESS_ENSEMBLE", "w")
