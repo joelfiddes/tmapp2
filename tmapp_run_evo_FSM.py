@@ -653,7 +653,7 @@ def main(wd, simdir, model):
 
 
                     ipad=   '%03d' % (int(i),)
-                    successFile = home + "/ensemble/ensemble" + str(ipad) + "/.runsucces"
+                    successFile = home + "/ensemble/ensemble" + str(ipad) + "/_RUN_SUCCESS"
 
                     if not os.path.isfile(successFile):  # NOT ROBUST
                         logging.info("----- START ENSEMBLE RUN " + str(i) + " -----")

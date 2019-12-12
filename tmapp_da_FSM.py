@@ -60,10 +60,11 @@ def main(wd, home, ensembleN):
 	logging.info("Config settings used")
 	logging.info(config)
 
-	# make new dierectory
+	# make new dierectory if does not exist
 	dst = config['main']['wd']
-	cmd = "mkdir  %s"%(dst)
-	os.system(cmd)
+	if not os.path.isdir(dst):
+		cmd = "mkdir  %s"%(dst)
+		os.system(cmd)
 
 	# copy sim dirs only
 	src = home+"/forcing/fsm*.txt"
@@ -167,18 +168,15 @@ def main(wd, home, ensembleN):
 			str16="\n  Nave=" +str(tout)
 			str17="\n/\n"
 
-			logging.info(str15)
-			logging.info(str5)
 			L = [str1, str2, str18, str3, str4, str5, str6, str7, str8, str9, str10, str11,str12,str13,str14,str15,str16,str17] 
 			nlst.writelines(L)
 			nlst.close() 
 
-			logging.info(str15)
 			# run model
 			os.chdir(wd)
 			fsm="./FSM"
 			cmd=fsm+ " < " +home+"/nlst_tmapp.txt"
-			logging.info(cmd)
+
 			os.system(cmd)
 			os.chdir(config['main']['srcdir'])
 
