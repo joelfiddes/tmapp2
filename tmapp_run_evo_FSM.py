@@ -41,6 +41,7 @@ from tqdm import tqdm
 import numpy as np
 import pickle
 import pandas as pd
+import tmapp_da_FSM
 
 # add to config
 svf_sectors = str(8)  # sectors to search
@@ -650,11 +651,16 @@ def main(wd, simdir, model):
                 # loop through ensemble members
                 for i in tqdm(range(0, int(config['ensemble']['members']))):
 
-                    logging.info("----- START ENSEMBLE RUN " + str(i) + " -----")
 
-                    # run ensemble directory create and perturb code on ensemble i
-                    import tmapp_da_FSM
-                    tmapp_da_FSM.main(wd, home, i)
+                    ipad=   '%03d' % (int(i),)
+                    fname1 = home + "/ensemble/ensemble" + str(ipad) + "/"
+
+                    if not os.path.isdir(fname1):  # NOT ROBUST
+                        logging.info("----- START ENSEMBLE RUN " + str(i) + " -----")
+
+                        # run ensemble directory create and perturb code on ensemble i
+                        
+                        tmapp_da_FSM.main(wd, home, i)
 
                     
 
