@@ -66,6 +66,7 @@ def main(wd, home, ensembleN):
 		cmd = "mkdir  %s"%(dst)
 		os.system(cmd)
 
+	# remove all files in case any outfiles exist
 	# copy sim dirs only
 	src = home+"/forcing/fsm*.txt"
 	dst = config['main']['wd']
@@ -73,7 +74,7 @@ def main(wd, home, ensembleN):
 	os.system(cmd)
 
 
-	tsfiles = glob.glob(dst + "/*.txt")
+	tsfiles = glob.glob(dst + "/fsm*.txt")
 	timestep = int(config["forcing"]["step"]) *60*60 # forcing in seconds 
 	logging.info("Perturb and run ensemble...")
 	tout=24/(timestep/60/60)
@@ -118,7 +119,7 @@ def main(wd, home, ensembleN):
 			df.iloc[:,6] = df.iloc[:,6] * config['da']['pscale'] #multiplicative
 			df.iloc[:,7] = df.iloc[:,7] * config['da']['pscale'] #multiplicative
 			df.iloc[:,8] = df.iloc[:,8]*config['da']['tscale']
-			logging.info(config['da']['pscale'])
+
 
 		if config["da"]["PPARS"] == "PTS":
 
@@ -137,7 +138,7 @@ def main(wd, home, ensembleN):
 
 		df.to_csv( config["main"]["wd"]+myfile,sep='\t', index = False, header=False)
 		
-        
+
 		for n in range(0,1):
 			nconfig=str(n)
 			nconfig2='%02d' % (n,)
