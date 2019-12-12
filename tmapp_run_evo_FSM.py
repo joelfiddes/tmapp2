@@ -489,7 +489,7 @@ def main(wd, simdir, model):
         fname1 = home + "/SUCCESS_SIM"
         if os.path.isfile(fname1) == False:  # NOT ROBUST
             print('FSM simulation')
-            fsm="/home/joel/src/tmapp2/fsm/FSM"
+            fsm=config['main']['FSMPATH'] + "/FSM"
             cmd="cp " +fsm+ " " +wd
             os.system(cmd)
 
@@ -509,7 +509,7 @@ def main(wd, simdir, model):
                 fileID ='%03d' % (int(a.split('meteoc')[1]), )
                 fsmFilename="fsm"+ str(fileID)+".txt"
 
-                for i in range(0,32):
+                for i in range(0,1):
                     nconfig=str(i)
                     nconfig2='%02d' % (i,) # fixed width for filename sorting
 

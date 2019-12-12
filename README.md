@@ -9,6 +9,7 @@ https://docs.google.com/spreadsheets/d/1cDXIQRZK0_gT1BKH9TqVX7dWb68o0wwGaJaTCi7_
 |  main | wd | /home/caduff/sim/tsub_basin8big/ |  |  | ALL |  |  |
 |  main | srcdir | /home/caduff/src/tmapp2/ |  |  | ALL |  |  |
 |  main | tscale_root | /home/caduff/src/ |  |  | ALL |  |  |
+|  main | FSMPATH | /home/caduff/src/fsm/ |  |  | ALL |  |location of executable "FSM"  |
 |  main | runmode | basins | "basins" "grid" "points" "points_sparse" |  | ALL |  |  |
 |  main | startDate | 2013-09-01 |  |  | ALL |  |  |
 |  main | endDate | 2014-09-01 |  |  | ALL |  |  |
