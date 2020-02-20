@@ -14,8 +14,9 @@ endda <- 	args[6]
 
 #nens= nens*32
  
- # home='/home/joel/sim/barandunPaper/amu_grid//sim/g466'
- # nens = 100 #100#50
+ # RUN: gridDA_FSM.R '/home/joel/sim/barandunPaper/amu_basin/sim/g1' 1000 "2013-09-01" "2014-09-01" "2013-09-01" "2014-09-01"
+ # home='/home/joel/sim/barandunPaper/amu_basin/sim/g1' 
+ # nens = 1000 #100#50
  # startSim="2013-09-01"
  # endSim="2014-09-01"
  # startda="2013-09-01"
@@ -43,7 +44,10 @@ lp= read.csv(paste0(home, "/listpoints.txt"))
 # area of domain in km2
 aod = cellStats(area(landform), sum) 
 
+# read in basin for masking
+basin=shapefile("/home/joel/sim/tmapp_val/basins/sim3/basins/basins.shp")
 
+basin = basin[1,]
 
 
 #=================================================================
@@ -152,18 +156,62 @@ countNa_cloudfree <-  sum(  getValues(is.na(lf_agg))  )/ncell(lf_agg)
 
 # loop through obs compute mean fsca for basin area
 
+# nNa=c()
+# obs=c()
+# for (myindex in obs_da_dates_index[1]){
+# print(myindex)
+
+# rcrop = crop(rstack[[myindex]], lf_resamp)
+# rmask=mask(rcrop,lf_resamp)
+# newobs <- cellStats(rmask, 'mean') /100    
+# countNa <-  sum(  getValues(is.na(rmask))  )/ncell(rmask) 
+# obs=c(obs,newobs)
+# nNa = c(nNa, countNa)
+# }
+
+
+
 nNa=c()
 obs=c()
 for (myindex in obs_da_dates_index){
 print(myindex)
+rcrop = crop(rstack[[myindex]], trim(lf_resamp),  snap='out')
 
-rcrop = crop(rstack[[myindex]], lf_resamp)
-rmask=mask(rcrop,lf_resamp)
-newobs <- cellStats(rmask, 'mean') /100    
-countNa <-  sum(  getValues(is.na(rmask))  )/ncell(rmask) 
+tryCatch(
+    expr = {
+        rmask =trim(rasterize(basin, rcrop, mask=TRUE) )
+        newobs <- cellStats(rmask, 'mean', na.rm=T) /100  
+        
+    },
+    error = function(e){ 
+        print("All NAs found , skipping this ")
+
+    },
+    warning = function(w){
+        # (Optional)
+        # Do this if an warning is caught...
+    },
+    finally = {
+        countNa <-  sum(  getValues(is.na(rmask))  )/ncell(rmask) 
+        #newobs <-0
 obs=c(obs,newobs)
 nNa = c(nNa, countNa)
+next
+    }
+)
+
+# rmask <- trim(rasterize(basin, rcrop, mask=TRUE) ) # fast
+# newobs <- cellStats(rmask, 'mean', na.rm=T) /100    
+# countNa <-  sum(  getValues(is.na(rmask))  )/ncell(rmask) 
+# obs=c(obs,newobs)
+# nNa = c(nNa, countNa)
 }
+
+
+         #   rst1=crop(raster(predictors[p]) ,basin[i,], snap='out')
+         
+          #  rst <- trim(rasterize(basin[i,], rst1, mask=TRUE))  # fast
+
 
 # remove percentage of scene due to border, in case of no cloud free scenes then none will be avvailbel for DA anyway as wont pass cloudthreshold test
 nNa2 = nNa-min(nNa)   
@@ -337,7 +385,7 @@ high.pri = c(high.pri, med$y)
 date = seq(as.Date(startda), as.Date(endda),by='day')
 date=da_dates
 #  xlim=c(date[182],date[355])
-plot(date,high.pri, col=NULL, type='l', main=paste('fSCA'), ylab="fSCA (0-1)",xlab='', ylim=c(0,1))
+plot(date,high.pri, col=NULL, type='l', main=paste('(A) fSCA'), ylab="fSCA (0-1)",xlab='', ylim=c(0,1))
 #lines(low.pri, col='red')
 lines(date,med.pri, col='red', lwd=3)
 #lines(high.post, col='blue')
@@ -505,7 +553,7 @@ date = seq(as.Date(startda), as.Date(endda)-1,by='day')
 cfact=1
 #,xlim=as.Date(c(date[100],date[355]))
 
-plot(date,  high.pri*cfact, col=NULL, type='l', main=paste('SWE'), ylab="Total domain SWE (km3)" , xlab="")
+plot(date,  high.pri*cfact, col=NULL, type='l', main=paste('(B) SWE'), ylab="Mean basin SWE (mm)" , xlab="")
 #lines(low.pri*cfact, col='red')
 lines(date, med.pri*cfact, col='red', lwd=3)
 #lines(high.post*cfact, col='blue')

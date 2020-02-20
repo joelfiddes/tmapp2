@@ -42,6 +42,8 @@ import numpy as np
 import pickle
 import pandas as pd
 import tmapp_da_FSM
+import netCDF4 as nc
+
 
 # add to config
 svf_sectors = str(8)  # sectors to search
@@ -70,6 +72,22 @@ def main(wd, simdir, model):
         os.remove(logfile)
     logging.basicConfig(level=logging.DEBUG, filename=logfile, filemode="a+",
                         format="%(asctime)-15s %(levelname)-8s %(message)s")
+
+    logging.info("Run script = " + os.path.basename(__file__))
+    # ===============================================================================
+    #  Time stuff
+    # ===============================================================================
+    # time stuff
+    f = nc.Dataset(wd + "/forcing/SURF.nc")
+    nctime = f.variables['time']
+    dtime = pd.to_datetime(nc.num2date(nctime[:],nctime.units, calendar="standard"))
+
+    # compute timestep before we cut timeseries
+    a=dtime[2]-dtime[1]
+    step = a.seconds
+    stephr=step/(60*60)
+    # extract timestep
+
 
     # ===============================================================================
     #	Check ele rules
@@ -495,8 +513,8 @@ def main(wd, simdir, model):
 
             # list of toposcale generated forcing files with full path
             tsfiles = glob.glob(home + "/forcing/*.csv")
-            timestep = int(config["forcing"]["step"]) *60*60 # forcing in seconds 
-            tout=24/(timestep/60/60)
+            #timestep = int(config["forcing"]["step"]) *60*60 # forcing in seconds 
+            tout=24/stephr #Nave   24  Number of timesteps in averaged outputs / eg 24/3 is 8 *3h timesteps to make full day
             logging.info("Convert met to FSM format...")
             # make fsm met files
             for file in tqdm(tsfiles):
@@ -659,7 +677,7 @@ def main(wd, simdir, model):
                         logging.info("----- START ENSEMBLE RUN " + str(i) + " -----")
 
                         # run ensemble directory create and perturb code on ensemble i
-                        tmapp_da_FSM.main(wd, home, i)
+                        tmapp_da_FSM.main(wd, home, i, stephr)
 
                         # write success file if ensemble completes
                         f= open(successFile,"w+")

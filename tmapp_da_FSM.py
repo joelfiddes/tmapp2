@@ -14,7 +14,7 @@ from tqdm import tqdm
 # approx 38 s for 100 samples and 32 model types (320 sims) for 1 sim year
 #
 
-def main(wd, home, ensembleN):
+def main(wd, home, ensembleN, stephr):
 
 	config = ConfigObj(wd+"/config.ini")
 	root = home+"/ensemble"
@@ -58,7 +58,7 @@ def main(wd, home, ensembleN):
 	config.write()
 
 	logging.info("Config settings used")
-	logging.info(config)
+	#logging.info(config) # too verbose
 
 	# make new dierectory if does not exist
 	dst = config['main']['wd']
@@ -66,7 +66,7 @@ def main(wd, home, ensembleN):
 		cmd = "mkdir  %s"%(dst)
 		os.system(cmd)
 
-	# remove all files in case any outfiles exist
+
 	# copy sim dirs only
 	src = home+"/forcing/fsm*.txt"
 	dst = config['main']['wd']
@@ -74,10 +74,9 @@ def main(wd, home, ensembleN):
 	os.system(cmd)
 
 
-	tsfiles = glob.glob(dst + "/fsm*.txt")
-	timestep = int(config["forcing"]["step"]) *60*60 # forcing in seconds 
+	tsfiles = glob.glob(dst + "/fsm*.txt") # only looks for forcing files incase any outfiles there upon a restart (outfiles will crash tmapp due to index error in cols)
 	logging.info("Perturb and run ensemble...")
-	tout=24/(timestep/60/60)
+	tout=24/stephr
 
 	
 	for myfile in tqdm(tsfiles):
@@ -192,4 +191,5 @@ if __name__ == '__main__':
 	wd      = sys.argv[1]
 	home      = sys.argv[2]
 	ensembleN =sys.argv[3]
+	stephr = sys.argv[4]
 	main(config)

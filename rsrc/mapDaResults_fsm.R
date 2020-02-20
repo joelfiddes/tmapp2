@@ -57,4 +57,4 @@ lf=raster(paste0(home,"/landform.tif"))
 l2 =data.frame(cbind((1:dim(ensembRes2)[2]), y[day,] ))
 
 rst = subs(lf,l2 ,by=1, which=2)
-writeRaster(rst, paste0(home, param,"_da.tif"))
+writeRaster(rst, paste0(home, "/",param,"_da.tif"))

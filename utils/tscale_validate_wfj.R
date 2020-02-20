@@ -90,21 +90,30 @@ if (model == 'GEOTOP') {
 
 names(simdat_daily) <- c('Date', 'Date2', 'PINT', 'VW', 'DW', 'RH', 'TA', 'ISWR', 'ILWR')
 
-}
+simdat_daily$TA <- simdat_daily$TA+273.15
+simdat_daily$RH <- simdat_daily$RH/100
 
-if (model == 'FSM') {
-
-inDir=paste0(wd,"/out/FSM/")
-fsm = read.csv(paste0(inDir,"/meteoc1.csv",13,"out.txt"), header=F,sep='')
-
+surface = read.csv(paste0(wd,"/c00001/out/surface.txt"))
+simout= surface
+simout$HS_mod  <- simout$snow_depth.mm./10
 
 
-    #mycol=cols[i]
-    fsm_hs=c(fsm$V6)
-    fsm_dates=as.Date(paste(fsm$V1,fsm$V2,fsm$V3 ,sep='-'))
-simdat_daily$hs
 
 }
+
+# if (model == 'FSM') {
+
+# inDir=paste0(wd,"/out/FSM/")
+# fsm = read.csv(paste0(inDir,"/meteoc1.csv",13,"out.txt"), header=F,sep='')
+
+
+
+#     #mycol=cols[i]
+#     fsm_hs=c(fsm$V6)
+#     fsm_dates=as.Date(paste(fsm$V1,fsm$V2,fsm$V3 ,sep='-'))
+    
+
+# }
 
 if (model == 'SNOWPACK') {
     # parse snowpack smets
@@ -125,6 +134,8 @@ names(simout) <- fields
 
 }
 
+if (model != 'FSM') {
+
     if (length(imis_daily$TA) != length(simdat_daily$TA)) {
 
         shorterOne = c(length(imis_daily$TA), length(simdat_daily$TA))[which.min(c(length(imis_daily$TA), length(simdat_daily$TA)))]
@@ -138,15 +149,16 @@ names(simout) <- fields
     imis_daily$PSUM[imis_daily$PSUM < 0] <- NA
  imis_daily$PSUM[imis_daily$HS< 0] <- NA
 
-pdf(paste0(wd,"/valplot.pdf"))
+
+pdf(paste0(wd,"/valplot_",model,".pdf"), width=5, height=10)
 par(mfrow = c(4, 2), oma = c(0, 0, 2, 0))
 # plot results
-myrmse = round(rmse(imis_daily$TA-273.15, simdat_daily$TA), 2)
-plot(imis_daily$TA-273.15, simdat_daily$TA, main = paste(imisID, "TA rmse=", myrmse), xlab = "WFJ OBS", ylab = "MODEL")
+myrmse = round(rmse(imis_daily$TA, simdat_daily$TA), 2)
+plot(imis_daily$TA, simdat_daily$TA, main = paste(imisID, "TA rmse=", myrmse), xlab = "WFJ OBS", ylab = "MODEL")
 abline(0, 1)
 
-myrmse = round(rmse(imis_daily$RH*100, simdat_daily$RH), 2)
-plot(imis_daily$RH*100, simdat_daily$RH, main = paste(imisID, "RH rmse=", myrmse), xlab = "WFJ OBS", ylab = "MODEL")
+myrmse = round(rmse(imis_daily$RH, simdat_daily$RH), 2)
+plot(imis_daily$RH, simdat_daily$RH, main = paste(imisID, "RH rmse=", myrmse), xlab = "WFJ OBS", ylab = "MODEL")
 abline(0, 1)
 
 myrmse = round(rmse(imis_daily$VW, simdat_daily$VW), 2)
@@ -162,8 +174,8 @@ plot(imis_daily$ISWR, simdat_daily$ISWR, main = paste(imisID, "ISWR rmse=", myrm
 abline(0, 1)
 
 myrmse = round(rmse(imis_daily$PSUM, simdat_daily$PINT*24), 2)
-plot(cumsum(imis_daily$PSUM)  , main = paste(imisID, "PSUM rmse=", myrmse), xlab = "time", ylab = "cumsum mm", type = 'l')
-lines(cumsum( simdat_daily$PINT*24), col = 'red')
+#plot(cumsum(imis_daily$PSUM)  , main = paste(imisID, "PSUM rmse=", myrmse), xlab = "time", ylab = "cumsum mm", type = 'l')
+#lines(cumsum( simdat_daily$PINT*24), col = 'red')
 sum(simdat_daily$PINT*24, na.rm = T) 
 sum(imis_daily$PSUM, na.rm = T)
 
@@ -175,6 +187,69 @@ legend('bottomright', c('WFJ OBS', 'MODEL'), col=c('black', 'red'), lty=1)
 
 dev.off()
 
+}
+if (model == 'FSM') {
+
+pdf(paste0(wd,"/valplot_",model,".pdf"), width=10, height=10)
+par(mfrow = c(3, 2), oma = c(0, 0, 2, 0))
+
+plot((imis_daily$HS) , main = paste(imisID, "HS rmse="), xlab = "time", ylab = "cm", type = 'l')
+for (i in 30){
+i = formatC(i, width=2, flag="0")    
+inDir=paste0(wd,"/out/FSM/")
+fsm = read.csv(paste0(wd,"/out/FSM/fsm001.txt_",i,".txt"), header=F,sep='')
+
+# HS
+fsm_hs=c(fsm$V6)
+fsm_dates=as.Date(paste(fsm$V1,fsm$V2,fsm$V3 ,sep='-'))
+lines( (fsm_hs*100), col = 'red')
+legend('bottomright', c('WFJ OBS', 'MODEL'), col=c('black', 'red'), lty=1) 
+}
+
+
+# SWE
+fsm_hs=c(fsm$V7)
+fsm_dates=as.Date(paste(fsm$V1,fsm$V2,fsm$V3 ,sep='-'))
+    
+    #     if (length(imis_daily$Date) != length(fsm_dates)) {
+
+    #     shorterOne = c(length(imis_daily$TA), length(fsm_dates))[which.min(c(length(imis_daily$TA), length(fsm_dates)))]
+    #     fsm_hs= fsm_hs[1 : shorterOne]
+    #     fsm_dates= fsm_dates[1 : shorterOne]
+    #     imis_daily = imis_daily[1 : shorterOne,]
+    # }
+
+#plot(imis_daily$Date,imis_daily$SWE_M , main = paste(imisID, "SWE"), xlab = "time", ylab = "cm", type = 'l',ylim=c(0,1000 ))
+#lines( fsm_dates, fsm_hs, col = 'red')
+
+
+# Soil T
+fsm_tsg=c(fsm$V9)
+fsm_dates=as.Date(paste(fsm$V1,fsm$V2,fsm$V3 ,sep='-'))
+    
+plot((imis_daily$TSG) , main = paste(imisID, "TSG rmse="), xlab = "time", ylab = "cm", type = 'l',ylim=c(253.15,293.15 ))
+lines( (fsm_tsg+273.15), col = 'red')
+
+# surface T
+fsm_tss=c(fsm$V8)
+fsm_dates=as.Date(paste(fsm$V1,fsm$V2,fsm$V3 ,sep='-'))
+    
+plot((imis_daily$TSS) , main = paste(imisID, "TSS rmse="), xlab = "time", ylab = "k", type = 'l', ylim=c(253.15,293.15 ))
+lines( (fsm_tss+273.15), col = 'red')
+
+legend('bottomright', c('WFJ OBS', 'MODEL'), col=c('black', 'red'), lty=1) 
+
+# surface T
+fsm_lys=c(fsm$V5)
+fsm_dates=as.Date(paste(fsm$V1,fsm$V2,fsm$V3 ,sep='-'))
+    
+plot((imis_daily$LYSI) , main = paste(imisID, "TSS rmse="), xlab = "time", ylab = "k", type = 'l', ylim=c(253.15,293.15 ))
+lines( (fsm_lys), col = 'red')
+
+legend('bottomright', c('WFJ OBS', 'MODEL'), col=c('black', 'red'), lty=1) 
+
+dev.off()
+}
 #plot(imis_daily$ISWR, type='l')
 #lines(simdat_daily$ISWR, col='red')
 

@@ -63,6 +63,7 @@ def main(wd, simdir, model="GEOTOP"):
     logging.basicConfig(level=logging.DEBUG, filename=logfile, filemode="a+",
                         format="%(asctime)-15s %(levelname)-8s %(message)s")
 
+    logging.info("Run script = " + os.path.basename(__file__))
     # ===============================================================================
     #	Check ele rules
     # ===============================================================================

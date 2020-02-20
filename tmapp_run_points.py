@@ -18,7 +18,7 @@ Todo:
 
 
 """
-
+from tqdm import tqdm
 import sys
 import os
 import subprocess
@@ -32,8 +32,8 @@ import time
 import pandas as pd
 from configobj import ConfigObj
 import re
-
-
+import netCDF4 as nc
+import numpy as np
 
 
 def main(wd, model="SNOWPACK", interp='1D'):
@@ -61,6 +61,7 @@ def main(wd, model="SNOWPACK", interp='1D'):
     logging.basicConfig(level=logging.DEBUG, filename=logfile, filemode="a+",
                         format="%(asctime)-15s %(levelname)-8s %(message)s")
 
+    logging.info("Run script =" + os.path.basename(__file__))
     # ===============================================================================
     #	Timer
     # ===============================================================================
@@ -101,6 +102,25 @@ def main(wd, model="SNOWPACK", interp='1D'):
 
     # if int(member) == 1:
     # =========================  start of memeber 1 only section   ==================
+
+
+    # ===============================================================================
+    #  Time stuff
+    # ===============================================================================
+    # time stuff
+    f = nc.Dataset(home + "/forcing/SURF.nc")
+    nctime = f.variables['time']
+    dtime = pd.to_datetime(nc.num2date(nctime[:],nctime.units, calendar="standard"))
+    starti = np.asscalar(np.where(dtime==start)[0]) # so can run on a single timestep
+    print(end)
+    endi = np.asscalar(np.where(dtime==end)[0]) 
+    year = dtime.year[0] 
+
+    # compute timestep before we cut timeseries
+    a=dtime[2]-dtime[1]
+    step = a.seconds
+    stephr=step/(60*60)
+    # extract timestep
 
     # ===============================================================================
     #	Compute svf
@@ -197,7 +217,7 @@ def main(wd, model="SNOWPACK", interp='1D'):
     # ===============================================================================
     #   Prepare FSM (SSM) meteo file
     # ===============================================================================
-    if model == "FSM":
+    if model == "FSM1":
         logging.info("Convert met to FSM format...")
         # make geotop met files
         for file in files:
@@ -243,7 +263,79 @@ def main(wd, model="SNOWPACK", interp='1D'):
                 os.system(cmd)
 
 
+    if model=='FSM':
 
+        # copy executable to wd so can specify relative paths in config 
+        # to avoid longname failure (63char limit)
+        fname1 = home + "/SUCCESS_SIM"
+        if os.path.isfile(fname1) == False:  # NOT ROBUST
+            print('FSM simulation')
+            fsm=config['main']['FSMPATH'] + "/FSM"
+            cmd="cp " +fsm+ " " +wd
+            os.system(cmd)
+
+            # list of toposcale generated forcing files with full path
+            tsfiles = glob.glob(home + "/forcing/*.csv")
+            #timestep = int(config["forcing"]["step"]) *60*60 # forcing in seconds 
+
+
+
+
+            tout=24/(step/60/60)
+            logging.info("Convert met to FSM format...")
+            # make fsm met files
+            for file in tqdm(tsfiles):
+                file = os.path.basename(file)  # remove path
+                cmd = ["Rscript", "./rsrc/met2fsm.R", home + "/forcing/" + file] # has to write to forcing so setupSim can work
+                subprocess.check_output(cmd)
+
+                # get id of file
+                a  = file.split('.')[0]                                                                                                                
+                fileID ='%03d' % (int(a.split('meteoc')[1]), )
+                fsmFilename="fsm"+ str(fileID)+".txt"
+
+                for i in range(0,31):
+                    nconfig=str(i)
+                    nconfig2='%02d' % (i,) # fixed width for filename sorting
+
+                # write namelist
+                    nlst = open(home+"/nlst_tmapp.txt","w") 
+
+                    str1="! namelists for running FSM "
+                    str2="\n&config"
+                    str18="\n  nconfig="+nconfig
+                    str3="\n/"
+                    str4="\n&drive"
+                    str5="\n  met_file ='./forcing/"+fsmFilename+"'"
+                    str6="\n  zT = 1.5"
+                    str7="\n  zvar = .FALSE."
+                    str8="\n/"
+                    str9="\n&params"
+                    str10="\n/"
+                    str11="\n&initial"
+                    str12="\n  Tsoil = 282.98 284.17 284.70 284.70"
+                    str13="\n/"
+                    str14="\n&outputs"
+                    str15="\n  out_file ='./out/"+model+"/"+fsmFilename+"_"+nconfig2+".txt'"
+                    str16="\n  Nave=" +str(tout)
+                    str17="\n/\n"
+
+
+                    L = [str1, str2, str18, str3, str4, str5, str6, str7, str8, str9, str10, str11,str12,str13,str14,str15,str16,str17] 
+                    nlst.writelines(L)
+                    nlst.close() 
+
+                    logging.info(str15)
+                    # run model
+                    os.chdir(wd)
+                    fsm="./FSM"
+                    cmd=fsm+ " < " +home+"/nlst_tmapp.txt"
+                    print(cmd)
+                    os.system(cmd)
+                    os.chdir(config['main']['srcdir'])
+            #f = open(home + "/SUCCESS_SIM", "w")
+        else:
+            logging.info("SIM already run  " + home)
 
     # ===============================================================================
     #	Prepare GEOTOP meteo file
