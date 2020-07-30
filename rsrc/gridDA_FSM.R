@@ -1,5 +1,6 @@
 # file origin PBSgrid2.R
 # dependency
+Sys.setlocale("LC_TIME", "C")
 
 source("./rsrc/PBS.R") 
 require(raster) 
@@ -11,22 +12,22 @@ startSim <- 	args[3]
 endSim <- 	args[4]
 startda <- 	args[5]
 endda <- 	args[6]
-
+BASIN=FALSE
 #nens= nens*32
  
  # RUN: gridDA_FSM.R '/home/joel/sim/barandunPaper/amu_basin/sim/g1' 1000 "2013-09-01" "2014-09-01" "2013-09-01" "2014-09-01"
- # home='/home/joel/sim/barandunPaper/amu_basin/sim/g1' 
+ # home='/home/joel/sim/tmapp_val/basins/sim3/sim/g5/' 
  # nens = 1000 #100#50
- # startSim="2013-09-01"
- # endSim="2014-09-01"
- # startda="2013-09-01"
- # endda="2014-09-01"
+#  startSim="2013-09-01"
+#  endSim="2014-09-01"
+#  startda="2013-09-01"
+#  endda="2014-09-01"
 
 # constants
 mode = "swe" # 'swe'
 sdThresh=13
 R=0.016
-DSTART =  240
+DSTART =  180
 DEND =  330
 doystart=60
 doyend =270
@@ -44,58 +45,60 @@ lp= read.csv(paste0(home, "/listpoints.txt"))
 # area of domain in km2
 aod = cellStats(area(landform), sum) 
 
+if (BASIN==TRUE){
 # read in basin for masking
 basin=shapefile("/home/joel/sim/tmapp_val/basins/sim3/basins/basins.shp")
+basin_index=unlist(strsplit(unlist(strsplit(home,"/"))[length(unlist(strsplit(home,"/")))], "g"))[2]
+basin = basin[as.numeric(basin_index),]
 
-basin = basin[1,]
-
+}
 
 #=================================================================
 # PREPARE OBS
 #=================================================================
 
-if (!file.exists(paste0(home,"/fsca_stack.tif"))){
+# if (!file.exists(paste0(home,"/fsca_stack.tif"))){
 
-# run this inline with main code
-# 
-    startY= "2014" #start of snowmelt season dd-mm
-    endY = "2014"   #end snowmelt season dd-mm
+# # run this inline with main code
+# # 
+#     startY= "2014" #start of snowmelt season dd-mm
+#     endY = "2014"   #end snowmelt season dd-mm
 
-    modisRepo="/home/joel/data/modis/barandun_2013/modis"
-    out_wd=home # '/home/joel/sim/barandunPaper/amu_basin/sim/g2/'
-    landform=raster(paste0(out_wd, "/landform.tif"))
-    setwd(modisRepo)
-    mypattern="Snow_Cover"
-    modfiles= list.files(pattern = mypattern, recursive=T)
-    mydate = c()
-    rast.list <- list()
-    i=1
-        for (modfile in modfiles) {  
-            filename= unlist(strsplit(modfile,'/'))[length(unlist(strsplit(modfile,'/')))]
-
-
-            # parse date
-            date=substr(unlist(strsplit(filename,'_'))[2],2,8)
-            year=substr(date,1,4)    
-            doy=as.numeric(substr(date,5,7) )
-                dd = strptime(paste(year, doy), format = "%Y %j")
+#     modisRepo="/home/joel/data/modis/barandun_2013/modis"
+#     out_wd=home # '/home/joel/sim/barandunPaper/amu_basin/sim/g2/'
+#     landform=raster(paste0(out_wd, "/landform.tif"))
+#     setwd(modisRepo)
+#     mypattern="Snow_Cover"
+#     modfiles= list.files(pattern = mypattern, recursive=T)
+#     mydate = c()
+#     rast.list <- list()
+#     i=1
+#         for (modfile in modfiles) {  
+#             filename= unlist(strsplit(modfile,'/'))[length(unlist(strsplit(modfile,'/')))]
 
 
-            if (year >= startY & year <=endY){
-                if (doy > doystart & doy <doyend){
-    print(filename)
-        mydate = c(mydate, as.character(dd))
-                rast.list[i] <- crop(raster(modfiles[i]),landform) 
-                i=i+1
-            }
-        }
-        }
+#             # parse date
+#             date=substr(unlist(strsplit(filename,'_'))[2],2,8)
+#             year=substr(date,1,4)    
+#             doy=as.numeric(substr(date,5,7) )
+#                 dd = strptime(paste(year, doy), format = "%Y %j")
 
-    write.csv(mydate, paste0(out_wd, "/fsca_dates.csv"), row.names = FALSE)
-    rstack=stack(rast.list)  
-    writeRaster(rstack , paste0(out_wd, "/fsca_stack.tif"), overwrite=TRUE)
 
-}
+#             if (year >= startY & year <=endY){
+#                 if (doy > doystart & doy <doyend){
+#     print(filename)
+#         mydate = c(mydate, as.character(dd))
+#                 rast.list[i] <- crop(raster(modfiles[i]),landform) 
+#                 i=i+1
+#             }
+#         }
+#         }
+
+#     write.csv(mydate, paste0(out_wd, "/fsca_dates.csv"), row.names = FALSE)
+#     rstack=stack(rast.list)  
+#     writeRaster(rstack , paste0(out_wd, "/fsca_stack.tif"), overwrite=TRUE)
+
+# }
 
 rstack = brick(paste0(home,"/fsca_stack.tif"))
 obsTS = read.csv(paste0(home,"/fsca_dates.csv"))
@@ -156,31 +159,40 @@ countNa_cloudfree <-  sum(  getValues(is.na(lf_agg))  )/ncell(lf_agg)
 
 # loop through obs compute mean fsca for basin area
 
-# nNa=c()
-# obs=c()
-# for (myindex in obs_da_dates_index[1]){
-# print(myindex)
+ nNa=c()
+ obs=c()
+ for (myindex in obs_da_dates_index){
+ print(myindex)
 
-# rcrop = crop(rstack[[myindex]], lf_resamp)
-# rmask=mask(rcrop,lf_resamp)
-# newobs <- cellStats(rmask, 'mean') /100    
-# countNa <-  sum(  getValues(is.na(rmask))  )/ncell(rmask) 
-# obs=c(obs,newobs)
-# nNa = c(nNa, countNa)
-# }
+ rcrop = crop(rstack[[myindex]], lf_resamp)
+ #rmask=mask(rcrop,lf_resamp)
+ newobs <- cellStats(rcrop, 'mean') /100    
+ #countNa <-  sum(  getValues(is.na(rcrop))  )/ncell(rcrop) 
+ obs=c(obs,newobs)
+ #nNa = c(nNa, countNa)
+ }
 
 
 
 nNa=c()
 obs=c()
-for (myindex in obs_da_dates_index){
+for (myindex in obs_da_dates_index[DSTART:DEND]){
 print(myindex)
-rcrop = crop(rstack[[myindex]], trim(lf_resamp),  snap='out')
+#rcrop = crop(rstack[[myindex]], trim(lf_resamp),  snap='out')
+rcrop = crop(rstack, trim(lf_resamp),  snap='out')
 
 tryCatch(
     expr = {
-        rmask =trim(rasterize(basin, rcrop, mask=TRUE) )
-        newobs <- cellStats(rmask, 'mean', na.rm=T) /100  
+        #rmask =trim(rasterize(basin, rcrop, mask=TRUE) )
+        #newobs <- cellStats(rmask, 'mean', na.rm=T) /100  
+        if (BASIN==TRUE){
+        rmask=extract(rcrop, basin)
+}
+        if (BASIN==FALSE){
+        rmask=rcrop
+}
+       newobs=  mean(unlist(rmask),na.rm=T) /100
+
         
     },
     error = function(e){ 
@@ -192,7 +204,9 @@ tryCatch(
         # Do this if an warning is caught...
     },
     finally = {
-        countNa <-  sum(  getValues(is.na(rmask))  )/ncell(rmask) 
+        #countNa <-  sum(  getValues(is.na(rmask))  )/ncell(rmask) 
+        countNa <-sum(is.na(unlist(rmask))) /length(unlist(rmask))
+
         #newobs <-0
 obs=c(obs,newobs)
 nNa = c(nNa, countNa)
@@ -219,19 +233,19 @@ nNa2 = nNa-min(nNa)
 # find highNA scenes and set to NA
 
 cloudthreshold = 0.01
-index = which(nNa2 > 0.1)
+index = which(nNa2 > 0.2)
 obs[index] <- NA
 
-	
+obs[c(33,56)]	<-NA
 #===============================================================================
 #		PARTICLE FILTER
 #===============================================================================	
 OBS<-obs
 obsind = which (!is.na(obs))
 #obsind <- obsind[obsind > DSTART & obsind < DEND] # defind before
-naind = which (is.na(obs))	
+#naind = which (is.na(obs))	
 weight = PBS(HX[obsind,], OBS[obsind], R)
-	
+	weight = PBS(HX[(DSTART:DEND)[obsind],], OBS[obsind], R)
 write.csv(as.vector(weight), paste0(home,"/ensemble/weights.txt"), row.names=FALSE)
 	
 #===============================================================================
@@ -282,13 +296,13 @@ png(paste0(home,"/ensemble/daplot_",gridname,".png"), width=800, height=400)
 par(mfrow=c(1,2))
 
 OBS2PLOT <-OBS
-OBS2PLOT[naind]<-NA
+#OBS2PLOT[naind]<-NA
 prior =HX
 
 weight = as.vector(weight)
-ndays = length(obs)
-lq=0.1
-uq=0.9
+ndays = length(obs_da_dates_index)
+lq=0.3
+uq=0.85
 
 #		PLOTTING fSCA
 # ======================= posterior = ==========================================
@@ -384,10 +398,16 @@ high.pri = c(high.pri, med$y)
 
 date = seq(as.Date(startda), as.Date(endda),by='day')
 date=da_dates
+high.pri<-high.pri
+med.pri<-med.pri
+low.pri<-low.pri
+high.post<-high.post
+med.post<-med.post
+low.post<-low.post
 #  xlim=c(date[182],date[355])
 plot(date,high.pri, col=NULL, type='l', main=paste('(A) fSCA'), ylab="fSCA (0-1)",xlab='', ylim=c(0,1))
 #lines(low.pri, col='red')
-lines(date,med.pri, col='red', lwd=3)
+lines(date,med.pri ,col='red', lwd=3)
 #lines(high.post, col='blue')
 #lines(low.post, col='blue')
 lines(date,med.post, col='blue', lwd=3)
@@ -413,8 +433,8 @@ legend("topright", c("prior", "posterior", "obs", "open-loop") , col=c("red", "b
 #abline(v=DEND)
 #dev.off()
 
-abline(v=DSTART, lty=3)
-abline(v=DEND, lty=3)
+abline(v=date[DSTART], lty=3)
+abline(v=date[DEND], lty=3)
 #====================================================================
 #	# Now plot SWE (or HS)
 #====================================================================
@@ -442,8 +462,8 @@ arr <- varr * ensembRes2
 HX2 <- apply(arr, FUN = "sum", MARGIN = c(1,3)) / sum(lp$members)
 
 
-OBS2PLOT <-OBS
-OBS2PLOT[naind]<-NA
+#OBS2PLOT <-OBS
+#OBS2PLOT[naind]<-NA
 prior =HX2
 weight = as.vector(weight)
 ndays = dim(HX2)[1]
@@ -546,14 +566,15 @@ high.pri = c(high.pri, med$y)
 
 if(mode=='swe'){cfact = aod/1000000}
 if (mode=="hs"){cfact=1}
+cfact=1 # FIXED
 
 # ADD DATE
 date = seq(as.Date(startda), as.Date(endda)-1,by='day')
 #date=da_dates
-cfact=1
-#,xlim=as.Date(c(date[100],date[355]))
 
-plot(date,  high.pri*cfact, col=NULL, type='l', main=paste('(B) SWE'), ylab="Mean basin SWE (mm)" , xlab="")
+#,xlim=as.Date(c(date[100],date[355]))
+ymax = max(c(max(high.post), max(high.pri)))
+plot(date,  high.pri*cfact, col=NULL, type='l', main=paste('(B) SWE'), ylab="Mean basin SWE (mm)" , xlab="", ylim=c(0,ymax))
 #lines(low.pri*cfact, col='red')
 lines(date, med.pri*cfact, col='red', lwd=3)
 #lines(high.post*cfact, col='blue')

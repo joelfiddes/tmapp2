@@ -18,22 +18,21 @@ Todo:
 
 
 """
-from tqdm import tqdm
-import sys
-import os
-import subprocess
-import logging
-from datetime import datetime, timedelta
-from dateutil.relativedelta import *
 import glob
-from shutil import copyfile
+import logging
+import os
+import re
+import subprocess
 import sys
 import time
-import pandas as pd
-from configobj import ConfigObj
-import re
+from datetime import datetime
+
 import netCDF4 as nc
 import numpy as np
+import pandas as pd
+from configobj import ConfigObj
+from dateutil.relativedelta import *
+from tqdm import tqdm
 
 
 def main(wd, model="SNOWPACK", interp='1D'):

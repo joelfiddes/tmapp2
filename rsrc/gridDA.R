@@ -13,12 +13,12 @@ endSim <- 	args[4]
 startda <- 	args[5]
 endda <- 	args[6]
 
- # home='/home/joel/sim/amu_evo//sim/g80/'
- # nens = 20 #100#50
- # startSim="2013-09-01"
- # endSim="2014-09-01"
- # startda="2013-09-01"
- # endda="2014-09-01"
+  home='/home/joel/sim/amu_evo//sim/g80/'
+  nens = 20 #100#50
+  startSim="2013-09-01"
+  endSim="2014-09-01"
+  startda="2013-09-01"
+  endda="2014-09-01"
 
 # constants
 mode = "swe" # 'swe'

@@ -49,11 +49,16 @@ import netCDF4 as nc
 svf_sectors = str(8)  # sectors to search
 svf_dist = str(5000)  # search distance m
 
+# =============================================================================
+# wd="/home/joel/sim/paiku/"
+# #simdir='g1'
+# model="GEOTOP"
+# =============================================================================
 
 def main(wd, simdir, model):
-    # ===============================================================================
+    # =========================================================================
     #	Config setup
-    # ===============================================================================
+    # =========================================================================
     # os.system("python writeConfig.py") # update config DONE IN run.sh file
 
     config = ConfigObj(wd + "/config.ini")
@@ -64,19 +69,18 @@ def main(wd, simdir, model):
     start = datetime.strptime(config['main']['startDate'], "%Y-%m-%d")
     end = datetime.strptime(config['main']['endDate'], "%Y-%m-%d")
     windCor = config['toposcale']['windCor']
-    # ===============================================================================
+    # =========================================================================
     #	Log
-    # ===============================================================================
+    # =========================================================================
     logfile = wd + "/sim/" + simdir + "/logfile"
     if os.path.isfile(logfile) == True:
         os.remove(logfile)
-    logging.basicConfig(level=logging.DEBUG, filename=logfile, filemode="a+",
-                        format="%(asctime)-15s %(levelname)-8s %(message)s")
+    logging.basicConfig(level=logging.DEBUG, filename=logfile,filemode="a+",format="%(asctime)-15s %(levelname)-8s %(message)s")
 
     logging.info("Run script = " + os.path.basename(__file__))
-    # ===============================================================================
+    # =========================================================================
     #  Time stuff
-    # ===============================================================================
+    # =========================================================================
     # time stuff
     f = nc.Dataset(wd + "/forcing/SURF.nc")
     nctime = f.variables['time']
@@ -293,6 +297,7 @@ def main(wd, simdir, model):
                 subprocess.check_output(cmd)
 
 
+
         if config["toposcale"]["mode"] == "basins":
             basinID = simdir.split('g', 1)[1]
 
@@ -456,25 +461,8 @@ def main(wd, simdir, model):
                     cmd = ["./geotop/geotop1.226", sim]
                     subprocess.check_output(cmd)
 
-            # ===============================================================================
-            #	Generate aggregated results
-            # ===============================================================================
-            # logging.info( "Generate spatial mean " +simdir)
-            # cmd = [
-            # "Rscript",
-            # "./rsrc/toposub_spatial_mean.R",
-            # home ,
-            # config["toposub"]["nclust"],
-            # 'surface.txt',
-            # 'snow_water_equivalent.mm.',
-            # config["main"]["startDate"],
-            # config["main"]["endDate"]
-            # ]
-            # subprocess.check_output(cmd)
 
-            # ===============================================================================
-            #	Generate max results GEOTOP
-            # ===============================================================================
+
 
             f = open(home + "/SUCCESS_SIM", "w")
         else:
@@ -485,17 +473,37 @@ def main(wd, simdir, model):
         fname1 = home + "/snow_water_equivalent.mm.maxSWE.tif"
         if os.path.isfile(fname1) == False:  # NOT ROBUST
 
-            logging.info("Generate spatial max " + simdir)
-            cmd = [
-                "Rscript",
-                "./rsrc/toposubSpatialNow.R",
-                home,
-                config["toposub"]["nclust"],
-                'snow_water_equivalent.mm.',
-                config["toposub"]["spatialDate"]
-            ]
-            subprocess.check_output(cmd)
+            # ===============================================================================
+            #   Generate max results GEOTOP
+            # ===============================================================================
+            if config["toposub"]["spatialType"] == "spatialMax":
+                logging.info("Generate spatial max " + simdir)
+                cmd = [
+                    "Rscript",
+                    "./rsrc/toposubSpatialNow.R",
+                    home,
+                    config["toposub"]["nclust"],
+                    config["toposub"]["targetVar"],
+                    config["toposub"]["spatialDate"]
+                ]
+                subprocess.check_output(cmd)
 
+
+            # ===============================================================================
+            #   Generate aggregated results
+            # ===============================================================================
+            if config["toposub"]["spatialType"] == "spatialMean":
+                logging.info( "Generate spatial mean " +simdir)
+                cmd = [
+                "Rscript",
+                "./rsrc/toposub_spatial_mean.R",
+                home ,
+                config["toposub"]["nclust"],
+                config["toposub"]["targetVar"],
+                config["main"]["startDate"],
+                config["main"]["endDate"]
+                ]
+                subprocess.check_output(cmd)
 
 
 

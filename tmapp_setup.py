@@ -4,7 +4,7 @@
 
 args1: full path to config.ini
 
-example:	
+example:
 	python tmapp_setup.py "/home/caduff/sim/topomapptest/config.ini"
 
 
@@ -37,9 +37,9 @@ start_time = time.time()
 #os.system("python writeConfig.py") # update config DONE IN run.sh file
 from configobj import ConfigObj
 config = ConfigObj(sys.argv[1])
-#config = ConfigObj("/home/joel/sim/topomapptest/config.ini")	
+#config = ConfigObj("/home/joel/sim/topomapptest/config.ini")
 wd = config["main"]["wd"]
-tscale_root=config['main']['tscale_root'] 
+tscale_root=config['main']['tscale_root']
 
 #===============================================================================
 #	DEM parameters
@@ -86,14 +86,14 @@ logging.info("----------------------- START SETUP -----------------------")
 logging.info("Simulation directory: " + wd  )
 
 #===============================================================================
-#	Initialise run: this can be used to copy meteo and surfaces to a new sim directory. 
+#	Initialise run: this can be used to copy meteo and surfaces to a new sim directory.
 # 	Main application is in ensemble runs
 #===============================================================================
 # if config["main"]["initSim"] == "TRUE":
 # 	import TMinit
 # 	TMinit.main(config, ensembRun=False)
 
-  
+
 #===============================================================================
 # Copy config to simulation directory
 #===============================================================================
@@ -107,16 +107,16 @@ logging.info("Simulation directory: " + wd  )
 
 # control statement to skip if "asp.tif" exist - indicator fileNOT ROBUST
 # fname = wd + "/predictors/asp.tif"
-# if os.path.isfile(fname) == False:	
+# if os.path.isfile(fname) == False:
 
 fname1 = wd + "/predictors/asp.tif"
 fname2 = wd + "/predictors/slp.tif"
 fname3 = wd + "/predictors/ele.tif"
 
-if os.path.isfile(fname1) == False or os.path.isfile(fname2) == False or os.path.isfile(fname3) == False: #NOT ROBUST	
+if os.path.isfile(fname1) == False or os.path.isfile(fname2) == False or os.path.isfile(fname3) == False: #NOT ROBUST
 
 	if not os.path.exists(wd + "predictors/ndvi.tif"):
-		sys.exit("No NDVI file found at: " + wd + "predictors/ndvi.tif " +" please download from  https://clim-engine.appspot.com/")
+		sys.exit("No NDVI file found at: " + wd + "predictors/ndvi.tif " +" please download from  https://clim-engine.appspot.com/") # see below MODIS for product details
 
 		# copy preexisting dem
 	if config["main"]["demexists"] == "TRUE":
@@ -126,11 +126,11 @@ if os.path.isfile(fname1) == False or os.path.isfile(fname2) == False or os.path
 		src = config["main"]["dempath"]
 		dst = wd +"/predictors/dem.tif"
 		cmd = "cp -r %s %s"%(src,dst)
-		os.system(cmd) 
+		os.system(cmd)
 
 	if config["main"]["demexists"] == "FALSE":
 
-		'''makes domain.shp that is used to download dem only, could alos now pass ccord directly to getDEM.R. 
+		'''makes domain.shp that is used to download dem only, could alos now pass ccord directly to getDEM.R.
 		If DEM is present missing or incorrect coords is not a problem'''
 		if config['main']['runmode']=='grid':
 			logging.info("create shp")
@@ -138,7 +138,7 @@ if os.path.isfile(fname1) == False or os.path.isfile(fname2) == False or os.path
 			subprocess.check_output(cmd)
 
 			fname = wd + "/predictors/ele.tif"
-			if os.path.isfile(fname) == False:	
+			if os.path.isfile(fname) == False:
 				logging.info("Downloading DEM")
 				cmd = ["Rscript", "./rsrc/getDEM.R" , wd, config["main"]["demdir"] , wd +"/spatial/domain.shp", demRes]
 				subprocess.check_output(cmd)
@@ -148,7 +148,7 @@ if os.path.isfile(fname1) == False or os.path.isfile(fname2) == False or os.path
 
 		if config['main']['runmode']=='points':
 			fname = wd + "/predictors/ele.tif"
-			if os.path.isfile(fname) == False:	
+			if os.path.isfile(fname) == False:
 				logging.info("Downloading DEM")
 				cmd = ["Rscript", "./rsrc/getDEM.R" , wd, config["main"]["demdir"] , config["main"]["pointsShp"], demRes]
 				subprocess.check_output(cmd)
@@ -157,7 +157,7 @@ if os.path.isfile(fname1) == False or os.path.isfile(fname2) == False or os.path
 
 		if config['main']['runmode']=='points_sparse':
 			fname = wd + "/predictors/ele.tif"
-			if os.path.isfile(fname) == False:	
+			if os.path.isfile(fname) == False:
 				logging.info("Downloading DEM")
 				cmd = ["Rscript", "./rsrc/getDEM_points.R" , wd, config["main"]["demdir"] , config["main"]["pointsShp"], demRes, config["main"]["pointsBuffer"]]
 				subprocess.check_output(cmd)
@@ -166,16 +166,16 @@ if os.path.isfile(fname1) == False or os.path.isfile(fname2) == False or os.path
 
 		if config['main']['runmode']=='basins':
 			fname = wd + "/predictors/ele.tif"
-			if os.path.isfile(fname) == False:	
+			if os.path.isfile(fname) == False:
 				logging.info("Downloading DEM")
 				cmd = ["Rscript", "./rsrc/getDEM.R" , wd, config["main"]["demdir"] , wd +"/basins/basins.shp", demRes]
 				subprocess.check_output(cmd)
 			else:
 				logging.info("DEM already downloaded")
-	
-	
+
+
 	# points topo is handled in main run routine now.
-	
+
 	#if config['main']['runmode']!='points': WHY THIS LINE?
 	if config['main']['runmode']!='points_sparse':
 			logging.info("Compute topo predictors")
@@ -205,7 +205,7 @@ Most MODIS retrieval api are quite unstable so current solution is:
  - "1 Aug - 31 Aug"
  - full length of record
 
- This then returns mean August NDVI over entire record. Download a subset that 
+ This then returns mean August NDVI over entire record. Download a subset that
  is greater than footprint of domain and save as "predictors/ndvi.tif"
 
 """
@@ -282,7 +282,7 @@ if config['main']['runmode']=='basinsBLIN':
 #	Start sims
 #===============================================================================
 """ Start sims
-	- generate joblist that can be executed locally on n cores or sent to 
+	- generate joblist that can be executed locally on n cores or sent to
 	cluster
 	"""
 #logging.info("Generate joblist")

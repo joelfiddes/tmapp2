@@ -24,10 +24,9 @@ source("./rsrc/toposub_src.R")
 args <- 	commandArgs(trailingOnly=TRUE)
 gridpath <- args[1]
 Nclust <-	args[2]
-file1 <- 	args[3]
-targV <- 	args[4]
-beg <- 		args[5] #"%Y-%m-%d"
-end <- 		args[6] #"%Y-%m-%d"
+targV <- 	args[3]
+beg <- 		args[4] #"%Y-%m-%d"
+end <- 		args[5] #"%Y-%m-%d"
 #====================================================================
 # PARAMETERS FIXED
 #====================================================================
@@ -37,6 +36,10 @@ end <- 		args[6] #"%Y-%m-%d"
 	crisp <- TRUE #other options as separate functions]
 	fuzzy <- FALSE
 	VALIDATE <- FALSE
+
+	if(targV == "snow_water_equivalent.mm."){file1 <- "surface.txt"}
+	if(targV == "snow_depth.mm."){file1 <- "surface.txt"}
+	if(targV == "X100.000000"){file1 <- "ground.txt"}
 
 #========================================================================
 #		FORMAT DATE
