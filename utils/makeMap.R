@@ -1,5 +1,7 @@
 require(raster)
-rasters1 <- list.files(pattern="*maxSWE.tif",full.names=TRUE, recursive=FALSE)
+args = commandArgs(trailingOnly=TRUE)
+wd=args[1]
+rasters1 <- list.files(wd,pattern="*.tif",full.names=TRUE, recursive=FALSE)
 rast.list <- list()
   for(i in 1:length(rasters1)) { rast.list[i] <- raster(rasters1[i]) }
 

@@ -75,6 +75,12 @@ def main(wd, simdir, model):
     logfile = wd + "/sim/" + simdir + "/logfile"
     if os.path.isfile(logfile) == True:
         os.remove(logfile)
+
+
+    # to clear logger: https://stackoverflow.com/questions/30861524/logging-basicconfig-not-creating-log-file-when-i-run-in-pycharm
+    for handler in logging.root.handlers[:]:
+        logging.root.removeHandler(handler)
+
     logging.basicConfig(level=logging.DEBUG, filename=logfile,filemode="a+",format="%(asctime)-15s %(levelname)-8s %(message)s")
 
     logging.info("Run script = " + os.path.basename(__file__))

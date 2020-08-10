@@ -140,10 +140,10 @@ if (sampling=="random"){
 	if (sampling=="lhc"){
 
 
-	pbias=c(0.4,0.6,0.8, 1.2,1.4,1.6,1.8,2,3)
-	tbias=rep(1,9)
-	swbias=rep(1,9)
-	lwbias=rep(1,9)
+	pbias=c(0.2,0.4,0.6,0.8,1, 1.2,1.4,1.6,1.8,2,3)
+	tbias=rep(1,11)
+	swbias=rep(1,11)
+	lwbias=rep(1,11)
 	df=data.frame(pbias,tbias,swbias,lwbias)
 	write.csv(df,paste0(wd,'/ensemble.csv'))
 	}
