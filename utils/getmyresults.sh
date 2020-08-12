@@ -1,2 +1,2 @@
-rsync -a caduff@hyperion:/home/caduff/myresults/* ./myresults/
-q
+rsync -a caduff@hyperion:/home/caduff/myresults/* /home/joel/sim/myresults/
+

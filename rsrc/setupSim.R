@@ -40,7 +40,11 @@ simdir=args[1] #'/home/joel/sim/topomap_test/grid1' #
 			Angle=c(45,135,225,315)
 			
 			Height=rep(round(hor,2),4)
-			
+
+			## test!!
+			Height=rep(round(0,2),4)
+			#======================
+
 			hor=data.frame(Angle, Height)
 			write.table(hor, paste(listPath,'/hor/hor_point',IDn,'.txt',sep=''),sep=',', row.names=FALSE, quote=FALSE)
 			

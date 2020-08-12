@@ -36,7 +36,7 @@ require(raster)
 # PARAMETERS/ARGS
 # ====================================================================
 args = commandArgs(trailingOnly = TRUE)
-sca_wd="/home/joel/data/modis/barandun_2013"
+sca_wd="/home/joel/sim/paiku/modis"
 #sink(paste0(simdir, "/modisprocess.log"), append = TRUE)
 
 #cloudThreshold <- 100  # max cloud % to be considered 'cloudfree'

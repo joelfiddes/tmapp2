@@ -9,4 +9,4 @@ rast.list <- list()
 rast.list$fun <- mean
 rast.mosaic <- do.call(mosaic,rast.list)
 rst<-rast.mosaic
-writeRaster(rst, "tmapp_out.tif")
+writeRaster(rst, paste0(rasters1[1],"_ALL_OUT.tif"))

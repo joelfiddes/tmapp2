@@ -164,7 +164,7 @@ if os.path.isfile(fname1) == False or os.path.isfile(fname2) == False or os.path
 			else:
 				logging.info("DEM already downloaded")
 
-		if config['main']['runmode']=='basins':
+		if config['main']['runmode']=='basins' or config['main']['runmode']=='basin':
 			fname = wd + "/predictors/ele.tif"
 			if os.path.isfile(fname) == False:
 				logging.info("Downloading DEM")
@@ -252,7 +252,7 @@ if config['main']['runmode']=='points_sparse':
 	cmd = ["Rscript", "./rsrc/prepClust_pointsSparse.R", wd, config['forcing']['grid']]
 	subprocess.check_output(cmd)
 
-if config['main']['runmode']=='basins':
+if config['main']['runmode']=='basins'or config['main']['runmode']=='basin':
 	logging.info("Setup basin sim directories")
 	if config["forcing"]["product"]=="reanalysis":
 		cmd = ["Rscript", "./rsrc/prepClust_BASINS.R", wd, wd+'/basins/basins.shp']
@@ -267,7 +267,7 @@ if config['main']['runmode']=='basinsBLIN':
 #	generate basin forcing
 #  todo: calc p gradient here
 #===============================================================================
-if config['main']['runmode']=='basins':
+if config['main']['runmode']=='basins'or config['main']['runmode']=='basin':
 	logging.info("Generate basin forcing")
 	print("Generate basin forcing")
 	cmd = ["Rscript", tscale_root+"/tscaleV2/toposcale/grid2basin_memSafe.R",wd]
