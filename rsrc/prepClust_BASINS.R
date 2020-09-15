@@ -18,6 +18,8 @@ basin = shapefile(basin)
 
 pdf(paste0(wd,"/spatial/idPoly.pdf"))
 plot(basin)
+text(coordinates(basin)[,1],coordinates(basin)[,2], 1:19)
+
 #text(coordinates(poly)[,1],coordinates(poly)[,2], poly$era5_gp)
 dev.off()
 

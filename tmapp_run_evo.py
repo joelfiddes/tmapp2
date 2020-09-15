@@ -141,7 +141,7 @@ def main(wd, simdir, model="GEOTOP"):
         logging.info("Run TopoSUB! " + simdir)
         cmd = [
             "Rscript",
-            "./rsrc/toposub_evo_chirps.R",
+            "./rsrc/toposub_evo.R",
             home,
             config['toposub']['nclust'],
             "TRUE",

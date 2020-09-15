@@ -182,11 +182,13 @@ def main(wd, simdir, model):
         print("Running TopoSUB")
         cmd = [
             "Rscript",
-            "./rsrc/toposub_evo_chirps.R",
+            "./rsrc/toposub_evo.R",
             home,
             config['toposub']['nclust'],
             "TRUE",
-            "TRUE"
+            "TRUE",
+            config["toposcale"]["mode"]
+
         ]
         subprocess.check_output(cmd)
 
@@ -257,7 +259,7 @@ def main(wd, simdir, model):
     if os.path.isfile(fname1) == False:  # NOT ROBUST
         print("Running TopoSCALE")
 
-        if config["toposcale"]["mode"] == "3d":
+        if config["toposcale"]["mode"] == "3d" or config["toposcale"]["mode"] == "3D":
 
             fname1 = home + "/SUCCESS_TSCALE"
             if os.path.isfile(fname1) == False:  # NOT ROBUST
@@ -281,7 +283,7 @@ def main(wd, simdir, model):
 
 
 
-        if config["toposcale"]["mode"] == "1d":
+        if config["toposcale"]["mode"] == "1d" or config["toposcale"]["mode"] == "1D":
             fname1 = home + "/SUCCESS_TSCALE"
             if os.path.isfile(fname1) == False:  # NOT ROBUST
 
@@ -304,7 +306,7 @@ def main(wd, simdir, model):
 
 
 
-        if config["toposcale"]["mode"] == "basins":
+        if config["toposcale"]["mode"] == "basins" or config["toposcale"]["mode"] == "basin":
             basinID = simdir.split('g', 1)[1]
 
             fname1 = home + "/SUCCESS_TSCALE"
@@ -315,8 +317,8 @@ def main(wd, simdir, model):
 
                     cmd = [
                         "python",
-                        tscale_root + "/tscaleV2/toposcale/tscale_run_basin.py",
-                        wd + "/forcing/",
+                        tscale_root + "/tscaleV2/toposcale/tscale_run_basin_interp.py", # tscale_root + "/tscaleV2/toposcale/tscale_run_basin_interp.py",
+                        wd + "/forcing",
                         home,
                         home + "/forcing/",
                         startTime,
@@ -325,7 +327,7 @@ def main(wd, simdir, model):
                         basinID,
                         config['toposcale']['plapse']
                     ]
-
+                
                 subprocess.check_output(cmd)
 
 

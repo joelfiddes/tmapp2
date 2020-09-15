@@ -64,13 +64,7 @@ gridmaps$surface<-NULL
 
 #define new predNames (aspC, aspS)
 allNames<-names(gridmaps@data)
-
-# use two predname as we dont want to cluster on long and lat but we want the mean attributes of each sample
-# filter predictors we get mean attributes for in lsp
-predNames1 <- allNames[which(allNames!='surface'&allNames!='asp')]
-
-# filter predictors we put into kmeans
-predNames2 <- allNames[which(allNames!='surface'&allNames!='asp'&allNames!='latRst'&allNames!='lonRst')] # remove aspS here
+predNames2 <- allNames[which(allNames!='surface'&allNames!='asp'&allNames!='chirps')] # remove aspS here
 
 #read coeffs file (prescribed)
 weightsMean<-read.table(paste(gridpath,"/coeffs.txt",sep=""), sep=",",header=T)
@@ -153,13 +147,11 @@ gridmaps$landform <-vec
 rst=raster(gridmaps["landform"])
 writeRaster(rst, paste0(gridpath,"/landform.tif"),NAflag=-9999,overwrite=T)
 
-samp_mean <- aggregate(gridmaps@data[predNames1], by=list(gridmaps$landform), FUN='mean',na.rm=TRUE)
-samp_sd <- aggregate(gridmaps@data[predNames1], by=list(gridmaps$landform), FUN='sd',na.rm=TRUE)
-samp_sum <- aggregate(gridmaps@data[predNames1], by=list(gridmaps$landform), FUN='sum',na.rm=TRUE)
+samp_mean <- aggregate(gridmaps@data[predNames2], by=list(gridmaps$landform), FUN='mean',na.rm=TRUE)
+samp_sd <- aggregate(gridmaps@data[predNames2], by=list(gridmaps$landform), FUN='sd',na.rm=TRUE)
+samp_sum <- aggregate(gridmaps@data[predNames2], by=list(gridmaps$landform), FUN='sum',na.rm=TRUE)
 
 #replace asp with correct mmean asp
-#df=na.omit(as.data.frame(gridmaps))
-
 asp=meanAspect(dat=gridmaps@data, agg=gridmaps$landform)
 samp_mean$asp<-asp
 #issue with sd and sum of aspect - try use 'circular'
@@ -179,7 +171,8 @@ members<-mem[,1]
 colnames(samp_mean)[1] <- "id"
 lsp<-data.frame(members,samp_mean)
 
-# Add long lat of gridbox for each sample (which are positionless) in order to satisfy toposcale_sw.R (FALSE)-> solarCompute()
+# Add long lat of gridbox for each sample (which are positionless) in order to satisfy toposcale_sw.R (FALSE)-> solarCompute() 
+#this is used to extract gridbox also
 e=extent(rst)
 lonbox=e@xmin + (e@xmax-e@xmin)/2
 latbox=e@ymin + (e@ymax-e@ymin)/2
@@ -191,11 +184,6 @@ write.csv(round(lsp,2),paste0(gridpath, '/listpoints.txt'), row.names=FALSE)
 
 pdf(paste0(gridpath,'/landformsInform.pdf'))
 plot(rst)
-dev.off()
-
-pdf(paste0(gridpath,'/lonlatdist.pdf'))
-plot(raster(paste0(gridpath,'/predictors/ele.tif')))
-points(samp_mean$lonRst, samp_mean$latRst, col='green', cex=2)
 dev.off()
 
 
