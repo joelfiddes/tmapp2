@@ -115,8 +115,9 @@ fname3 = wd + "/predictors/ele.tif"
 
 if os.path.isfile(fname1) == False or os.path.isfile(fname2) == False or os.path.isfile(fname3) == False: #NOT ROBUST
 
-	if not os.path.exists(wd + "predictors/ndvi.tif"):
-		sys.exit("No NDVI file found at: " + wd + "predictors/ndvi.tif " +" please download from  https://clim-engine.appspot.com/") # see below MODIS for product details
+	if config['main']['runmode']!='points' or config['main']['runmode']!='points_sparse':
+		if not os.path.exists(wd + "predictors/ndvi.tif"):
+			sys.exit("No NDVI file found at: " + wd + "predictors/ndvi.tif " +" please download from  https://clim-engine.appspot.com/") # see below MODIS for product details
 
 		# copy preexisting dem
 	if config["main"]["demexists"] == "TRUE":
