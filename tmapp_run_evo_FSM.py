@@ -46,8 +46,8 @@ import netCDF4 as nc
 
 
 # add to config
-svf_sectors = str(8)  # sectors to search
-svf_dist = str(5000)  # search distance m
+#svf_sectors = str(8)  # sectors to search
+#svf_dist = str(5000)  # search distance m
 
 # =============================================================================
 # wd="/home/joel/sim/paiku/"
@@ -69,6 +69,8 @@ def main(wd, simdir, model):
     start = datetime.strptime(config['main']['startDate'], "%Y-%m-%d")
     end = datetime.strptime(config['main']['endDate'], "%Y-%m-%d")
     windCor = config['toposcale']['windCor']
+    svfSectors = config['toposcale']['svfSectors']
+    svfMaxDist = config['toposcale']['svfMaxDist']
     # =========================================================================
     #	Log
     # =========================================================================
@@ -85,10 +87,12 @@ def main(wd, simdir, model):
 
     logging.info("Run script = " + os.path.basename(__file__))
     # =========================================================================
-    #  Time stuff
+    #  Time stuff -  just required to find timestep use first month
     # =========================================================================
     # time stuff
-    f = nc.Dataset(wd + "/forcing/SURF.nc")
+
+    files = sorted(glob.glob(wd + "/forcing/SURF*.nc"))  
+    f = nc.Dataset(files[0])
     nctime = f.variables['time']
     dtime = pd.to_datetime(nc.num2date(nctime[:],nctime.units, calendar="standard"))
 
@@ -141,7 +145,7 @@ def main(wd, simdir, model):
     if os.path.isfile(fname) == False:
         logging.info("Calculating SVF layer " + simdir)
         print("Calculating SVF layer " + simdir)
-        cmd = ["Rscript", "./rsrc/computeSVF.R", home, svf_sectors, svf_dist]
+        cmd = ["Rscript", "./rsrc/computeSVF.R", home, svfSectors, svfMaxDist]
         subprocess.check_output(cmd)
     else:
         logging.info("SVF computed!")
@@ -186,8 +190,8 @@ def main(wd, simdir, model):
             home,
             config['toposub']['nclust'],
             "TRUE",
-            "TRUE",
-            config["toposcale"]["mode"]
+            "TRUE"
+           
 
         ]
         subprocess.check_output(cmd)
@@ -197,9 +201,8 @@ def main(wd, simdir, model):
         # sample dist plots
         src = "./rsrc/sampleDistributions.R"
         arg1 = home
-        arg2 = config['toposcale']['svfCompute']
-        arg3 = "sampDistInfm.pdf"
-        cmd = "Rscript %s %s %s %s" % (src, arg1, arg2, arg3)
+        arg2 = "sampDistInfm.pdf"
+        cmd = "Rscript %s %s %s" % (src, arg1, arg2)
         os.system(cmd)
 
         logging.info("Assign surface types")
@@ -267,20 +270,27 @@ def main(wd, simdir, model):
                 if config["forcing"]["product"] == "reanalysis":
                     logging.info("Run TopoSCALE " + simdir)
 
+                #     cmd = [
+                #         "python",
+                #         tscale_root + "/tscaleV2/toposcale/tscale3Dtsub.py",
+                #         home,
+                #         wd + "/forcing/",
+                #         "point",
+                #         config['main']['startDate'],
+                #         config['main']['endDate'],
+                #         "HRES",
+                #         "1"
+                #     ]
+
+                # subprocess.check_output(cmd)
+
                     cmd = [
                         "python",
-                        tscale_root + "/tscaleV2/toposcale/tscale3Dtsub.py",
-                        home,
-                        wd + "/forcing/",
-                        "point",
-                        config['main']['startDate'],
-                        config['main']['endDate'],
-                        "HRES",
-                        "1"
+                        tscale_root + "/tscale3D.py",wd                
+                    
                     ]
 
                 subprocess.check_output(cmd)
-
 
 
         if config["toposcale"]["mode"] == "1d" or config["toposcale"]["mode"] == "1D":
@@ -293,13 +303,15 @@ def main(wd, simdir, model):
                     cmd = [
                         "python",
                         tscale_root + "/tscaleV2/toposcale/tscale_run.py",
-                        wd + "/forcing/",
-                        home, home + "/forcing/",
+                        wd,
+                        home, 
                         startTime,
                         endTime,
-                        windCor,
                         config['forcing']['dataset'],
+                        windCor,
                         config['toposcale']['plapse']
+                        
+                        
                     ]
 
                 subprocess.check_output(cmd)

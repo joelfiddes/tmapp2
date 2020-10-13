@@ -15,13 +15,13 @@ require(raster)
 args = commandArgs(trailingOnly=TRUE)
 home=args[1] 
 shp.in=args[2]
-simdir=args[3]
+
 #====================================================================
 # PARAMETERS FIXED
 #====================================================================
 
 setwd(paste0(home,'/predictors'))
-shpIndex = as.numeric(unlist(strsplit(simdir,'g'))[2])
+shpIndex = as.numeric(unlist(strsplit(home,'g'))[2])
 
 
 predictors=list.files( pattern=paste0('*.tif$'))

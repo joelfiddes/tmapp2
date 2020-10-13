@@ -1,15 +1,16 @@
 args = commandArgs(trailingOnly=TRUE)
 gridpath=args[1]
-svfCompute=args[2]
-outName=args[3]
+outName=args[2]
 
+suppressPackageStartupMessages({
 require(raster)
+})
 
 predDir=paste0(gridpath, "/predictors")
 lsp=read.csv(paste0(gridpath, "/listpoints.txt"))
 pdf(paste0(gridpath, '/', outName), width=6, height =16)
-par(mfrow=c(4,1))
-if (svfCompute ==TRUE){par(mfrow=c(5,1))}
+
+par(mfrow=c(5,1))
 
 
 # elevation
@@ -53,7 +54,6 @@ lines(myd, lwd=3, col='green')
 legend("topright", c("density of finegrid"), col='green', lty=1, lwd=3)
 
 
-if (svfCompute ==TRUE){
 # svf
 myhist = hist(lsp$svf, plot=FALSE)
 topo=raster(paste0(predDir, "/svf.tif"))
@@ -67,7 +67,7 @@ plot(myhist, xlim=c(minlim,maxlim))
 lines(myd, lwd=3, col='green')
 legend("topright", c("density of finegrid"), col='green', lty=1, lwd=3)
 
-}
+
 
 hist(lsp$members)
 dev.off()

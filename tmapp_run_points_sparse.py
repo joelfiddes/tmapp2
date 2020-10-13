@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
-"""tmapp_run.py
+"""tmapp_run_points_sparse.py
+
+Takes grids as units but identifies points that exist with grid and 
+computes svf as a buffered region around point NOT whole grid - massive efficiency gains
 
 
 Example:
@@ -34,8 +37,7 @@ import pandas as pd
 from configobj import ConfigObj
 import re
 
-
-
+  
 
 def main(wd, simdir, model="SNOWPACK", interp='1D'):
     print("Toposcale= " + interp)
@@ -184,6 +186,7 @@ def main(wd, simdir, model="SNOWPACK", interp='1D'):
                 '1'
 
             ]
+        logging.info("Interp = ", interp)
         logging.info("Run tscale")
         subprocess.check_output(cmd)
 

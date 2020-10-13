@@ -5,8 +5,20 @@ home = args[1]
 angles = as.numeric(args[2])
 dist = as.numeric(args[3])
 
-require(horizon)
-nfiles=list.files(paste0(home, "/predictors/"), pattern='ele')
+ require(raster)
+
+# rasters1 <- list.files(home,pattern="ele.tif",full.names=TRUE, recursive=TRUE)
+# rast.list <- list()
+# for(i in 1:length(rasters1)) { rast.list[i] <- raster(rasters1[i]) }
+
+# # And then use do.call on the list of raster objects
+# rast.list$fun <- mean
+# rast.mosaic <- do.call(mosaic,rast.list)
+# rst<-rast.mosaic
+# writeRaster(rst, paste0(home, "/predictors/ele.tif"), overwrite=TRUE)
+
+ require(horizon)
+
 
 #if(!file.exists(paste0(home, "/predictors/svf.tif"))){ In case of restart this causes possible mising slp/asp - needs to check for all files
 

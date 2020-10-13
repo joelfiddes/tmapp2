@@ -250,7 +250,7 @@ if config['main']['runmode']=='grid':
 
 if config['main']['runmode']=='points_sparse':
 	logging.info("Setup point sim directories")
-	cmd = ["Rscript", "./rsrc/prepClust_pointsSparse.R", wd, config['forcing']['grid']]
+	cmd = ["Rscript", "./rsrc/prepClust_pointsSparse.R", wd]
 	subprocess.check_output(cmd)
 
 if config['main']['runmode']=='basins'or config['main']['runmode']=='basin':

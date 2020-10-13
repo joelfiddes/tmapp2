@@ -7,7 +7,7 @@ dir.create(paste0(wd,"/sim/"), showWarnings=FALSE)
 
 nfiles=list.files(paste0(wd, "/predictors/"), pattern='ele')
 
-ndvi = raster(paste0(wd, "/predictors/ndvi.tif"))
+#ndvi = raster(paste0(wd, "/predictors/ndvi.tif"))
 
 
 
@@ -20,9 +20,9 @@ for (file in 1:length(nfiles)){
 	setwd(paste0(wd,'/sim/', simdir,"/predictors"))
 	writeRaster(ele, 'ele.tif', overwrite=TRUE)
 
-	ncrop = crop(ndvi,ele, snap='out')
-	nresamp = resample(ncrop,ele) # resample to ensure no geometry issues in basin cookiecuts
-	writeRaster(nresamp, 'ndvi.tif', overwrite=TRUE)
+	#ncrop = crop(ndvi,ele, snap='out')
+	#nresamp = resample(ncrop,ele) # resample to ensure no geometry issues in basin cookiecuts
+	#writeRaster(nresamp, 'ndvi.tif', overwrite=TRUE)
 
 			
 	}

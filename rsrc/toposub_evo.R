@@ -17,9 +17,8 @@ source("./rsrc/toposub_src.R")
 args = commandArgs(trailingOnly=TRUE)
 gridpath=args[1]
 Nclust=as.numeric(args[2])
-svfCompute=args[3]
-lowmem=args[4]
-mode=args[5]
+lowmem=args[3]
+
 #Nclust=args[2] #'/home/joel/sim/topomap_test/grid1' #
 
 #====================================================================
@@ -40,8 +39,10 @@ algo="Hartigan-Wong"#"MacQueen" # ("Hartigan-Wong", "Lloyd", "Forgy",
 #====================================================================
 #			TOPOSUB PREPROCESSOR INFORMED SAMPLING		
 #====================================================================
-setwd(gridpath)
-
+# check for any errant ndvi.tif not rm by makeSurface.tif
+if (file.exists(paste0(gridpath,'/predictors/ndvi.tif'))){
+	system(paste0('rm ',gridpath,'/predictors/ndvi.tif'))
+	}
 #set tmp directory for raster package
 #setOptions(tmpdir=paste(gridpath, '/tmp', sep=''))
 
@@ -187,7 +188,7 @@ latbox=e@ymin + (e@ymax-e@ymin)/2
 lsp$lat <-rep(latbox,dim(lsp)[1])
 lsp$lon <-rep(lonbox,dim(lsp)[1])
 
-if (mode == "basins"){
+#if (mode == "sample_means"){
 
 	x=c()
 	y=c()
@@ -201,7 +202,7 @@ if (mode == "basins"){
 				lsp$lat <- y
 		lsp$lon <- x
 
-	}
+#	}
 
 lsp$surfRough = rep(1e-3,dim(lsp)[1])
 lsp$tz = rep(0,dim(lsp)[1])
