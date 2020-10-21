@@ -39,6 +39,23 @@ namelist="/home/joel/sim/qmap/ch_tmapp2/nlst_tmapp.txt"
 fsmexepath = "/home/joel/src/topoCLIM/FSM"
 start = "197908"
 end = "201909"
+
+# =========================================================================
+#	Log
+# =========================================================================
+logfile = wd+ "/logfile"
+if os.path.isfile(logfile) == True:
+    os.remove(logfile)
+
+
+# to clear logger: https://stackoverflow.com/questions/30861524/logging-basicconfig-not-creating-log-file-when-i-run-in-pycharm
+for handler in logging.root.handlers[:]:
+    logging.root.removeHandler(handler)
+
+logging.basicConfig(level=logging.DEBUG, filename=logfile,filemode="a+",format="%(asctime)-15s %(levelname)-8s %(message)s")
+
+logging.info("Running setup")
+
 # make wd dirs
 tlib.make_dirs(wd)
 
@@ -67,17 +84,21 @@ Parallel(n_jobs=int(num_cores))(delayed(tlib.compute_svf)(home, svfSectors, svfM
 homes = tqdm(sorted(glob.glob(wd+"/sim/*")))
 Parallel(n_jobs=int(num_cores))(delayed(tlib.compute_surface)(home) for home in homes)
 
+
 # toposub
+logging.info("Running TopoSUB")
 homes = tqdm(sorted(glob.glob(wd+"/sim/*")))
 Parallel(n_jobs=int(num_cores))(delayed(tlib.toposub)(tmapp_root, home, nclust)for home in homes)
 
+
 # tscale
+logging.info("Running TopoSCALE")
 tscale3D.main(wd, start, end) 
 # need to solve dotprod memory issue Kris?Help!
 # i/o is quite costly eg 2000 files
 
 # convert to FSM format
-
+logging.info("Running FSM")
 # Simulate FSM
 meteofiles = tqdm(sorted(glob.glob(wd+"/out/tscale*.csv")))
 Parallel(n_jobs=int(1))(delayed(tlib.fsm_sim)(meteofile,namelist,fsmexepath) for meteofile in meteofiles)
