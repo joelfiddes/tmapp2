@@ -1,7 +1,7 @@
 # args
 import sys
 wd= sys.argv[1] #'/home/joel/sim/qmap/ch_tmapp_10/' 
-
+use_mpi =True
 
 from configobj import ConfigObj
 
@@ -15,6 +15,18 @@ from tqdm import tqdm
 from joblib import Parallel, delayed
 import os
 import tscale3D
+import logging
+
+
+# setup MPI
+if use_mpi == True:
+	# https://gist.github.com/joezuntz/7c590a8652a1da6dc4c9
+	import mpi4py.MPI
+	#find out which number processor this particular instance is,
+	#and how many there are in total
+	rank = mpi4py.MPI.COMM_WORLD.Get_rank()
+	size = mpi4py.MPI.COMM_WORLD.Get_size()
+
 
 # config
 config = ConfigObj(wd + "/config.ini")
