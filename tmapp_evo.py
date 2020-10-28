@@ -57,7 +57,7 @@ end = "201909"
 # =========================================================================
 #	Log
 # =========================================================================
-logfile = wd+ "/logfile"
+logfile = wd+ "/logfile_worker"+str(rank)
 if use_mpi == True:
 	if rank==0:
 		if os.path.isfile(logfile) == True:
