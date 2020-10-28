@@ -163,4 +163,4 @@ if use_mpi == True:
 		if i%size!=rank:
 			continue
 		logging.info("Running FSM "+ meteofiles[i])
-		tlib.fsm_sim(meteofile,namelist,fsmexepath)
+		tlib.fsm_sim(meteofiles[i],namelist,fsmexepath)
