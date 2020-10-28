@@ -2,6 +2,7 @@
 import sys
 wd= sys.argv[1] #'/home/joel/sim/qmap/ch_tmapp_10/' 
 use_mpi =True
+sys.path.append(os.getcwd())
 
 from configobj import ConfigObj
 
@@ -56,8 +57,15 @@ end = "201909"
 #	Log
 # =========================================================================
 logfile = wd+ "/logfile"
-if os.path.isfile(logfile) == True:
-    os.remove(logfile)
+if use_mpi == True:
+	if rank==0:
+		if os.path.isfile(logfile) == True:
+			os.remove(logfile)
+
+if use_mpi == False:
+
+	if os.path.isfile(logfile) == True:
+		os.remove(logfile)
 
 
 # to clear logger: https://stackoverflow.com/questions/30861524/logging-basicconfig-not-creating-log-file-when-i-run-in-pycharm
@@ -89,20 +97,41 @@ tlib.compute_terrain_ndvi( wd )
 tlib.setup_sim_dirs_grid(wd, forcing_grid)
 
 # compute svf in parallel in homes
-homes = tqdm(sorted(glob.glob(wd+"/sim/*")))
-Parallel(n_jobs=int(num_cores))(delayed(tlib.compute_svf)(home, svfSectors, svfMaxDist) for home in homes)
+if use_mpi == False:
+	homes = tqdm(sorted(glob.glob(wd+"/sim/*")))
+	Parallel(n_jobs=int(num_cores))(delayed(tlib.compute_svf)(home, svfSectors, svfMaxDist) for home in homes)
+
+if use_mpi == True:
+	homes = sorted(glob.glob(wd+"/sim/*"))
+	for i,task in enumerate(homes):
+		if i%size!=rank:
+			continue	
+		tlib.compute_svf(homes[i], svfSectors, svfMaxDist)
 
 # compute surface model
-homes = tqdm(sorted(glob.glob(wd+"/sim/*")))
-Parallel(n_jobs=int(num_cores))(delayed(tlib.compute_surface)(home) for home in homes)
+if use_mpi == False:
+	homes = tqdm(sorted(glob.glob(wd+"/sim/*")))
+	Parallel(n_jobs=int(num_cores))(delayed(tlib.compute_surface)(home) for home in homes)
 
+if use_mpi == True:
+	homes = sorted(glob.glob(wd+"/sim/*"))
+	for i,task in enumerate(homes):
+		if i%size!=rank:
+			continue
+		tlib.compute_surface(homes[i] )
 
 # toposub
 logging.info("Running TopoSUB")
-homes = tqdm(sorted(glob.glob(wd+"/sim/*")))
-Parallel(n_jobs=int(num_cores))(delayed(tlib.toposub)(tmapp_root, home, nclust)for home in homes)
+if use_mpi == False:
+	homes = tqdm(sorted(glob.glob(wd+"/sim/*")))
+	Parallel(n_jobs=int(num_cores))(delayed(tlib.toposub)(tmapp_root, home, nclust)for home in homes)
 
-
+if use_mpi == True:
+	homes = sorted(glob.glob(wd+"/sim/*"))
+	for i,task in enumerate(homes):
+		if i%size!=rank:
+			continue
+		tlib.toposub(tmapp_root, homes[i], nclust)
 # tscale
 logging.info("Running TopoSCALE")
 tscale3D.main(wd, start, end) 
