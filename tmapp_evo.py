@@ -1,9 +1,10 @@
 # args
 import sys
+import os
 wd= sys.argv[1] #'/home/joel/sim/qmap/ch_tmapp_10/' 
 use_mpi =True
 sys.path.append(os.getcwd())
-
+print (sys.version)
 from configobj import ConfigObj
 
 config = ConfigObj(wd + "/config.ini")
