@@ -2,7 +2,7 @@
 import sys
 import os
 wd= sys.argv[1] #'/home/joel/sim/qmap/ch_tmapp_10/' 
-use_mpi =True
+use_mpi =False
 sys.path.append(os.getcwd())
 print (sys.version)
 from configobj import ConfigObj
@@ -76,6 +76,7 @@ for handler in logging.root.handlers[:]:
 logging.basicConfig(level=logging.DEBUG, filename=logfile,filemode="a+",format="%(asctime)-15s %(levelname)-8s %(message)s")
 
 logging.info("Running setup")
+
 
 # make wd dirs
 tlib.make_dirs(wd)

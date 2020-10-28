@@ -18,9 +18,9 @@ e=as.numeric(args[3])
 w=as.numeric(args[4])
 out=args[5]
 
+if(file.exists(out)==FALSE){
 ext <- as(raster::extent(w, e, s, n), "SpatialPolygons")
 proj4string(ext) <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
-if(file.exists(out)==FALSE){
 shapefile(ext, out, overwrite=TRUE)
 }
 

@@ -37,7 +37,7 @@ for (i in 1:ncells){
 		# only cookiecut predicors on ensemble=1
 		
 		for (p in 1:Npreds){
-			if (!file.exists(paste0(wd,'/predictors/',predictors[p]))){
+			if (!file.exists(paste0(wd,'/sim/', simdir,predictors[p]))){
 			setwd(paste0(wd,'/predictors'))	
 			rst=crop(raster(predictors[p]) ,poly[ic,])
 			setwd(paste0(wd,'/sim/', simdir,"/predictors"))
