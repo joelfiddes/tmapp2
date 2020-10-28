@@ -49,10 +49,12 @@ lonW = config["main"]["lonW"]
 num_cores = config["main"]["num_cores"]
 nclust = config['toposub']['nclust']
 tsub_mode = config["toposcale"]["mode"]
-namelist="/home/joel/sim/qmap/ch_tmapp2/nlst_tmapp.txt"
-fsmexepath = "/home/joel/src/topoCLIM/FSM"
+#namelist="/home/joel/sim/qmap/ch_tmapp2/nlst_tmapp.txt"
+namelist="/home/caduff/src/FSM/nlst_tmapp.txt"
+#fsmexepath = "/home/joel/src/topoCLIM/FSM"
+fsmexepath = "/home/caduff/src/FSM/FSM"
 start = "197908"
-end = "201909"
+end = "198109"
 
 # =========================================================================
 #	Log
@@ -98,7 +100,10 @@ tlib.compute_terrain_ndvi( wd )
 tlib.setup_sim_dirs_grid(wd, forcing_grid)
 
 # compute svf in parallel in homes
+
+
 if use_mpi == False:
+	logging.info("Computing SVF")
 	homes = tqdm(sorted(glob.glob(wd+"/sim/*")))
 	Parallel(n_jobs=int(num_cores))(delayed(tlib.compute_svf)(home, svfSectors, svfMaxDist) for home in homes)
 
@@ -107,10 +112,12 @@ if use_mpi == True:
 	for i,task in enumerate(homes):
 		if i%size!=rank:
 			continue	
+		logging.info("Computing SVF " +homes[i])
 		tlib.compute_svf(homes[i], svfSectors, svfMaxDist)
 
 # compute surface model
 if use_mpi == False:
+	logging.info("Computing surface")
 	homes = tqdm(sorted(glob.glob(wd+"/sim/*")))
 	Parallel(n_jobs=int(num_cores))(delayed(tlib.compute_surface)(home) for home in homes)
 
@@ -119,11 +126,13 @@ if use_mpi == True:
 	for i,task in enumerate(homes):
 		if i%size!=rank:
 			continue
+		logging.info("Computing surface " +homes[i])
 		tlib.compute_surface(homes[i] )
 
 # toposub
-logging.info("Running TopoSUB")
+
 if use_mpi == False:
+	logging.info("Running TopoSUB")
 	homes = tqdm(sorted(glob.glob(wd+"/sim/*")))
 	Parallel(n_jobs=int(num_cores))(delayed(tlib.toposub)(tmapp_root, home, nclust)for home in homes)
 
@@ -132,6 +141,7 @@ if use_mpi == True:
 	for i,task in enumerate(homes):
 		if i%size!=rank:
 			continue
+		logging.info("Running TopoSUB "+ homes[i])
 		tlib.toposub(tmapp_root, homes[i], nclust)
 # tscale
 logging.info("Running TopoSCALE")
@@ -141,6 +151,18 @@ tscale3D.main(wd, start, end)
 
 # convert to FSM format
 logging.info("Running FSM")
+
+
 # Simulate FSM
-meteofiles = tqdm(sorted(glob.glob(wd+"/out/tscale*.csv")))
-Parallel(n_jobs=int(1))(delayed(tlib.fsm_sim)(meteofile,namelist,fsmexepath) for meteofile in meteofiles)
+if use_mpi == False:
+	logging.info("Running FSM")
+	meteofiles = tqdm(sorted(glob.glob(wd+"/out/tscale*.csv")))
+	Parallel(n_jobs=int(1))(delayed(tlib.fsm_sim)(meteofile,namelist,fsmexepath) for meteofile in meteofiles)
+
+if use_mpi == True:
+	meteofiles = sorted(glob.glob(wd+"/out/tscale*.csv"))
+	for i,task in enumerate(meteofiles):
+		if i%size!=rank:
+			continue
+		logging.info("Running FSM "+ meteofiles[i])
+		tlib.fsm_sim(meteofile,namelist,fsmexepath)
