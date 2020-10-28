@@ -61,12 +61,10 @@ end = "198109"
 # =========================================================================
 logfile = wd+ "/logfile_worker"+str(rank)
 if use_mpi == True:
-	if rank==0:
 		if os.path.isfile(logfile) == True:
 			os.remove(logfile)
 
 if use_mpi == False:
-
 	if os.path.isfile(logfile) == True:
 		os.remove(logfile)
 

@@ -27,18 +27,20 @@ dem=raster('predictors/ele.tif')
 #====================================================================
 # EXTRACT SLP/ASP
 #================================================================= ==
-slp=terrain(dem, opt="slope", unit="degrees", neighbors=8, filename='')
-asp=terrain(dem, opt="aspect", unit="degrees", neighbors=8, filename='')
-slp[is.na(asp)==T]<-0 # pads raster with 0 so dimension of valid vals same as dem (eg when passed to trim in generating sim files dimension remain the same)
-asp[is.na(asp)==T]<-0
+if (!file.exists("predictors/slp.tif")){
+	slp=terrain(dem, opt="slope", unit="degrees", neighbors=8, filename='')
+	slp[is.na(asp)==T]<-0 # pads raster with 0 so dimension of valid vals same as dem (eg when passed to trim in generating sim files dimension remain the same)
+	writeRaster(round(slp,0), "predictors/slp.tif", overwrite=TRUE) #write and reduce precision
+	}
 
+if (!file.exists("predictors/asp.tif")){
+	asp=terrain(dem, opt="aspect", unit="degrees", neighbors=8, filename='')
+	asp[is.na(asp)==T]<-0
+	writeRaster(round(asp,0), "predictors/asp.tif", overwrite=TRUE) #write and reduce precision
+	}
 #====================================================================
 # WRITE OUTPUTS
 #====================================================================
-
-writeRaster(round(slp,0), "predictors/slp.tif", overwrite=TRUE) #write and reduce precision
-writeRaster(round(asp,0), "predictors/asp.tif", overwrite=TRUE) #write and reduce precision
-
 if (!file.exists("predictors/ndvi.tif")){
 	ndvi=raster('predictors/ndvi_modis.tif')
 	ncrop = crop(ndvi,dem, snap='out')
