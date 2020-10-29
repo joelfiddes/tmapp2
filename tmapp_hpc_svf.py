@@ -1,5 +1,10 @@
 import sys
+wd= sys.argv[1] #'/home/joel/sim/qmap/ch_tmapp_10/' 
+grid= sys.argv[2] 
+
 import os
+jobid = os.getenv('SLURM_ARRAY_TASK_ID')
+
 import glob
 from configobj import ConfigObj
 config = ConfigObj(wd + "/config.ini")
@@ -9,9 +14,6 @@ tscale_root = config['main']['tscale_root']  # path to tscaleV2 directory
 sys.path.insert(1, tscale_root)
 import tscale_lib as tlib
 
-wd= sys.argv[1] #'/home/joel/sim/qmap/ch_tmapp_10/' 
-grid= sys.argv[2] 
-jobid = os.getenv('SLURM_ARRAY_TASK_ID')
 
 print("Computing SVF grid " + str(jobid))
 
