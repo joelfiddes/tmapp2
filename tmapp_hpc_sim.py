@@ -57,7 +57,7 @@ tasks = ids[int(starti)-1:int(endi)]
 
 for i,task in enumerate(tasks):
 	print("concat "+ str(tasks[i]) )
-	logging.info("concat "+ str(tasks[i]) )
+	logging.info("concat "+ str(tasks[i])+1 )
 	tlib.concat_results(wd,str(tasks[i]+1), outputFormat)
 
 
