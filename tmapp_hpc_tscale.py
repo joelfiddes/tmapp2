@@ -1,4 +1,4 @@
-import pandas
+import pandas as pd
 import sys
 wd= sys.argv[1] #'/home/joel/sim/qmap/ch_tmapp_10/' 
 starti= sys.argv[2] 
