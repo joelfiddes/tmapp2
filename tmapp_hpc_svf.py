@@ -1,6 +1,7 @@
 import sys
 import os
 import glob
+from configobj import ConfigObj
 
 wd= sys.argv[1] #'/home/joel/sim/qmap/ch_tmapp_10/' 
 grid= sys.argv[2] 
