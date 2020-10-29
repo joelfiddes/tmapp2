@@ -27,7 +27,7 @@ lp = pd.read_csv(wd+"/listpoints.txt")
 ids=range(len(lp.id))
 tasks = ids[int(starti)-1:int(endi)]
 
-for i,task in enumerate(task):
+for i,task in enumerate(tasks):
 	print("concat "+ str(tasks[i]) )
 	tlib.concat_results(wd,str(tasks[i]+1), outputFormat)
 
@@ -36,7 +36,7 @@ for i,task in enumerate(task):
 meteofiles = sorted(glob.glob(wd+"/out/tscale*.csv"))
 tasks = meteofiles[int(starti)-1:int(endi)]
 
-for i,task in enumerate(task):
+for i,task in enumerate(tasks):
 	print("Running FSM "+ tasks[i])
 	logging.info("Running FSM "+ tasks[i])
 	tlib.fsm_sim(tasks[i],namelist,fsmexepath)
