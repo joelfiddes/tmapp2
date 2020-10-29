@@ -19,5 +19,5 @@ print("Computing SVF grid " + str(jobid))
 
 
 homes = sorted(glob.glob(wd+"/sim/*"))
-tlib.compute_svf(homes[grid], svfSectors, svfMaxDist)
+tlib.compute_svf(homes[grid-1], svfSectors, svfMaxDist)
 print("Grid " + str(jobid) + " done!")
