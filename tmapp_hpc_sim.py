@@ -35,7 +35,7 @@ for handler in logging.root.handlers[:]:
 
 logging.basicConfig(level=logging.DEBUG, filename=logfile,filemode="a+",format="%(asctime)-15s %(levelname)-8s %(message)s")
 
-
+logging.info("Computing "+ str(starti) +" to "+str(endi) )
 
 
 
@@ -53,6 +53,7 @@ tasks = ids[int(starti)-1:int(endi)]
 
 for i,task in enumerate(tasks):
 	print("concat "+ str(tasks[i]) )
+	logging.info("concat "+ str(tasks[i]) )
 	tlib.concat_results(wd,str(tasks[i]+1), outputFormat)
 
 
