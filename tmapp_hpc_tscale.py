@@ -49,7 +49,7 @@ end  = mymonths[int(endi) -1].split(".nc")[0]
 print("Jobid "+ str(jobid)+ " toposcaling "+ str(start)+ " to " + str(end))
 
 
-tasks = mymonths[starti:endi]
+tasks = mymonths[int(starti):int(endi)]
 
 for i,task in enumerate(tasks):
 
