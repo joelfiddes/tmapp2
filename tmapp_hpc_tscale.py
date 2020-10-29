@@ -37,7 +37,7 @@ for handler in logging.root.handlers[:]:
 logging.basicConfig(level=logging.DEBUG, filename=logfile,filemode="a+",format="%(asctime)-15s %(levelname)-8s %(message)s")
 
 
-logging.info("Jobid "+ str(jobid)+ " toposcaling "+ str(start)+ " to " + str(end))
+
 
 
 # make outdir
@@ -69,7 +69,7 @@ start = mymonths[int(starti) -1].split(".nc")[0]
 end  = mymonths[int(endi) -1].split(".nc")[0]  
 
 
-
+logging.info("Jobid "+ str(jobid)+ " toposcaling "+ str(start)+ " to " + str(end))
 
 tasks = mymonths[int(starti):int(endi)]
 
