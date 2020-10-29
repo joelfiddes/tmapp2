@@ -1,4 +1,5 @@
 import pandas as pd
+import logging
 import sys
 wd= sys.argv[1] #'/home/joel/sim/qmap/ch_tmapp_10/' 
 starti= sys.argv[2] 
@@ -75,6 +76,7 @@ tasks = mymonths[int(starti):int(endi)]
 for i,task in enumerate(tasks):
 
 	logging.info("toposcaling "+ tasks[i])
+	print(("toposcaling "+ tasks[i]))
 	tlib.tscale3dmain(wd,tasks[i],lp, reduceSteepSnow, outputFormat)
 
 
