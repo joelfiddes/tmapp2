@@ -85,3 +85,5 @@ tlib.compute_terrain_ndvi( wd )
 # make sim dirs and cookie cut ele,slf,asp,ndvi to them
 tlib.setup_sim_dirs_grid(wd, forcing_grid)
 
+logging.info("Setup complete!")
+print("Setup complete!")
