@@ -4,7 +4,7 @@ import glob
 
 wd= sys.argv[1] #'/home/joel/sim/qmap/ch_tmapp_10/' 
 grid= sys.argv[2] 
-jobid = sys.getenv('SLURM_ARRAY_TASK_ID')
+jobid = os.getenv('SLURM_ARRAY_TASK_ID')
 
 print("Computing SVF grid " + str(jobid))
 config = ConfigObj(wd + "/config.ini")
