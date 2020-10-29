@@ -1,6 +1,10 @@
 #!/bin/bash
 # JobArray.sh
 #
+# $1 : wd
+# $2 : NMONTHS
+
+
 #SBATCH -J tmapp # A single job name for the array
 #SBATCH -p node # Partition (required)
 #SBATCH -A node # Account (required)
@@ -10,17 +14,13 @@
 #SBATCH --mem 4000 # Memory request of 4 GB
 #SBATCH -o output/myArray_%A_%a.out # Standard output - write the console output to the output folder %A= Job ID, %a = task or Step ID
 #SBATCH -e error/myArray_%A_%a.err # Standard error -write errors to the errors folder and
-#SBATCH --array=1-50%50 # create a array from 1to16 and limit the concurrent runing task  to 50
+#SBATCH --array=1-100 # create a array from 1to16 and limit the concurrent runing task  to 50
 #SBATCH --mail-user=joelfiddes@gmail.com
 #SBATCH --mail-type=ALL  # Send me some mails when jobs end or fail.
 
 pwd; hostname; date
 
-# run sequentially
-python tmapp_hpc_setup.py wd
 
-# parallel however many grids there are (NGRID)
-python tmapp_hpc_svf.py wd
 
 # parallelise through time (use NGRID as devidor)
 # This is an example script that combines array tasks with
@@ -32,7 +32,7 @@ python tmapp_hpc_svf.py wd
 
 
 #Set the number of runs that each SLURM task should do
-PER_TASK=1000
+PER_TASK=$2/100
 
 # Calculate the starting and ending values for this task based
 # on the SLURM task and the number of runs per task.
