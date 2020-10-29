@@ -46,7 +46,7 @@ echo This is task $SLURM_ARRAY_TASK_ID, which will do runs $START_NUM to $END_NU
 for (( run=$START_NUM; run<=END_NUM; run++ )); do
   echo This is SLURM task $SLURM_ARRAY_TASK_ID, run number $run
   #Do your stuff here
-	python tmapp_hpc_tscale.py wd
+	python tmapp_hpc_tscale.py $1 START_NUM END_NUM
 
 done
 
