@@ -14,7 +14,7 @@ import tscale_lib as tlib
 
 namelist="/home/caduff/src/FSM/nlst_tmapp.txt"
 fsmexepath = "/home/caduff/src/FSM/FSM"
-
+outputFormat='FSM'
 
 
 
