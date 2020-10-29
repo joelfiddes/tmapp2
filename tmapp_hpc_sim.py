@@ -7,6 +7,10 @@ wd= sys.argv[1] #'/home/joel/sim/qmap/ch_tmapp_10/'
 starti= sys.argv[2]
 endi= sys.argv[3]
 
+# ensure we have a whole number, rounds up
+starti = round(int(starti))
+endi = round(int(endi))
+
 from configobj import ConfigObj
 config = ConfigObj(wd + "/config.ini")
 tscale_root = config['main']['tscale_root']  # path to tscaleV2 directory

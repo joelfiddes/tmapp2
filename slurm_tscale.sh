@@ -3,6 +3,8 @@
 #
 # $1 : wd
 # $2 : NMONTHS
+# run sbatch slurm_tscale.sh /home/caduff/sim/ch_tmapp_50 500
+
 
 
 #SBATCH -J tmapp # A single job name for the array

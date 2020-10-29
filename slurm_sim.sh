@@ -2,6 +2,7 @@
 # JobArray.sh
 #$1 : wd
 #$2 : number of sims
+# run sbatch slurm_sim.sh /home/caduff/sim/ch_tmapp_50 1050
 
 #SBATCH -J tmapp # A single job name for the array
 #SBATCH -p node # Partition (required)
