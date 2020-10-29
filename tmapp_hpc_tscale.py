@@ -14,6 +14,10 @@ tscale_root = config['main']['tscale_root']  # path to tscaleV2 directory
 sys.path.insert(1, tscale_root)
 import tscale_lib as tlib
 
+# pars to add to config
+reduceSteepSnow='TRUE'
+outputFormat='FSM'
+
 # make outdir
 outdir = wd+"/out/"
 if not os.path.exists(outdir):
@@ -56,10 +60,3 @@ for i,task in enumerate(tasks):
 
 
 
-
-
-
-
-
-
-tscale3D.main(wd, start, end) 
