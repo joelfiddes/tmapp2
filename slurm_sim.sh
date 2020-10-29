@@ -19,11 +19,7 @@
 
 pwd; hostname; date
 
-# run sequentially
-python tmapp_hpc_setup.py wd
 
-# parallel however many grids there are (NGRID)
-python tmapp_hpc_svf.py wd
 
 # parallelise through time (use NGRID as devidor)
 # This is an example script that combines array tasks with
@@ -46,16 +42,10 @@ END_NUM=$(( $SLURM_ARRAY_TASK_ID * $PER_TASK ))
 echo This is task $SLURM_ARRAY_TASK_ID, which will do runs $START_NUM to $END_NUM
 
   #Do your stuff here
-	python tmapp_hpc_tscale.py $1
+ python tmapp_hpc_sim.py $1 $START_NUM $END_NUM
 
 
 
 date
 
 
-
-# paralleise over sims (use NGRID as divifor)
-# efficient running of many small taskshttps://help.rc.ufl.edu/doc/SLURM_Job_Arrays 
-# eg As an example let's imaging I have 5,000 runs of a program to do, with each run taking about 30 seconds to complete. Rather than running an array job with 5,000 tasks, 
-# it would be much more efficient to run 5 tasks where each completes 1,000 runs. Here's a sample script to accomplish this by combining array jobs with bash loops.
-Python r_passingArguments.R input/input"${SLURM_ARRAY_TASK_ID}".txt    #R
