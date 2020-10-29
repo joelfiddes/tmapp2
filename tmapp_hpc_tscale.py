@@ -19,12 +19,12 @@ mylist = glob.glob(wd+'/forcing/SURF_*')
 mymonths =sorted([i.split('SURF_', 1)[1] for i in mylist])
 
 # if submitted end of array is long than number of months then set to length of months
-if endi > len(mymonths):
-	endi = len(mymonths)
+if int(endi) > len(mymonths):
+	(endi) = len(mymonths)
 
 # compute month range to compute by this worker (python index conversion)
-start = mymonths[starti -1]
-end  = mymonths[endi -1]  
+start = mymonths[int(starti) -1]
+end  = mymonths[int(endi) -1]  
 
 print("Jobid "+ str(jobid)+ " toposcaling "+ str(start)+ " to " + str(end))
 tscale3D.main(wd, start, end) 
