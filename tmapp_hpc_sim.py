@@ -17,7 +17,7 @@ namelist="/home/caduff/src/FSM/nlst_tmapp.txt"
 fsmexepath = "/home/caduff/src/FSM/FSM"
 outputFormat='FSM'
 
-
+jobid = os.getenv('SLURM_ARRAY_TASK_ID')
 
 #	Log
 logdir = wd+"/logs/"
