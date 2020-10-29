@@ -2,7 +2,7 @@
 import sys
 import os
 wd= sys.argv[1] #'/home/joel/sim/qmap/ch_tmapp_10/' 
-use_mpi =False
+use_mpi =True
 sys.path.append(os.getcwd())
 print (sys.version)
 from configobj import ConfigObj
@@ -59,12 +59,14 @@ end = "198109"
 # =========================================================================
 #	Log
 # =========================================================================
-logfile = wd+ "/logfile_worker"+str(rank)
+
 if use_mpi == True:
-		if os.path.isfile(logfile) == True:
-			os.remove(logfile)
+	logfile = wd+ "/logfile_worker"+str(rank)
+	if os.path.isfile(logfile) == True:
+		os.remove(logfile)
 
 if use_mpi == False:
+	logfile = wd+ "/logfile_setup"
 	if os.path.isfile(logfile) == True:
 		os.remove(logfile)
 
