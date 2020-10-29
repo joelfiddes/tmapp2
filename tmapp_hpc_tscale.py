@@ -18,6 +18,27 @@ import tscale_lib as tlib
 reduceSteepSnow='TRUE'
 outputFormat='FSM'
 
+
+#	Log
+logdir = wd+"/logs/"
+if not os.path.exists(logdir):
+	os.makedirs(logdir)
+
+logfile = logdir+ "/logfile_tscale"+ jobid
+if os.path.isfile(logfile) == True:
+	os.remove(logfile)
+
+
+# to clear logger: https://stackoverflow.com/questions/30861524/logging-basicconfig-not-creating-log-file-when-i-run-in-pycharm
+for handler in logging.root.handlers[:]:
+    logging.root.removeHandler(handler)
+
+logging.basicConfig(level=logging.DEBUG, filename=logfile,filemode="a+",format="%(asctime)-15s %(levelname)-8s %(message)s")
+
+
+logging.info("Jobid "+ str(jobid)+ " toposcaling "+ str(start)+ " to " + str(end))
+
+
 # make outdir
 outdir = wd+"/out/"
 if not os.path.exists(outdir):
@@ -46,14 +67,14 @@ if int(endi) > len(mymonths):
 start = mymonths[int(starti) -1].split(".nc")[0]
 end  = mymonths[int(endi) -1].split(".nc")[0]  
 
-print("Jobid "+ str(jobid)+ " toposcaling "+ str(start)+ " to " + str(end))
+
 
 
 tasks = mymonths[int(starti):int(endi)]
 
 for i,task in enumerate(tasks):
 
-	print("toposcaling "+ tasks[i])
+	logging.info("toposcaling "+ tasks[i])
 	tlib.tscale3dmain(wd,tasks[i],lp, reduceSteepSnow, outputFormat)
 
 

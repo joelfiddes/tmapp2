@@ -32,7 +32,7 @@ pwd; hostname; date
 
 
 #Set the number of runs that each SLURM task should do
-PER_TASK=$2/100
+PER_TASK=$(($2/100))
 
 # Calculate the starting and ending values for this task based
 # on the SLURM task and the number of runs per task.
@@ -43,12 +43,12 @@ END_NUM=$(( $SLURM_ARRAY_TASK_ID * $PER_TASK ))
 echo This is task $SLURM_ARRAY_TASK_ID, which will do runs $START_NUM to $END_NUM
 
 # Run the loop of runs for this task.
-for (( run=$START_NUM; run<=END_NUM; run++ )); do
-  echo This is SLURM task $SLURM_ARRAY_TASK_ID, run number $run
+#for (( run=$START_NUM; run<=END_NUM; run++ )); do
+  #echo This is SLURM task $SLURM_ARRAY_TASK_ID, run number $run
   #Do your stuff here
-	python tmapp_hpc_tscale.py $1 $START_NUM $END_NUM
+python tmapp_hpc_tscale.py $1 $START_NUM $END_NUM
 
-done
+#done
 
 date
 

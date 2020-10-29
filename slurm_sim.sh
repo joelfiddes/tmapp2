@@ -1,6 +1,8 @@
 #!/bin/bash
 # JobArray.sh
-#
+#$1 : wd
+#$2 : number of sims
+
 #SBATCH -J tmapp # A single job name for the array
 #SBATCH -p node # Partition (required)
 #SBATCH -A node # Account (required)
@@ -8,11 +10,12 @@
 #SBATCH -n 1 # one cores
 #SBATCH -t 02:00:00 # Running time of 2 days
 #SBATCH --mem 4000 # Memory request of 4 GB
-#SBATCH -o output/myArray_%A_%a.out # Standard output - write the console output to the output folder %A= Job ID, %a = task or Step ID
-#SBATCH -e error/myArray_%A_%a.err # Standard error -write errors to the errors folder and
-#SBATCH --array=1-50%50 # create a array from 1to16 and limit the concurrent runing task  to 50
+#SBATCH -o LOG_tscale-%A.out # Standard output - write the console output to the output folder %A= Job ID, %a = task or Step ID
+#SBATCH -e LOG_tscale-%A.err # Standard error -write errors to the errors folder and
+#SBATCH --array=1-100 # create a array from 1to16 and limit the concurrent runing task  to 50
 #SBATCH --mail-user=joelfiddes@gmail.com
 #SBATCH --mail-type=ALL  # Send me some mails when jobs end or fail.
+
 
 pwd; hostname; date
 
@@ -32,7 +35,7 @@ python tmapp_hpc_svf.py wd
 
 
 #Set the number of runs that each SLURM task should do
-PER_TASK=1000
+PER_TASK=$(($2/100))
 
 # Calculate the starting and ending values for this task based
 # on the SLURM task and the number of runs per task.
@@ -42,13 +45,10 @@ END_NUM=$(( $SLURM_ARRAY_TASK_ID * $PER_TASK ))
 # Print the task and run range
 echo This is task $SLURM_ARRAY_TASK_ID, which will do runs $START_NUM to $END_NUM
 
-# Run the loop of runs for this task.
-for (( run=$START_NUM; run<=END_NUM; run++ )); do
-  echo This is SLURM task $SLURM_ARRAY_TASK_ID, run number $run
   #Do your stuff here
-	python tmapp_hpc_tscale.py wd
+	python tmapp_hpc_tscale.py $1
 
-done
+
 
 date
 
