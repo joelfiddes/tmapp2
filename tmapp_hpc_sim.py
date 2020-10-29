@@ -18,11 +18,34 @@ outputFormat='FSM'
 
 
 
+#	Log
+logdir = wd+"/logs/"
+if not os.path.exists(logdir):
+	os.makedirs(logdir)
+
+logfile = logdir+ "/logfile_sim"+ jobid
+if os.path.isfile(logfile) == True:
+	os.remove(logfile)
+
+
+# to clear logger: https://stackoverflow.com/questions/30861524/logging-basicconfig-not-creating-log-file-when-i-run-in-pycharm
+for handler in logging.root.handlers[:]:
+    logging.root.removeHandler(handler)
+
+logging.basicConfig(level=logging.DEBUG, filename=logfile,filemode="a+",format="%(asctime)-15s %(levelname)-8s %(message)s")
+
+
+
+
 
 
 
 # outputFormat='FSM'
 lp = pd.read_csv(wd+"/listpoints.txt")
+
+# if submitted end of array is long than number of months then set to length of months
+if int(endi) > len(mymonths):
+	endi = len(lp.id)
 
 ids=range(len(lp.id))
 tasks = ids[int(starti)-1:int(endi)]
