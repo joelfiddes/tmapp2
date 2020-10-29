@@ -1,7 +1,7 @@
 #!/bin/bash
 # JobArray.sh
 #
-#SBATCH -J tmapp # A single job name for the array
+#SBATCH -J tmapp_setup # A single job name for the array
 #SBATCH -p node # Partition (required)
 #SBATCH -A node # Account (required)
 #SBATCH -q normal # QOS (required)
