@@ -45,7 +45,7 @@ logging.basicConfig(level=logging.DEBUG, filename=logfile,filemode="a+",format="
 lp = pd.read_csv(wd+"/listpoints.txt")
 
 # if submitted end of array is long than number of months then set to length of months
-if int(endi) > len(mymonths):
+if int(endi) > len(lp.id):
 	endi = len(lp.id)
 
 ids=range(len(lp.id))
