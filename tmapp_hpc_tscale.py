@@ -71,7 +71,7 @@ end  = mymonths[int(endi) -1].split(".nc")[0]
 
 logging.info("Jobid "+ str(jobid)+ " toposcaling "+ str(start)+ " to " + str(end))
 
-tasks = mymonths[int(starti):int(endi)]
+tasks = mymonths[int(starti-1):int(endi)]
 
 for i,task in enumerate(tasks):
 
