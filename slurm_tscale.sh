@@ -54,8 +54,3 @@ date
 
 
 
-# paralleise over sims (use NGRID as divifor)
-# efficient running of many small taskshttps://help.rc.ufl.edu/doc/SLURM_Job_Arrays 
-# eg As an example let's imaging I have 5,000 runs of a program to do, with each run taking about 30 seconds to complete. Rather than running an array job with 5,000 tasks, 
-# it would be much more efficient to run 5 tasks where each completes 1,000 runs. Here's a sample script to accomplish this by combining array jobs with bash loops.
-Python r_passingArguments.R input/input"${SLURM_ARRAY_TASK_ID}".txt    #R
