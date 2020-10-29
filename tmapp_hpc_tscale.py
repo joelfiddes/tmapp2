@@ -23,8 +23,8 @@ if int(endi) > len(mymonths):
 	(endi) = len(mymonths)
 
 # compute month range to compute by this worker (python index conversion)
-start = mymonths[int(starti) -1]
-end  = mymonths[int(endi) -1]  
+start = mymonths[int(starti) -1].split(".nc")[0]
+end  = mymonths[int(endi) -1].split(".nc")[0]  
 
 print("Jobid "+ str(jobid)+ " toposcaling "+ str(start)+ " to " + str(end))
 tscale3D.main(wd, start, end) 
