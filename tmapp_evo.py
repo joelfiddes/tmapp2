@@ -150,6 +150,27 @@ tscale3D.main(wd, start, end)
 # need to solve dotprod memory issue Kris?Help!
 # i/o is quite costly eg 2000 files
 
+	# agregate results
+	
+# outputFormat='FSM'
+# lp = pd.read_csv(wd+"/listpoints.txt")
+
+# if use_mpi == False:
+# 	print("Aggregate results")
+# 	ids=tqdm(range(len(lp.id)))
+# 	Parallel(n_jobs=int(num_cores))(delayed(tlib.concat_results)(wd,str(id+1), outputFormat) for id in ids)
+
+
+# if use_mpi == True:
+# 	ids=range(len(lp.id))
+# 	for i,task in enumerate(ids):
+
+# 		if i%size!=rank:
+# 			continue
+# 		logging.info("concat "+ str(ids[i]) )
+# 		tlib.concat_results(wd,str(ids[i]+1), outputFormat)
+
+
 # convert to FSM format
 logging.info("Running FSM")
 

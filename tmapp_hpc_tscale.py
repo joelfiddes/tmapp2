@@ -1,3 +1,4 @@
+import pandas
 import sys
 wd= sys.argv[1] #'/home/joel/sim/qmap/ch_tmapp_10/' 
 starti= sys.argv[2] 
@@ -11,8 +12,23 @@ from configobj import ConfigObj
 config = ConfigObj(wd + "/config.ini")
 tscale_root = config['main']['tscale_root']  # path to tscaleV2 directory
 sys.path.insert(1, tscale_root)
-import tscale3D
+import tscale_lib as tlib
 
+# make outdir
+outdir = wd+"/out/"
+if not os.path.exists(outdir):
+	os.makedirs(outdir)
+
+# concat all listpoint files
+filenames = sorted(glob.glob(wd + "/*/*/listpoints.txt"))
+
+dfs = []
+for filename in filenames:
+	dfs.append(pd.read_csv(filename))
+
+# Concatenate all lp data into one DataFrame
+lp = pd.concat(dfs, ignore_index=True)
+lp.to_csv(path_or_buf=wd+"/listpoints.txt" ,na_rep=-999,float_format='%.3f')
 
 
 mylist = glob.glob(wd+'/forcing/SURF_*')
@@ -27,4 +43,23 @@ start = mymonths[int(starti) -1].split(".nc")[0]
 end  = mymonths[int(endi) -1].split(".nc")[0]  
 
 print("Jobid "+ str(jobid)+ " toposcaling "+ str(start)+ " to " + str(end))
+
+
+tasks = mymonths[starti:endi]
+
+for i,task in enumerate(tasks):
+
+	print("toposcaling "+ tasks[i])
+	tlib.tscale3dmain(wd,tasks[i],lp, reduceSteepSnow, outputFormat)
+
+
+
+
+
+
+
+
+
+
+
 tscale3D.main(wd, start, end) 
