@@ -1,5 +1,7 @@
-
+import pandas as pd
 import sys
+import glob
+import logging
 wd= sys.argv[1] #'/home/joel/sim/qmap/ch_tmapp_10/' 
 starti= sys.argv[2]
 endi= sys.argv[3]
