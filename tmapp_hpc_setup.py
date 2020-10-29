@@ -61,7 +61,7 @@ for handler in logging.root.handlers[:]:
 
 logging.basicConfig(level=logging.DEBUG, filename=logfile,filemode="a+",format="%(asctime)-15s %(levelname)-8s %(message)s")
 
-jobid = sys.getenv('SLURM_ARRAY_TASK_ID')
+jobid = os.getenv('SLURM_ARRAY_TASK_ID')
 logging.info("Running setup on jobid"+ str(jobid))
 
 
