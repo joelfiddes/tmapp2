@@ -1,6 +1,6 @@
 import sys
 wd= sys.argv[1] #'/home/joel/sim/qmap/ch_tmapp_10/' 
-grid= sys.argv[2] 
+grid= int(sys.argv[2]) 
 
 import os
 jobid = os.getenv('SLURM_ARRAY_TASK_ID')
