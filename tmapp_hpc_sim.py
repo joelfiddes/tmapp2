@@ -56,16 +56,17 @@ ids=range(len(lp.id))
 tasks = ids[int(starti)-1:int(endi)]
 
 for i,task in enumerate(tasks):
-	print("concat "+ str(tasks[i]) )
+	print("concat "+ str(tasks[i]+1) )
 	logging.info("concat "+ str(tasks[i]+1) )
 	tlib.concat_results(wd,str(tasks[i]+1), outputFormat)
 
 
 
-meteofiles = sorted(glob.glob(wd+"/out/tscale*.csv"))
-tasks = meteofiles[int(starti)-1:int(endi)]
+#meteofiles = sorted(glob.glob(wd+"/out/tscale*.csv"))
+#tasks = meteofiles[int(starti)-1:int(endi)]
 
 for i,task in enumerate(tasks):
-	print("Running FSM "+ tasks[i])
-	logging.info("Running FSM "+ tasks[i])
-	tlib.fsm_sim(tasks[i],namelist,fsmexepath)
+	meteofile = wd+"/out/tscale_"+str(task+1)+".csv"
+	print("Running FSM "+ str(task+1))
+	logging.info("Running FSM "+ str(task+1))
+	tlib.fsm_sim(meteofile,namelist,fsmexepath)
