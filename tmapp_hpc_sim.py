@@ -65,8 +65,47 @@ for i,task in enumerate(tasks):
 #meteofiles = sorted(glob.glob(wd+"/out/tscale*.csv"))
 #tasks = meteofiles[int(starti)-1:int(endi)]
 
+def resamp_1H(path_inpt, freq='1H'):# create 1h wfj era5 obs data by
+
+	# freq = '1H' or '1D'
+	dfin =pd.read_csv(path_inpt, delim_whitespace=True, 
+	header=None, index_col='datetime', 
+                 parse_dates={'datetime': [0,1,2,3]}, 
+                 date_parser=lambda x: pd.datetime.strptime(x, '%Y %m %d %H') )
+
+
+	df = dfin.resample(freq).interpolate()
+
+
+	dates=df.index
+	df_fsm= pd.DataFrame({	
+	 				"year": dates.year, 
+	 				"month": dates.month, 
+					"day": dates.day, 
+					"hour": dates.hour,
+					"ISWR":df.iloc[:,0]  , 
+					"ILWR":df.iloc[:,1]  , 
+					"Sf":df.iloc[:,2]  , # prate in mm/hr to kgm2/s
+					"Rf":df.iloc[:,3]  , # prate in mm/hr to kgm2/s
+					"TA":df.iloc[:,4]  , 
+					"RH":df.iloc[:,5]  ,#*0.01, #meteoio 0-1
+					"VW":df.iloc[:,6]  ,
+					"P":df.iloc[:,7]  ,
+					
+					
+					})
+
+	df_fsm.to_csv(path_or_buf=path_inpt.split('.')[0]  + '_'+freq+'.csv' ,na_rep=-999,float_format='%.8f', header=False, sep='\t', index=False, 
+		columns=['year','month','day', 'hour', 'ISWR', 'ILWR', 'Sf', 'Rf', 'TA', 'RH', 'VW', 'P'])
+
+	return(path_inpt.split('.')[0]  + '_'+freq+'.csv')
+
+
 for i,task in enumerate(tasks):
 	meteofile = wd+"/out/tscale_"+str(task+1)+".csv"
+	
+	path = resamp_1H(meteofile)
+
 	print("Running FSM "+ str(task+1))
 	logging.info("Running FSM "+ str(task+1))
-	tlib.fsm_sim(meteofile,namelist,fsmexepath)
+	tlib.fsm_sim(path,namelist,fsmexepath)
