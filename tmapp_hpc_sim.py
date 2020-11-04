@@ -6,6 +6,7 @@ import logging
 wd= sys.argv[1] #'/home/joel/sim/qmap/ch_tmapp_10/' 
 starti= sys.argv[2]
 endi= sys.argv[3]
+concat="FALSE"
 
 # ensure we have a whole number, rounds up
 starti = round(int(starti))
@@ -55,7 +56,7 @@ if int(endi) > len(lp.id):
 ids=range(len(lp.id))
 tasks = ids[int(starti)-1:int(endi)]
 
-if len(tasks) > 0:
+if concat=="TRUE":
 	for i,task in enumerate(tasks):
 		print("concat "+ str(tasks[i]+1) )
 		logging.info("concat "+ str(tasks[i]+1) )
