@@ -55,7 +55,7 @@ if int(endi) > len(lp.id):
 ids=range(len(lp.id))
 tasks = ids[int(starti)-1:int(endi)]
 
-if len(tasks>0):
+if len(tasks) > 0:
 	for i,task in enumerate(tasks):
 		print("concat "+ str(tasks[i]+1) )
 		logging.info("concat "+ str(tasks[i]+1) )
