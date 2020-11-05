@@ -23,7 +23,7 @@ if not os.path.isfile(fname1):  # NOT ROBUST
     successFile = wd + "/ensemble/ensemble" + str(ipad) + "/_RUN_SUCCESS"
 
     if not os.path.isfile(successFile):  # NOT ROBUST
-        logging.info("----- START ENSEMBLE RUN " + str(ensembleN) + " -----")
+        print("----- START ENSEMBLE RUN " + str(ensembleN) + " -----")
 
         # run ensemble directory create and perturb code on ensemble i
         tmapp_da_FSM_hpc.main(wd, ensembleN, stephr)
@@ -35,5 +35,5 @@ if not os.path.isfile(fname1):  # NOT ROBUST
 
     f = open(wd + "/SUCCESS_ENSEMBLE", "w")
 else:
-    logging.info("Ensemble simulated already")
+    print("Ensemble simulated already")
 
