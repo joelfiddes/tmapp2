@@ -3,6 +3,7 @@ import subprocess
 import sys
 import os
 from configobj import ConfigObj
+import glob
 
 wd= sys.argv[1] #'/home/joel/sim/qmap/ch_tmapp_10/' 
 config = ConfigObj(wd + "/config.ini")
