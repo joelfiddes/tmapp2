@@ -1,3 +1,4 @@
+# run python tmapp_hpc_perturb.py #WD
 import subprocess
 import sys
 import os
@@ -26,3 +27,11 @@ subprocess.call(["Rscript", "rsrc/ensemGen.R" , str(N) , ensemb_dir, config['ens
 fsm=config['main']['FSMPATH'] + "/FSM"
 cmd="cp " +fsm+ " " +wd
 os.system(cmd)
+
+# clean up old resamples from tmapp
+for f in glob.glob(wd+"/out/"+ "*1D.csv"):
+	os.remove(f)
+
+# clean up old resamples
+for f in glob.glob(wd+"/out/"+ "*1H.csv"):
+	os.remove(f)
