@@ -14,7 +14,7 @@ config = ConfigObj(wd + "/config.ini")
 # ===============================================================================
 
    
-stephr=1  # this needs to come from config
+
 
 fname1 = wd + "/SUCCESS_ENSEMBLE"
 if not os.path.isfile(fname1):  # NOT ROBUST
@@ -26,7 +26,7 @@ if not os.path.isfile(fname1):  # NOT ROBUST
         print("----- START ENSEMBLE RUN " + str(ensembleN) + " -----")
 
         # run ensemble directory create and perturb code on ensemble i
-        tmapp_da_FSM_hpc.main(wd, ensembleN, stephr)
+        tmapp_da_FSM_hpc.main(wd, ensembleN)
 
         # write success file if ensemble completes
         f= open(successFile,"w+")
