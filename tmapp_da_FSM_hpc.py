@@ -12,7 +12,7 @@ import glob
 # approx 38 s for 100 samples and 32 model types (320 sims) for 1 sim year
 
 
-def main(wd, ensembleN, stephr):
+def main(wd, ensembleN):
 
 	config = ConfigObj(wd+"/config.ini")
 	ensemb_root = wd+"/ensemble"
@@ -33,8 +33,8 @@ def main(wd, ensembleN, stephr):
 
 
 	# pad to 3 digits for sorting ease
-	i=ensembleN
-	ipad=	'%03d' % (int(ensembleN),)
+	i=int(ensembleN)
+	ipad=	'%03d' % (i,)
 	# Loop Timer
 
 
@@ -182,7 +182,6 @@ def main(wd, ensembleN, stephr):
 if __name__ == '__main__':
 	import sys
 	wd      = sys.argv[1]
-	home      = sys.argv[2]
-	ensembleN =sys.argv[3]
-	stephr = sys.argv[4]
+	ensembleN =sys.argv[2]
+
 	main(config)
