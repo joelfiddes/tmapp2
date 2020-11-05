@@ -1,8 +1,9 @@
 #!/bin/bash
 # JobArray.sh
 #$1 : wd
-#$2 : number of sims
-# run sbatch slurm_sim.sh /home/caduff/sim/ch_tmapp_50 1100
+# run python tmapp_hpc_perturb.py #WD once at cmdline THEN:
+
+# run sbatch slurm_da.sh /home/caduff/sim/ch_tmapp_50
 
 #SBATCH -J tmapp # A single job name for the array
 #SBATCH -p node # Partition (required)
@@ -13,7 +14,7 @@
 #SBATCH --mem 4000 # Memory request of 4 GB
 #SBATCH -o LOG_tscale-%A_%a.out # Standard output - write the console output to the output folder %A= Job ID, %a = task or Step ID
 #SBATCH -e LOG_tscale-%A_%a.err # Standard error -write errors to the errors folder and
-#SBATCH --array=1-100 # create a array from 1to16 and limit the concurrent runing task  to 50
+#SBATCH --array=1-100 # this is number of ensembles (100)
 #SBATCH --mail-user=joelfiddes@gmail.com
 #SBATCH --mail-type=ALL  # Send me some mails when jobs end or fail.
 
@@ -32,18 +33,16 @@ pwd; hostname; date
 
 
 #Set the number of runs that each SLURM task should do
-PER_TASK=$(($2/100))
+
 
 # Calculate the starting and ending values for this task based
 # on the SLURM task and the number of runs per task.
-START_NUM=$(( ($SLURM_ARRAY_TASK_ID - 1) * $PER_TASK + 1 ))
-END_NUM=$(( $SLURM_ARRAY_TASK_ID * $PER_TASK ))
 
 # Print the task and run range
-echo This is task $SLURM_ARRAY_TASK_ID, which will do runs $START_NUM to $END_NUM
+echo This is task $SLURM_ARRAY_TASK_ID, which will do Ensemble $SLURM_ARRAY_TASK_ID 
 
-  #Do your stuff here
- python tmapp_hpc_sim.py $1 $START_NUM $END_NUM
+ #Do your stuff here
+python tmapp_hpc_da.py $1 $SLURM_ARRAY_TASK_ID 
 
 
 

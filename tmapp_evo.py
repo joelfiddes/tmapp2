@@ -18,6 +18,7 @@ from joblib import Parallel, delayed
 import os
 import tscale3D
 import logging
+import tmap_evo_da
 
 
 # setup MPI
@@ -188,3 +189,7 @@ if use_mpi == True:
 			continue
 		logging.info("Running FSM "+ meteofiles[i])
 		tlib.fsm_sim(meteofiles[i],namelist,fsmexepath)
+
+
+
+tmapp_evo_da(wd)

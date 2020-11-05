@@ -63,7 +63,6 @@ if concat=="TRUE":
 		tlib.concat_results(wd,str(tasks[i]+1), outputFormat)
 
 
-
 #meteofiles = sorted(glob.glob(wd+"/out/tscale*.csv"))
 #tasks = meteofiles[int(starti)-1:int(endi)]
 
