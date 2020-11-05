@@ -5,7 +5,7 @@ from configobj import ConfigObj
 import tmapp_da_FSM_hpc
 
 wd= sys.argv[1] #'/home/joel/sim/qmap/ch_tmapp_10/' 
-ensembleN=sys.argV[2]
+ensembleN=sys.argv[2]
 
 config = ConfigObj(wd + "/config.ini")
 
