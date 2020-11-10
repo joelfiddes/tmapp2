@@ -16,24 +16,24 @@ config = ConfigObj(wd + "/config.ini")
    
 
 
-fname1 = wd + "/SUCCESS_ENSEMBLE"
-if not os.path.isfile(fname1):  # NOT ROBUST
+#fname1 = wd + "/SUCCESS_ENSEMBLE"
+#if not os.path.isfile(fname1):  # NOT ROBUST
 
-    ipad=   '%03d' % (int(ensembleN),)
-    successFile = wd + "/ensemble/ensemble" + str(ipad) + "/_RUN_SUCCESS"
+ipad=   '%03d' % (int(ensembleN),)
+successFile = wd + "/ensemble/ensemble" + str(ipad) + "/_RUN_SUCCESS"
 
-    if not os.path.isfile(successFile):  # NOT ROBUST
-        print("----- START ENSEMBLE RUN " + str(ensembleN) + " -----")
+if not os.path.isfile(successFile):  # NOT ROBUST
+    print("----- START ENSEMBLE RUN " + str(ensembleN) + " -----")
 
-        # run ensemble directory create and perturb code on ensemble i
-        tmapp_da_FSM_hpc.main(wd, ensembleN)
+    # run ensemble directory create and perturb code on ensemble i
+    tmapp_da_FSM_hpc.main(wd, ensembleN)
 
-        # write success file if ensemble completes
-        f= open(successFile,"w+")
-        f.close() 
+    # write success file if ensemble completes
+    f= open(successFile,"w+")
+    f.close() 
 
 
-    f = open(wd + "/SUCCESS_ENSEMBLE", "w")
-else:
-    print("Ensemble simulated already")
+#    f = open(wd + "/SUCCESS_ENSEMBLE", "w")
+#else:
+#    print("Ensemble simulated already")
 
