@@ -34,6 +34,6 @@ if not os.path.isfile(successFile):  # NOT ROBUST
 
 
 #    f = open(wd + "/SUCCESS_ENSEMBLE", "w")
-#else:
-#    print("Ensemble simulated already")
+else:
+    print("Ensemble "+ipad+ " simulated already")
 
