@@ -7,7 +7,7 @@ import pandas as pd
 from tqdm import tqdm
 wd= sys.argv[1] #'/home/joel/sim/qmap/ch_tmapp_10/' 
 da_year = sys.argv[2]
-ensembleN =sys.argv[2]
+ensembleN =sys.argv[3]
 # ===============================================================================
 #	Make ensemble.csv (peturb pars)
 # ===============================================================================
