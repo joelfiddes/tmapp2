@@ -1,4 +1,5 @@
-library(RcppCNPy)
+
+args <- 	commandArgs(trailingOnly=TRUE)
 wd <- args[1]
 nens <-as.numeric(args[2])
 
