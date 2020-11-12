@@ -10,7 +10,7 @@ da_year=sys.argv[2] # da_year=2003
 config = ConfigObj(wd + "/config.ini")
 
 #constants
-sdThresh=0
+sdThresh=5
 R=0.016
 #R=0.0001
 # ===============================================================================
