@@ -3,6 +3,7 @@ import glob
 import pandas as pd
 import numpy as np
 import subprocess
+import sys
 
 wd= sys.argv[1] # wd ='/home/caduff/sim//ch_tmapp_50/' 
 da_year=sys.argV[2] # da_year=2003
