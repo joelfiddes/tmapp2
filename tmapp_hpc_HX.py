@@ -6,7 +6,7 @@ import subprocess
 import sys
 
 wd= sys.argv[1] # wd ='/home/caduff/sim//ch_tmapp_50/' 
-da_year=sys.argV[2] # da_year=2003
+da_year=sys.argv[2] # da_year=2003
 config = ConfigObj(wd + "/config.ini")
 
 #constants
