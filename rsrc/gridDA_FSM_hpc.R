@@ -1,31 +1,23 @@
 library(RcppCNPy)
-wd = "/home/caduff/sim/ch_tmapp_50"
+wd <- args[1]
+nens <-as.numeric(args[2])
 
+
+
+# FIXED
 HX <- as.matrix(read.table(paste0(wd, "/ensemble/HX")))
 obs <- read.table(paste0(wd, "/ensemble/obs"))
 obs=obs$V1
-
-#startSim <-   "1979-08-01" 
-#startSim <-   "1979-08-01" 
-#endSim <-   "2019-09-30"
-
-# fixed
-nens=49
-#sdThresh=13
-#R=0.016
-#lp= read.csv(paste0(wd, "/listpoints.txt"))
 fsca= read.csv(paste0(wd, "/meanSCA.csv"))
 fsca_dates = read.csv(paste0(wd,"/fsca_dates.csv"))
 fsca = fsca$meanvec
 weight = read.csv(paste0(wd, "/ensemble/weights.txt"), header=F)
-
 weight = weight$V2
-
 ndays = length(obs)
 lq=0.3
 uq=0.85
 
-
+# code
 png(paste0(wd,"/ensemble/daplot.png"), width=800, height=400)
 par(mfrow=c(1,2))
 
@@ -119,7 +111,7 @@ high.pri = c(high.pri, med$y)
 
 
 #date = seq(as.Date(startda), as.Date(endda),by='day')
-date=1:91
+date=1:length(obs)
 
 #  xlim=c(date[182],date[355])
 plot(date,high.pri, col=NULL, type='l', main=paste('(A) fSCA'), ylab="fSCA (0-1)",xlab='', ylim=c(0,0.2))
@@ -278,7 +270,7 @@ cfact=1 # FIXED
 
 # ADD DATE
 #date = seq(as.Date(obsTS$x[1]), as.Date(obsTS$x[250]),by='day')
-date=1:91
+date=1:length(obs)
 
 #date=da_dates
 

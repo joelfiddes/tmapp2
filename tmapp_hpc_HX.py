@@ -83,5 +83,5 @@ np.savetxt(wd + "/ensemble/HX", HX)
 np.savetxt(wd + "/ensemble/HX_swe", HX_swe)
 np.savetxt(wd + "/ensemble/obs", Y)
 
-cmd = [ "Rscript",   "./rsrc/gridDA_FSM_hpc.R"]
+cmd = [ "Rscript",   "./rsrc/gridDA_FSM_hpc.R" , wd, N]
 subprocess.check_output(cmd)

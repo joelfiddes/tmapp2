@@ -17,13 +17,24 @@ def main(wd, ensembleN):
 	config = ConfigObj(wd+"/config.ini")
 	ensemb_root = wd+"/ensemble"
 
+	# pad to 3 digits for sorting ease
+	i=int(ensembleN)
+	ipad=	'%03d' % (i,)
 
-	#	Logging
+	# make new dierectory if does not exist
+	ensemb_dir = ensemb_root + "/ensemble" + str(ipad) + "/"
+	if not os.path.isdir(ensemb_dir):
+		cmd = "mkdir  %s"%(ensemb_dir)
+		os.system(cmd)
+
+
+
+
 
 	# write copy of config for ensemble editing
-	config.filename = ensemb_root +"/ensemble_config.ini"
-	config.write()
-	config = ConfigObj(config.filename)
+	# config.filename = ensemb_root +"/ensemble_config.ini"
+	# config.write()
+	# config = ConfigObj(config.filename)
 	
 
 	# start ensemble runs
@@ -32,9 +43,7 @@ def main(wd, ensembleN):
 	df = pd.read_csv(ensemb_root+"/ensemble.csv")
 
 
-	# pad to 3 digits for sorting ease
-	i=int(ensembleN)
-	ipad=	'%03d' % (i,)
+
 	# Loop Timer
 
 
@@ -44,20 +53,15 @@ def main(wd, ensembleN):
 	swbias = df['swbias'][i]
 
 
-	config["main"]["wd"]  = ensemb_root + "/ensemble" + str(ipad) + "/"
-	config["da"]["pscale"] = pbias #factor to multiply precip by
-	config["da"]["tscale"] = tbias #factor to add to temp
-	config["da"]["swscale"] = swbias
-	config["da"]["lwscale"] = lwbias
+	# config["main"]["wd"]  = ensemb_root + "/ensemble" + str(ipad) + "/"
+	# config["da"]["pscale"] = pbias #factor to multiply precip by
+	# config["da"]["tscale"] = tbias #factor to add to temp
+	# config["da"]["swscale"] = swbias
+	# config["da"]["lwscale"] = lwbias
 
-	config.write()
+	# config.write()
 
 
-	# make new dierectory if does not exist
-	ensemb_dir = config['main']['wd']
-	if not os.path.isdir(ensemb_dir):
-		cmd = "mkdir  %s"%(ensemb_dir)
-		os.system(cmd)
 
 
 	# copy sim dirs only THIS doesnt scale as we 30GB data *100 workers! Do 1 by 1
@@ -104,29 +108,29 @@ def main(wd, ensembleN):
 
 
 		if config["da"]["PPARS"] == "P":
-			df.iloc[:,6] = df.iloc[:,6] * config['da']['pscale'] #multiplicative formal
-			df.iloc[:,7] = df.iloc[:,7] * config['da']['pscale'] #multiplicative
+			df.iloc[:,6] = df.iloc[:,6] *pbias#multiplicative formal
+			df.iloc[:,7] = df.iloc[:,7] *pbias#multiplicative
 
 		if config["da"]["PPARS"] == "PT":
-			df.iloc[:,6] = df.iloc[:,6] * config['da']['pscale'] #multiplicative
-			df.iloc[:,7] = df.iloc[:,7] * config['da']['pscale'] #multiplicative
-			df.iloc[:,8] = df.iloc[:,8]*config['da']['tscale']
+			df.iloc[:,6] = df.iloc[:,6] *pbias#multiplicative
+			df.iloc[:,7] = df.iloc[:,7] *pbias#multiplicative
+			df.iloc[:,8] = df.iloc[:,8]*tbias
 
 
 		if config["da"]["PPARS"] == "PTS":
 
-			df.iloc[:,6] = df.iloc[:,6] * config['da']['pscale'] #multiplicative
-			df.iloc[:,7] = df.iloc[:,7] * config['da']['pscale'] #multiplicative
-			df.iloc[:,8] = df.iloc[:,8]*config['da']['tscale']
-			df.iloc[:,4] = df.iloc[:,4] * config['da']['swscale']##multiplicative
+			df.iloc[:,6] = df.iloc[:,6] *pbias#multiplicative
+			df.iloc[:,7] = df.iloc[:,7] *pbias#multiplicative
+			df.iloc[:,8] = df.iloc[:,8]*tbias
+			df.iloc[:,4] = df.iloc[:,4] * swbias##multiplicative
 
 
 		if config["da"]["PPARS"] == "PTSL":
-			df.iloc[:,6] = df.iloc[:,6] * config['da']['pscale'] #multiplicative
-			df.iloc[:,7] = df.iloc[:,7] * config['da']['pscale'] #multiplicative
-			df.iloc[:,8] = df.iloc[:,8]*config['da']['tscale']
-			df.iloc[:,4] = df.iloc[:,4] * config['da']['swscale']##multiplicative
-			df.iloc[:,5] = df.iloc[:,5] * config['da']['lwscale']##multiplicative
+			df.iloc[:,6] = df.iloc[:,6] *pbias#multiplicative
+			df.iloc[:,7] = df.iloc[:,7] *pbias#multiplicative
+			df.iloc[:,8] = df.iloc[:,8]*tbias
+			df.iloc[:,4] = df.iloc[:,4] * swbias##multiplicative
+			df.iloc[:,5] = df.iloc[:,5] * lwbias##multiplicative
 
 		df.to_csv( ensemb_dir+myfilebase,sep='\t', index = False, header=False)
 		
