@@ -40,10 +40,7 @@ logging.basicConfig(level=logging.DEBUG, filename=logfile,filemode="a+",format="
 
 
 
-# make outdir
-outdir = wd+"/out/"
-if not os.path.exists(outdir):
-	os.makedirs(outdir)
+
 
 # concat all listpoint files
 filenames = sorted(glob.glob(wd + "/*/*/listpoints.txt"))

@@ -5,7 +5,7 @@
 # $2 : NMONTHS
 # run sbatch slurm_tscale.sh /home/caduff/sim/ch_tmapp_50 500
 
-rm LOG*
+
 
 #SBATCH -J tmapp # A single job name for the array
 #SBATCH -p node # Partition (required)

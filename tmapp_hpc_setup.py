@@ -85,5 +85,10 @@ tlib.compute_terrain_ndvi( wd )
 # make sim dirs and cookie cut ele,slf,asp,ndvi to them
 tlib.setup_sim_dirs_grid(wd, forcing_grid)
 
+# make outdir
+outdir = wd+"/out/"
+if not os.path.exists(outdir):
+	os.makedirs(outdir)
+	
 logging.info("Setup complete!")
 print("Setup complete!")
