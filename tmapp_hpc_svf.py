@@ -17,7 +17,7 @@ sys.path.insert(1, tscale_root)
 import tscale_lib as tlib
 
 
-print("Computing SVF grid " + str(grid)
+print("Computing SVF grid " + str(grid))
 
 
 homes = sorted(glob.glob(wd+"/sim/*"))
