@@ -3,7 +3,7 @@
 # $1 : wd
 
 
-rm LOG*
+
 #SBATCH -J tmapp_svf # A single job name for the array
 #SBATCH -p node # Partition (required)
 #SBATCH -A node # Account (required)

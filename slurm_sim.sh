@@ -3,7 +3,7 @@
 #$1 : wd
 #$2 : number of sims
 # run sbatch slurm_sim.sh /home/caduff/sim/ch_tmapp_50 1100
-rm LOG*
+
 #SBATCH -J tmapp # A single job name for the array
 #SBATCH -p node # Partition (required)
 #SBATCH -A node # Account (required)
