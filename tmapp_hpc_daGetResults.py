@@ -35,8 +35,8 @@ import re
 
 def natural_sort(l): 
 	convert = lambda text: int(text) if text.isdigit() else text.lower() 
-    alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
-    return sorted(l, key = alphanum_key)
+	lphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
+	return sorted(l, key = alphanum_key)
 
 file_list = natural_sort(a)
 
@@ -48,7 +48,8 @@ endIndex = df[df.iloc[:,0]==str(da_year)+"-06-30"].index.values
 
 data = []
 for file_path in tqdm(file_list):
-        data.append( np.genfromtxt(file_path, usecols=6)[int(startIndex):int(endIndex)]   )
+	data.append( np.genfromtxt(file_path, usecols=6)[int(startIndex):int(endIndex)]   )
+
 myarray = np.asarray(data)
 df =pd.DataFrame(myarray)
 
@@ -64,63 +65,14 @@ if ensembleN==1:
 
 	data = []
 	for file_path in tqdm(file_listOL):
-
 		data.append( np.genfromtxt(file_path, usecols=6)[int(startIndex):int(endIndex)]   )
+
 	myarray = np.asarray(data)
 	df =pd.DataFrame(myarray)
 
 	# 2d rep of 3d ensemble in batches where ensemble changes slowest
 	df.to_csv( wd+'/openloopRes.csv', index = False, header=False)
 
-    # FSMID="01"
-    # cmd = [
-    #     "Rscript",
-    #     "./rsrc/resultsMatrix_fsm.R",
-    #     home,
-    #     config["ensemble"]["members"],
-    #     str(FSMID)
-    # ]
-    # subprocess.check_output(cmd)
-
-    #f = open(wd + "/SUCCESS_RMAT", "w")
-
-#else:
-    #print("Results matrix already generated!")
                 
 
 
-# ===============================================================================
-#	DA - run PBS grid code
-# ===============================================================================
-# fname1 = home + "/SUCCESS_PBS2"
-# if not os.path.isfile(fname1):  # NOT ROBUST
-
-#     logging.info("Run PBS " + simdir)
-#     cmd = [
-#         "Rscript",
-#         "./rsrc/gridDA_FSM.R",
-#         home,
-#         config["ensemble"]["members"],
-#         config["main"]["startDate"],
-#         config["main"]["endDate"],
-#         config["da"]["startDate"],
-#         config["da"]["endDate"]
-#     ]
-#     subprocess.check_output(cmd)
-
-#     cmd = [
-#         "Rscript",
-#         "./rsrc/mapDaResults_fsm.R",
-#         home,
-#         config["ensemble"]["members"],
-#         'surface',
-#         'snow_water_equivalent.mm.',
-#         '263'
-#     ]
-
-#     subprocess.check_output(cmd)
-
-#     f = open(home + "/SUCCESS_PBS2", "w")
-
-# else:
-#     logging.info("PBS2 already run")
