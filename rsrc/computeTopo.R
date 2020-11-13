@@ -46,6 +46,7 @@ if (!file.exists("predictors/ndvi.tif")){
 	ncrop = crop(ndvi,dem, snap='out')
 	nresamp = resample(ncrop,dem) # resample to ensure no geometry issues in basin cookiecuts
 	writeRaster(nresamp, "predictors/ndvi.tif", overwrite=TRUE)
+	system("rm predictors/ndvi_modis.tif")
 	}
 # if (chirpsP==TRUE){
 # 	chirps=raster('predictors/chirps.tif')

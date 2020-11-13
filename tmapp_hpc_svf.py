@@ -17,11 +17,11 @@ sys.path.insert(1, tscale_root)
 import tscale_lib as tlib
 
 
-print("Computing SVF grid " + str(jobid))
+print("Computing SVF grid " + str(grid)
 
 
 homes = sorted(glob.glob(wd+"/sim/*"))
-tlib.compute_svf(homes[grid-1], svfSectors, svfMaxDist)
-tlib.compute_surface(homes[grid-1] )
-tlib.toposub(tmapp_root, homes[grid-1], nclust)
+tlib.compute_svf(homes[grid], svfSectors, svfMaxDist)
+tlib.compute_surface(homes[grid] )
+tlib.toposub(tmapp_root, homes[grid], nclust)
 print("Grid " + str(jobid) + " done!")
