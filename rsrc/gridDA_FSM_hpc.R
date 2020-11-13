@@ -6,6 +6,8 @@ nens <-as.numeric(args[2])
 
 
 # FIXED
+openloop = read.table(paste0(wd, "/openloopMean.csv"))
+openloop=openloop$V1
 HX <- as.matrix(read.table(paste0(wd, "/ensemble/HX")))
 obs <- read.table(paste0(wd, "/ensemble/obs"))
 obs=obs$V1
@@ -309,7 +311,7 @@ lines(date,med.pri*cfact, col='red', lwd=3)
 lines(date, med.post*cfact, col='blue', lwd=3)
 #points(OBS2PLOT, col='green', lwd=4)
 
-#lines(date, hx_determ_swe*cfact, col='green', lwd=3)
+lines(date, openloop, col='green', lwd=3)
 
 legend("topright", c("prior", "posterior", "open-loop") , col=c("red", "blue", "green"), lty=1)
 

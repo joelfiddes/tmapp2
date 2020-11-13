@@ -52,12 +52,20 @@ for eres in ensembleResults:
 
 HX_swe = np.asarray(data).transpose()
 
+# open loop 
+openloop =wd + "/openloopRes.csv"
+ensembRes2 = pd.read_csv(openloop, header=None)
+ensembRes2[ensembRes2>1000]=1000
+Vect = lp.members
+arr = ensembRes2.transpose()*Vect
+oloop = arr.sum(axis=1)/sum(lp.members)
+
+
 
 # cut all values > 10000
 # extract obs for da year
 startIndex = fsca_dates[fsca_dates.iloc[:,0]==str(da_year)+"-03-31"].index.values     
 endIndex = fsca_dates[fsca_dates.iloc[:,0]==str(da_year)+"-06-30"].index.values 
-
 Y=fsca[int(startIndex):int(endIndex)]/100
 
 
@@ -82,6 +90,7 @@ pd.Series(w).to_csv( wd + "/ensemble/weights.txt")
 np.savetxt(wd + "/ensemble/HX", HX)
 np.savetxt(wd + "/ensemble/HX_swe", HX_swe)
 np.savetxt(wd + "/ensemble/obs", Y)
+np.savetxt(wd + "/openloopMean.csv", oloop)
 
 cmd = [ "Rscript",   "./rsrc/gridDA_FSM_hpc.R" , wd, N]
 subprocess.check_output(cmd)
