@@ -1,3 +1,5 @@
+# run as single job 
+# python tmapp_hpc_HX.py wd da_year
 from configobj import ConfigObj
 import glob
 import pandas as pd

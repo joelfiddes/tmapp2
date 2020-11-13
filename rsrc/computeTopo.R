@@ -29,7 +29,7 @@ dem=raster('predictors/ele.tif')
 #================================================================= ==
 if (!file.exists("predictors/slp.tif")){
 	slp=terrain(dem, opt="slope", unit="degrees", neighbors=8, filename='')
-	slp[is.na(asp)==T]<-0 # pads raster with 0 so dimension of valid vals same as dem (eg when passed to trim in generating sim files dimension remain the same)
+	slp[is.na(slp)==T]<-0 # pads raster with 0 so dimension of valid vals same as dem (eg when passed to trim in generating sim files dimension remain the same)
 	writeRaster(round(slp,0), "predictors/slp.tif", overwrite=TRUE) #write and reduce precision
 	}
 
