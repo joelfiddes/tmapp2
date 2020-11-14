@@ -3,7 +3,7 @@ require(raster)
 args = commandArgs(trailingOnly=TRUE)
 wd=args[1]
 #grid = args[2]
-domain = args[2]
+domainpath = args[2]
 
 # rst = raster(grid) # crop era5 footprint grid to domain
 
@@ -16,6 +16,7 @@ domain = args[2]
 # idRst = setValues(domain , 1:ncells )
 # poly = rasterToPolygons(idRst)
 # shapefile(poly, paste0(wd,"/spatial/idPoly.shp"), overwrite=TRUE)
+domain=shapefile(domainpath)
 ngridsSeq = domain@data[,1]
 pdf(paste0(wd,"/spatial/idPoly.pdf"))
 plot(domain)
