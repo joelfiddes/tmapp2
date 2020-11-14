@@ -70,7 +70,7 @@ for i,task in enumerate(tasks):
 
 	logging.info("toposcaling "+ tasks[i])
 	print(("toposcaling "+ tasks[i]))
-	tlib.tscale3dmain(wd2,tasks[i],lp2, reduceSteepSnow, outputFormat)
+	tlib.tscale3dmain(wd,tasks[i],lp, reduceSteepSnow, outputFormat)
 
 
 
