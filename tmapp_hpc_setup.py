@@ -73,7 +73,7 @@ files = sorted(glob.glob(wd + "/forcing/SURF*.nc"))
 stephr = tlib.compute_timestep(files[0])
 
 # make shape
-tlib.make_poly(latN,latS,lonE,lonW,wd)
+tlib.make_poly(latN,latS,lonE,lonW,wd, forcing_grid)
 
 # get DEM
 shp = wd +"/spatial/domain.shp"
