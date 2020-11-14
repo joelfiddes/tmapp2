@@ -1,7 +1,7 @@
 import pandas as pd
 import logging
 import sys
-wd= sys.argv[1] #'/home/joel/sim/qmap/ch_tmapp_10/' 
+wd= sys.argv[1] #'/home/caduff/sim/ch_tmapp_50/' 
 starti= sys.argv[2] 
 endi= sys.argv[3] 
 
@@ -37,11 +37,6 @@ for handler in logging.root.handlers[:]:
 logging.basicConfig(level=logging.DEBUG, filename=logfile,filemode="a+",format="%(asctime)-15s %(levelname)-8s %(message)s")
 
 
-
-
-
-
-
 # concat all listpoint files
 filenames = sorted(glob.glob(wd + "/*/*/listpoints.txt"))
 
@@ -60,7 +55,8 @@ mymonths =sorted([i.split('SURF_', 1)[1] for i in mylist])
 # if submitted end of array is long than number of months then set to length of months
 if int(endi) > len(mymonths):
 	(endi) = len(mymonths)
-
+if int(starti) > len(mymonths):
+	(starti) = len(mymonths)
 # compute month range to compute by this worker (python index conversion)
 start = mymonths[int(starti) -1].split(".nc")[0]
 end  = mymonths[int(endi) -1].split(".nc")[0]  
@@ -74,7 +70,7 @@ for i,task in enumerate(tasks):
 
 	logging.info("toposcaling "+ tasks[i])
 	print(("toposcaling "+ tasks[i]))
-	tlib.tscale3dmain(wd,tasks[i],lp, reduceSteepSnow, outputFormat)
+	tlib.tscale3dmain(wd2,tasks[i],lp2, reduceSteepSnow, outputFormat)
 
 
 
