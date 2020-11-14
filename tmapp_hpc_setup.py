@@ -76,14 +76,14 @@ stephr = tlib.compute_timestep(files[0])
 tlib.make_poly(latN,latS,lonE,lonW,wd, forcing_grid)
 
 # get DEM
-shp = wd +"/spatial/domain.shp"
-tlib.download_dem(wd, demDir,shp, demRes)
+domain_shp = wd +"/spatial/domain.shp"
+tlib.download_dem(wd, demDir,domain_shp, demRes)
 
 # make terrain (need check here)
 tlib.compute_terrain_ndvi( wd )
 
 # make sim dirs and cookie cut ele,slf,asp,ndvi to them
-tlib.setup_sim_dirs_grid(wd, forcing_grid)
+tlib.setup_sim_dirs_grid(wd, domain_shp)
 
 # make outdir
 outdir = wd+"/out/"

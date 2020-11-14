@@ -2,7 +2,8 @@
 # simultneous sbacth jobs
  
 WD = '/home/caduff/sim//ch_tmapp_50/'
-
+ 
+WD = '/home/caduff/sim//c'
 # = Prep =================================================================
 
 # ensure comfig.ini exists in $WD
