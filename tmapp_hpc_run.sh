@@ -43,7 +43,7 @@ sbatch slurm_tscale.sh $WD 100
 # perhaps edit #<SBATCH --array=1-100 >
 # jobs per processor must be a whole number
 
-sbatch slurm_sim.sh $WD 1100
+sbatch slurm_sim.sh $WD 1200
 
 
 

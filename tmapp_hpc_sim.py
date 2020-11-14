@@ -6,7 +6,9 @@ import logging
 wd= sys.argv[1] #'/home/joel/sim/qmap/ch_tmapp_10/' 
 starti= sys.argv[2]
 endi= sys.argv[3]
-concat="FALSE"
+
+# why this switxh?
+concat="TRUE"
 
 # ensure we have a whole number, rounds up
 starti = round(int(starti))
