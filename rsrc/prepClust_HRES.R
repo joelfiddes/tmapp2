@@ -12,19 +12,19 @@ domain = args[2]
 # aoi=raster(paste0(wd,"/predictors/ele.tif"))
 # #aoi=raster(paste0(wd,"/forcing/SURF.nc")) # defines domain BUT maybe NOT!
 # eraExtent=crop(rst,aoi, snap='out')
-# ncells=ncell(eraExtent)
-# idRst = setValues(eraExtent , 1:ncells )
+#ncells=ncell(domain)
+# idRst = setValues(domain , 1:ncells )
 # poly = rasterToPolygons(idRst)
 # shapefile(poly, paste0(wd,"/spatial/idPoly.shp"), overwrite=TRUE)
-
+ngridsSeq = domain@data[,1]
 pdf(paste0(wd,"/spatial/idPoly.pdf"))
-plot(poly)
-text(coordinates(poly)[,1],coordinates(poly)[,2], poly$era5_gp)
+plot(domain)
+text(coordinates(domain)[,1],coordinates(domain)[,2], ngridsSeq)
 dev.off()
 
-for (i in 1:ncells){
+for (ic in ngridsSeq){
 	setwd(wd)
-	ic=i #formatC(i, width=5, flag='0')
+	#formatC(i, width=5, flag='0')
 	simdir=paste0('g',ic)
 	dir.create(paste0(wd,"/sim/",simdir), showWarnings=FALSE)
 	dir.create(paste0(wd,"/sim/",simdir,"/predictors"), showWarnings=FALSE)
@@ -39,7 +39,7 @@ for (i in 1:ncells){
 		for (p in 1:Npreds){
 			if (!file.exists(paste0(wd,'/sim/', simdir,predictors[p]))){
 			setwd(paste0(wd,'/predictors'))	
-			rst=crop(raster(predictors[p]) ,poly[ic,])
+			rst=crop(raster(predictors[p]) ,domain[ic,])
 			setwd(paste0(wd,'/sim/', simdir,"/predictors"))
 			writeRaster(rst, predictors[p], overwrite=TRUE)
 			removeTmpFiles(h=0)
