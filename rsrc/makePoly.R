@@ -19,8 +19,8 @@ w=as.numeric(args[4])
 out=args[5]
 grid=args[6]
 
-if(file.exists(out)==FALSE){
-aoi <- as(raster::aoient(w, e, s, n), "SpatialPolygons")
+
+aoi <- as(raster::extent(w, e, s, n), "SpatialPolygons")
 proj4string(aoi) <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
 #shapefile(aoi, out, overwrite=TRUE)
 
@@ -32,7 +32,7 @@ idRst = setValues(eraExtent , 1:ncells )
 poly = rasterToPolygons(idRst)
 shapefile(poly, out, overwrite=TRUE)
 
-}
+
 
 # library(raster)
 # e <- aoient( c(4304916, 4305325, 365216, 365439) )
