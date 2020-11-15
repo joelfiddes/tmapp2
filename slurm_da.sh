@@ -6,15 +6,15 @@
 
 # run sbatch slurm_da.sh /home/caduff/sim/ch_tmapp_50
 
-#SBATCH -J tmapp # A single job name for the array
+#SBATCH -J da # A single job name for the array
 #SBATCH -p node # Partition (required)
 #SBATCH -A node # Account (required)
 #SBATCH -q normal # QOS (required)
 #SBATCH -n 1 # one cores
 #SBATCH -t 05:00:00 # Running time of 2 days
 #SBATCH --mem 4000 # Memory request of 4 GB
-#SBATCH -o LOG_DA-%A_%a.out # Standard output - write the console output to the output folder %A= Job ID, %a = task or Step ID
-#SBATCH -e LOG_DA-%A_%a.err # Standard error -write errors to the errors folder and
+#SBATCH -o LOG_da.out # Standard output - write the console output to the output folder %A= Job ID, %a = task or Step ID
+#SBATCH -e LOG_da.err # Standard error -write errors to the errors folder and
 #SBATCH --array=1-100 # this is number of ensembles (100)
 #SBATCH --mail-user=joelfiddes@gmail.com
 #SBATCH --mail-type=ALL  # Send me some mails when jobs end or fail.

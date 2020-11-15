@@ -11,6 +11,9 @@ if [[ $# -eq 0 ]] ; then
     exit 0
 fi
 
+# clear logs
+rm LOG*
+
 # Job dependency doc 
 # https://hpc.nih.gov/docs/job_dependencies.html
 
@@ -26,7 +29,7 @@ fi
 # gets dem, computes asp/slp and clips ndvi
 # requires predictors/ndvi_modis.tif to exist
 echo "Run setup...."
-sbatch slurm_setup.py $1
+sbatch slurm_setup.sh $1
 echo "Done!"
 # = Parallel job by N era5 grids  ==============================================
 
@@ -36,7 +39,7 @@ echo "Done!"
 # python2 script: tmapp_hpc_svf.sh 
 # computes, svf, surface toosub
 echo "Run svf...."
-sbatch --dependency=singleton --job-name=tmapp slurm_svf.sh $1
+sbatch --dependency=singleton --job-name=setup slurm_svf.sh $1
 echo "Done!"
 # = Parallel job by N jobs (normally 100) x months ==============================
 
@@ -46,7 +49,7 @@ echo "Done!"
 # perhaps edit #<SBATCH --array=1-100 >
 # jobs per processor must be a whole number
 echo "Run tscale...."
-sbatch --dependency=singleton --job-name=tmapp slurm_tscale.sh $1 $2
+sbatch --dependency=singleton --job-name=svf slurm_tscale.sh $1 $2
 echo "Done!"
 # = Parallel job by N jobs (normally 100) x samples ============================
 
@@ -57,25 +60,25 @@ echo "Done!"
 # jobs per processor must be a whole number
 
 echo "Run sim..."
-sbatch --dependency=singleton --job-name=tmapp  slurm_sim.sh $1 $3
+sbatch --dependency=singleton --job-name=tscale  slurm_sim.sh $1 $3
 echo "Done!"
 
 echo "Perturb parameters..."
-sbatch --dependency=singleton --job-name=tmapp slurm_perturb.sh $1
+sbatch --dependency=singleton --job-name=fsm slurm_perturb.sh $1
 echo "Done!"
 # number of ensembles declared in here
 
 echo "Simulate ensembles"
-sbatch --dependency=singleton --job-name=tmapp slurm_da.sh $1 $4
+sbatch --dependency=singleton --job-name=perturb slurm_da.sh $1 $4
 echo "Done!"
 
 
 # compute mean Modis fSCA
 echo "Process modis fsca"
-sbatch --dependency=singleton --job-name=tmapp slurm_modis.sh
+sbatch --dependency=singleton --job-name=da slurm_modis.sh
 echo "Done!"
 
 # run PBS and plots
 echo "run pbs"
-sbatch --dependency=singleton --job-name=tmapp slurm_pbs.sh  $1  $4
+sbatch --dependency=singleton --job-name=modis slurm_pbs.sh  $1  $4
 echo "Done!"
