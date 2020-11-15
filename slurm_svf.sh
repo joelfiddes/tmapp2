@@ -4,7 +4,7 @@
 
 
 
-#SBATCH -J tmapp_svf # A single job name for the array
+#SBATCH -J tmapp # A single job name for the array
 #SBATCH -p node # Partition (required)
 #SBATCH -A node # Account (required)
 #SBATCH -q normal # QOS (required)
@@ -16,6 +16,7 @@
 #SBATCH --array=1-6 # create a array from 1to $2 which is number of grids
 #SBATCH --mail-user=joelfiddes@gmail.com
 #SBATCH --mail-type=ALL  # Send me some mails when jobs end or fail.
+#SBATCH--dependency=singleton --job-name=tmapp 
 
 pwd; hostname; date
 

@@ -19,7 +19,7 @@
 #SBATCH --array=1-100 # create a array from 1to16 and limit the concurrent runing task  to 50
 #SBATCH --mail-user=joelfiddes@gmail.com
 #SBATCH --mail-type=ALL  # Send me some mails when jobs end or fail.
-
+#SBATCH --dependency=singleton --job-name=tmapp 
 pwd; hostname; date
 
 

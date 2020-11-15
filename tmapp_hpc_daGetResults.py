@@ -1,27 +1,21 @@
-# run python tmapp_hpc_perturb.py #WD
 import sys
 import os
 import glob
 import numpy as np
 import pandas as pd
-from tqdm import tqdm
-wd= sys.argv[1] #'/home/caduff/sim/ch_tmapp_50/' 
+
+
+wd= sys.argv[1]
 da_year = sys.argv[2]
 ensembleN =sys.argv[3]
+
 # ===============================================================================
-#	Make ensemble.csv (peturb pars)
+#	Make results arrays of SWE (Dims = time*samples) per ensemble
 # ===============================================================================
 
-# is making a massive df a good idea ?!
-
-#fname1 = wd + "/SUCCESS_RMAT"
-#if not os.path.isfile(fname1):  # NOT ROBUST
-print("Generate results matrix")
-
+print("Generate results array ensemble "+ str(ensembleN))
 ipad=   '%03d' % (int(ensembleN),)
 successFile = wd + "/ensemble/ensemble" + str(ipad) + "/_RUN_SUCCESS"
-
-    # faster
 a =glob.glob(wd + "/ensemble/ensemble" + str(ipad) +"/out*")
 
 # finishedsims = [os.path.split(i)[0] for i in a]
@@ -41,19 +35,22 @@ def natural_sort(l):
 file_list = natural_sort(a)
 
 # compute dates index for da we always extract 31 March to Jun 30 for DA - this may of course not always be appropriate
-
 df =pd.read_csv(file_list[0], delim_whitespace=True, parse_dates=[[0,1,2]], header=None)
 startIndex = df[df.iloc[:,0]==str(da_year)+"-03-31"].index.values     
 endIndex = df[df.iloc[:,0]==str(da_year)+"-06-30"].index.values     
 
+if len(startIndex) ==0:
+	sys.exit("da_year does not exist in simulation period")
+if len(endIndex) ==0:
+	sys.exit( "da_year does not exist in simulation period")
+
 data = []
-for file_path in tqdm(file_list):
+for file_path in file_list:
 	data.append( np.genfromtxt(file_path, usecols=6)[int(startIndex):int(endIndex)]   )
 
 myarray = np.asarray(data)
 df =pd.DataFrame(myarray)
 
-# 2d rep of 3d ensemble in batches where ensemble changes slowest
 df.to_csv( wd+'/ensembRes'+str(ipad)+'.csv', index = False, header=False)
 
 

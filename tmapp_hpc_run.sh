@@ -1,9 +1,19 @@
-# Task toi be run on hyperion can not be run as a script as all would send as 
-# simultneous sbacth jobs
- 
-WD = '/home/caduff/sim//ch_tmapp_50/'
- 
-WD = '/home/caduff/sim//c'
+# Example ./tmapp_hpc_run.sh /home/caduff/sim/ccamm_inter 100 1200 2003
+
+# Args:
+#	$1: is working directory
+# 	$2: number of months in sim rounded up to nearest 100
+# 	$3: number of samples rounded up to nearest 100
+# 	$4: data assimilation year corresponding to melt period
+
+if [[ $# -eq 0 ]] ; then
+    echo 'Working directory needed as Arg1'
+    exit 0
+fi
+
+
+
+#sbatch --dependency=singleton --job-name=GroupA 
 # = Prep =================================================================
 
 # ensure comfig.ini exists in $WD
@@ -14,8 +24,9 @@ WD = '/home/caduff/sim//c'
 
 # gets dem, computes asp/slp and clips ndvi
 # requires predictors/ndvi_modis.tif to exist
-srun python tmapp_hpc_setup.py $WD
-
+echo "Run tmapp_hpc_setup.py ...."
+srun python tmapp_hpc_setup.py $1
+echo "Done!"
 # = Parallel job by N era5 grids  ==============================================
 
 #Edit:
@@ -23,8 +34,9 @@ srun python tmapp_hpc_setup.py $WD
 # to be number of jobs to number of ERA5 grids
 # python2 script: tmapp_hpc_svf.sh 
 # computes, svf, surface toosub
-sbatch slurm_svf.sh $WD 
-
+echo "Run tmapp_hpc_setup.py ...."
+sbatch slurm_svf.sh $1
+echo "Done!"
 # = Parallel job by N jobs (normally 100) x months ==============================
 
 #Arg2 is a round number greater than number of months to compute in order to 
@@ -32,24 +44,27 @@ sbatch slurm_svf.sh $WD
 #eg 500/100 = max 5 jobs per processor
 # perhaps edit #<SBATCH --array=1-100 >
 # jobs per processor must be a whole number
-sbatch slurm_tscale.sh $WD 100
+sbatch slurm_tscale.sh $1 $2
 
 
 # = Parallel job by N jobs (normally 100) x samples ============================
 
 #Arg2 is a round number greater than number of samples to compute in order to 
 #paralise the tscale time loop - it is split into SAMPLES/PROCESSORS chuncks 
-#eg 1100/100 = max 11 jobs per processor
+#eg 1200/100 = max 12 jobs per processor
 # perhaps edit #<SBATCH --array=1-100 >
 # jobs per processor must be a whole number
 
-sbatch slurm_sim.sh $WD 1200
+sbatch slurm_sim.sh $1 $3
 
 
 
-python tmapp_hpc_perturb.py $WD
+python tmapp_hpc_perturb.py $1
 
 # number of ensembles declared in here
-sbatch slurm_da.sh $WD
+sbatch slurm_da.sh $1 $4
 
-python tmapp_hpc_HX.py  $WD  2003
+# compute mean Modis fSCA
+Rscript ../tscale-evo/process_modis.R
+# run PBS and plots
+srun python tmapp_hpc_HX.py  $1  $4
