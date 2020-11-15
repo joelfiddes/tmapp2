@@ -18,7 +18,7 @@
 #SBATCH --array=1-100 # this is number of ensembles (100)
 #SBATCH --mail-user=joelfiddes@gmail.com
 #SBATCH --mail-type=ALL  # Send me some mails when jobs end or fail.
-#SBATCH--dependency=singleton --job-name=tmapp 
+
 
 pwd; hostname; date
 

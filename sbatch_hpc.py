@@ -19,6 +19,8 @@ Dayear=sys.argv[4]
 # submit the first job
 cmd = "python tmapp_hpc_setup.py " + wd
 print "Submitting Job1 with command: %s" % cmd
+status, jobnum = subprocess.check_output(cmd)
+
 status, jobnum = commands.getstatusoutput(cmd)
 if (status == 0 ):
     print "Job1 is %s" % jobnum
