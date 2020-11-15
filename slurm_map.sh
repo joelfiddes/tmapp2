@@ -1,7 +1,16 @@
 #!/bin/bash
 
-# $1 = wd
 
+# $1 :  wd
+# $2 : mode
+# $3 : start (of map period) optional format = '2003-05-01' 
+# $4 : end  (of map period) optional format = '2003-05-30'
+
+# mode:
+# 	subperiod
+# 	allperiod
+# 	da
+# 	timseries
 
 #SBATCH -J setup # A single job name for the array
 #SBATCH -p node # Partition (required)
@@ -20,9 +29,7 @@ pwd; hostname; date
 
 # run sequentially
 # $1 is wd
-python tmapp_hpc_setup.py $1
+python tmapp_hpc_map.py $1 $2 $3 $4
 
 
 date
-
-

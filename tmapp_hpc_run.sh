@@ -9,6 +9,7 @@
 NGRIDS=6
 NENSEMBLE=100
 NJOBS=100
+DA=true
 
 if [[ $# -eq 0 ]] ; then
     echo 'Working directory needed as Arg1'
@@ -72,23 +73,40 @@ jid3=${SBATCHID//[!0-9]/}
 SBATCHID=$(sbatch  --dependency=afterany:$jid3  --array=1-$NJOBS slurm_sim.sh $1 $3)
 jid4=${SBATCHID//[!0-9]/}
 
-
-
-# Generate meteo purturbations 
-SBATCHID=$(sbatch  --dependency=afterany:$jid4  --array=1 slurm_perturb.sh $1)
+# mapping jobs sent simultaneously
+SBATCHID=$(sbatch  --dependency=afterany:$jid4  --array=1 slurm_map.sh $1 subperiod 2017-03-01 2017-03-30)
 jid5=${SBATCHID//[!0-9]/}
 
-# run ensembles get results, array = number of ensembles (in config.ini)
-SBATCHID=$(sbatch  --dependency=afterany:$jid5  --array=1-$NENSEMBLE slurm_da.sh $1 $4)
-jid6=${SBATCHID//[!0-9]/}
+SBATCHID=$(sbatch  --dependency=afterany:$jid4  --array=1 slurm_map.sh $1 allperiod)
+jid5=${SBATCHID//[!0-9]/}
 
-# compute mean Modis fSCA
-SBATCHID=$(sbatch  --dependency=afterany:$jid6 --array=1 slurm_modis.sh $1)
-jid7=${SBATCHID//[!0-9]/}
+SBATCHID=$(sbatch  --dependency=afterany:$jid4  --array=1 slurm_map.sh $1 timeseries)
+jid5=${SBATCHID//[!0-9]/}
 
-# run PBS and plots
-SBATCHID=$(sbatch  --dependency=afterany:$jid7 --array=1 slurm_pbs.sh  $1  $4)
-jid8=${SBATCHID//[!0-9]/}
+if [ "$DA" = true ] ; then
 
+	# DA doesnt need to wait for map jobs
+
+	# Generate meteo purturbations 
+	SBATCHID=$(sbatch  --dependency=afterany:$jid4  --array=1 slurm_perturb.sh $1)
+	jid5=${SBATCHID//[!0-9]/}
+
+	# run ensembles get results, array = number of ensembles (in config.ini)
+	SBATCHID=$(sbatch  --dependency=afterany:$jid5  --array=1-$NENSEMBLE slurm_da.sh $1 $4)
+	jid6=${SBATCHID//[!0-9]/}
+
+	# compute mean Modis fSCA
+	SBATCHID=$(sbatch  --dependency=afterany:$jid6 --array=1 slurm_modis.sh $1)
+	jid7=${SBATCHID//[!0-9]/}
+
+	# run PBS and plots
+	SBATCHID=$(sbatch  --dependency=afterany:$jid7 --array=1 slurm_pbs.sh  $1  $4)
+	jid8=${SBATCHID//[!0-9]/}
+
+	# map out ensemble with highest weight
+	SBATCHID=$(sbatch  --dependency=afterany:$jid8  --array=1 slurm_map.sh $1 ensemble)
+	jid9=${SBATCHID//[!0-9]/}
+
+	fi
 
 squeue -u caduff
