@@ -14,7 +14,7 @@ import commands, os, sys
 wd=sys.argv[1]
 Nmonths=sys.argv[2]
 Nsamples=sys.argv[3]
-Dayear=sys.argv[3]
+Dayear=sys.argv[4]
 
 # submit the first job
 cmd = "python tmapp_hpc_setup.py" + wd
