@@ -11,8 +11,9 @@ ngrid = sys.argv[3]
 
 # contingent args on mode
 if mode== 'subperiod':
-	start= sys.argv[3]
-	end= sys.argv[4]
+	start= sys.argv[4]
+	end= sys.argv[5]
+
 
 #start='2003-05-01' 
 #end = '2003-05-30'
