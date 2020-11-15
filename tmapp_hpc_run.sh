@@ -74,15 +74,15 @@ jid3=${SBATCHID//[!0-9]/}
 SBATCHID=$(sbatch  --dependency=afterany:$jid3  --array=1-$NJOBS slurm_sim.sh $1 $3)
 jid4=${SBATCHID//[!0-9]/}
 
-# mapping jobs sent simultaneously
+# mapping jobs (clash if simulateous on file rm code)
 SBATCHID=$(sbatch  --dependency=afterany:$jid4  --array=1 slurm_map.sh $1 subperiod 2017-03-01 2017-03-30)
 jid5=${SBATCHID//[!0-9]/}
 
-SBATCHID=$(sbatch  --dependency=afterany:$jid4  --array=1 slurm_map.sh $1 allperiod)
-jid5=${SBATCHID//[!0-9]/}
+SBATCHID=$(sbatch  --dependency=afterany:$jid5  --array=1 slurm_map.sh $1 allperiod)
+jid6=${SBATCHID//[!0-9]/}
 
-SBATCHID=$(sbatch  --dependency=afterany:$jid4  --array=1 slurm_map.sh $1 timeseries)
-jid5=${SBATCHID//[!0-9]/}
+SBATCHID=$(sbatch  --dependency=afterany:$jid6  --array=1 slurm_map.sh $1 timeseries)
+jid7=${SBATCHID//[!0-9]/}
 
 if [ "$DA" = true ] ; then
 
