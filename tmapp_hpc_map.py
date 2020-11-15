@@ -3,11 +3,11 @@ import os
 import glob
 import subprocess
 import pandas as pd
-from tqdm import tqdm
 from configobj import ConfigObj
 
 wd= sys.argv[1]
 mode=sys.argv[2]
+ngrid = sys.argv[3]
 
 # contingent args on mode
 if mode== 'subperiod':
@@ -23,13 +23,13 @@ if mode== 'subperiod':
 # 	da
 # 	timseries
 
-rcode = "/home/caduff/src/topoCLIM/spatialize.R"
+rcode = "/home/caduff/src/tmapp2/rsrc/spatialize.R"
 col=2
 
 def timeseries_means(wd, nsims, col):
 
 	mean_ts=[]
-	for ID in tqdm(range(nsims)):
+	for ID in (range(nsims)):
 
 
 		f=glob.glob(wd + "/fsm_sims/fsm_tscale_"+str(ID+1)+"_*")
@@ -53,7 +53,7 @@ def timeseries_means_period(wd, nsims, col, start, end):
 
 
 	mean_ts=[]
-	for ID in tqdm(range(nsims)):
+	for ID in (range(nsims)):
 
 
 		f=glob.glob(wd + "/fsm_sims/fsm_tscale_"+str(ID+1)+"_*")
@@ -78,7 +78,7 @@ def timeseries_means_period_ensemble(wd, ensembleN, nsims, col, start, end):
 
 
 	mean_ts=[]
-	for ID in tqdm(range(nsims)):
+	for ID in (range(nsims)):
 
 		idpad =	'%03d' % (ID+1,)
 		f=glob.glob(wd + "/ensemble/ensemble"+str(ipad)+"/out"+str(idpad)+"_*")
@@ -98,7 +98,7 @@ def timeseries(wd, nsims, col):
 
 	mydf = pd.DataFrame()
 	#mean_sample=[]
-	for ID in tqdm(range(nsims)):
+	for ID in (range(nsims)):
 
 		
 		f=glob.glob(wd + "/fsm_sims/fsm_tscale_"+str(ID+1)+"_*")
@@ -134,7 +134,7 @@ if mode=='allperiod':
 	outname="spatial_"+str(col)
 
 	timeseries_means(wd, nsims, col)
-	cmd = ["Rscript" ,rcode ,wd ,meanVar, str(nclust), outname]
+	cmd = ["Rscript" ,rcode ,wd ,meanVar, str(nclust), outname, ngrid]
 	subprocess.check_output(cmd)
 
 if mode=='subperiod':
@@ -143,7 +143,7 @@ if mode=='subperiod':
 	outname="spatial_" +start+"_"+end+"_"+str(col)
 
 	timeseries_means_period(wd, nsims, col, start, end)
-	cmd = ["Rscript" ,rcode ,wd ,meanVar, str(nclust), outname]
+	cmd = ["Rscript" ,rcode ,wd ,meanVar, str(nclust), outname, ngrid]
 	subprocess.check_output(cmd)
 
 if mode=='da':
@@ -157,7 +157,7 @@ if mode=='da':
 
 	meanVar= wd+"/ensemble/ensemble"+ipad+"/mean_ts_"+str(col)+"_"+start+end+".csv"
 	outname="spatial_" +start+"_"+end+"_"+str(col)+"ensemble"+ipad
-	cmd = ["Rscript" ,rcode ,wd ,meanVar, str(nclust), outname]
+	cmd = ["Rscript" ,rcode ,wd ,meanVar, str(nclust), outname, ngrid]
 	subprocess.check_output(cmd)
 
 

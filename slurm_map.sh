@@ -29,7 +29,7 @@ pwd; hostname; date
 
 # run sequentially
 # $1 is wd
-python tmapp_hpc_map.py $1 $2 $3 $4
+python tmapp_hpc_map.py $1 $2 $3 $4 $5
 
 
 date
