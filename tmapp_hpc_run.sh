@@ -1,4 +1,4 @@
-# Example ./tmapp_hpc_run.sh /home/caduff/sim/ccamm_inter 100 1200 2003
+# Example bash /tmapp_hpc_run.sh /home/caduff/sim/ccamm_inter 100 1200 2003
 
 # Args:
 #	$1: is working directory
@@ -31,18 +31,18 @@ rm LOG*
 
 SBATCHID=$(sbatch slurm_setup.sh $1)
 jid1=${SBATCHID//[!0-9]/}
-echo SBATCHID
+echo $SBATCHID
 # = Parallel job by N era5 grids  ==============================================
 
 #Edit:
 #<SBATCH --array=1-6 >
-# to be number of jobs to number of ERA5 grids
+# number of jobs to number of ERA5 grids
 # python2 script: tmapp_hpc_svf.sh 
 # computes, svf, surface toosub
 
 SBATCHID=$(sbatch  --dependency=afterany:$jid1 slurm_svf.sh $1)
 jid2=${SBATCHID//[!0-9]/}
-echo SBATCHID
+echo $SBATCHID
 # = Parallel job by N jobs (normally 100) x months ==============================
 
 #Arg2 is a round number greater than number of months to compute in order to 
@@ -51,11 +51,9 @@ echo SBATCHID
 # perhaps edit #<SBATCH --array=1-100 >
 # jobs per processor must be a whole number
 
-
-
-SBATCHID=$(sbatch  --dependency=afterany:$jid2 slurm_tscale.sh $1 $2)
+SBATCHID=$(sbatch  --dependency=afterany:$jid2 --array=1-50 slurm_tscale.sh $1 $2)
 jid3=${SBATCHID//[!0-9]/}
-echo SBATCHID
+echo $SBATCHID
 # = Parallel job by N jobs (normally 100) x samples ============================
 
 #Arg2 is a round number greater than number of samples to compute in order to 
@@ -64,40 +62,24 @@ echo SBATCHID
 # perhaps edit #<SBATCH --array=1-100 >
 # jobs per processor must be a whole number
 
-# echo "Run sim..."
-# sbatch --dependency=singleton --job-name=tscale  slurm_sim.sh $1 $3
-# echo "Done!"
-
 SBATCHID=$(sbatch  --dependency=afterany:$jid3  slurm_sim.sh $1 $3)
 jid4=${SBATCHID//[!0-9]/}
-echo SBATCHID
+echo $SBATCHID
 
-
-# echo "Perturb parameters..."
-# sbatch --dependency=singleton --job-name=fsm slurm_perturb.sh $1
-# echo "Done!"
 
 SBATCHID=$(sbatch  --dependency=afterany:$jid4  slurm_perturb.sh $1)
 jid5=${SBATCHID//[!0-9]/}
-echo SBATCHID
+echo $SBATCHID
 
-# number of ensembles declared in here
-
-# echo "Simulate ensembles"
-# sbatch --dependency=singleton --job-name=perturb slurm_da.sh $1 $4
-# echo "Done!"
+# number of ensembles declared in here as array number
 SBATCHID=$(sbatch  --dependency=afterany:$jid5  slurm_da.sh $1 $4)
 jid6=${SBATCHID//[!0-9]/}
-echo SBATCHID
+echo $SBATCHID
 
 # compute mean Modis fSCA
-# echo "Process modis fsca"
-# sbatch --dependency=singleton --job-name=da slurm_modis.sh
-# echo "Done!"
-
 SBATCHID=$(sbatch  --dependency=afterany:$jid6  slurm_modis.sh $1)
 jid7=${SBATCHID//[!0-9]/}
-echo SBATCHID
+echo $SBATCHID
 
 # run PBS and plots
 # echo "run pbs"
@@ -106,4 +88,6 @@ echo SBATCHID
 
 SBATCHID=$(sbatch  --dependency=afterany:$jid7  slurm_pbs.sh  $1  $4)
 jid8=${SBATCHID//[!0-9]/}
-echo SBATCHID
+echo $SBATCHID
+
+squeue -u caduff
