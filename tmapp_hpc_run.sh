@@ -11,7 +11,8 @@ if [[ $# -eq 0 ]] ; then
     exit 0
 fi
 
-
+# Job dependency doc 
+# https://hpc.nih.gov/docs/job_dependencies.html
 
 #sbatch --dependency=singleton --job-name=GroupA 
 # = Prep =================================================================
@@ -24,8 +25,8 @@ fi
 
 # gets dem, computes asp/slp and clips ndvi
 # requires predictors/ndvi_modis.tif to exist
-echo "Run tmapp_hpc_setup.py ...."
-srun python tmapp_hpc_setup.py $1
+echo "Run setup...."
+python tmapp_hpc_setup.py $1
 echo "Done!"
 # = Parallel job by N era5 grids  ==============================================
 
@@ -34,7 +35,7 @@ echo "Done!"
 # to be number of jobs to number of ERA5 grids
 # python2 script: tmapp_hpc_svf.sh 
 # computes, svf, surface toosub
-echo "Run tmapp_hpc_setup.py ...."
+echo "Run svf...."
 sbatch slurm_svf.sh $1
 echo "Done!"
 # = Parallel job by N jobs (normally 100) x months ==============================
@@ -44,6 +45,7 @@ echo "Done!"
 #eg 500/100 = max 5 jobs per processor
 # perhaps edit #<SBATCH --array=1-100 >
 # jobs per processor must be a whole number
+echo "Run tscale...."
 sbatch slurm_tscale.sh $1 $2
 
 
@@ -55,16 +57,26 @@ sbatch slurm_tscale.sh $1 $2
 # perhaps edit #<SBATCH --array=1-100 >
 # jobs per processor must be a whole number
 
+echo "Run sim..."
 sbatch slurm_sim.sh $1 $3
+echo "Done!"
 
-
-
-python tmapp_hpc_perturb.py $1
-
+echo "Perturb parameters..."
+srun python tmapp_hpc_perturb.py $1
+echo "Done!"
 # number of ensembles declared in here
+
+echo "Simulate ensembles"
 sbatch slurm_da.sh $1 $4
+echo "Done!"
+
 
 # compute mean Modis fSCA
+echo "Process modis fsca"
 Rscript ../tscale-evo/process_modis.R
+echo "Done!"
+
 # run PBS and plots
+echo "run pbs"
 srun python tmapp_hpc_HX.py  $1  $4
+echo "Done!"
