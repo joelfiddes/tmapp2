@@ -36,7 +36,7 @@ else:
     print "Error submitting Job2"
 
 # submit the third job to be dependent on the second
-cmd = "sbatch --depend=afterany:%s slurm_tscale.sh %s %d "% (jobnum, wd,Nmonths )
+cmd = "sbatch --depend=afterany:%s slurm_tscale.sh %s %s "% (jobnum, wd,Nmonths )
 print "Submitting Job2 with command: %s" % cmd
 status,jobnum = commands.getstatusoutput(cmd)
 if (status == 0 ):
