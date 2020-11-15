@@ -16,5 +16,5 @@
 #SBATCH --mail-type=ALL  # Send me some mails when jobs end or fail.
 
 pwd; hostname; date
-Rscript ../tscale-evo/process_modis.R
+Rscript ../tscale-evo/process_modis.R $1 /home/caduff/data/modis_fsca_gf/
 date
