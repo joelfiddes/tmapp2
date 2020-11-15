@@ -8,8 +8,11 @@ from configobj import ConfigObj
 
 wd= sys.argv[1]
 mode=sys.argv[2]
-start= sys.argv[3]
-end= sys.argv[4]
+
+# contingent args on mode
+if mode== 'subperiod':
+	start= sys.argv[3]
+	end= sys.argv[4]
 
 #start='2003-05-01' 
 #end = '2003-05-30'

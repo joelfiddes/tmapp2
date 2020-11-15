@@ -6,10 +6,11 @@
 # 	$3: number of samples rounded up to nearest 100
 # 	$4: data assimilation year corresponding to melt period
 
-NGRIDS=6
-NENSEMBLE=100
-NJOBS=100
-DA=true
+# variables
+NGRIDS=6 # number of era5 grids
+NENSEMBLE=100 # must match config.ini
+NJOBS=100 # can be any reasonable number
+DA=false
 
 if [[ $# -eq 0 ]] ; then
     echo 'Working directory needed as Arg1'
