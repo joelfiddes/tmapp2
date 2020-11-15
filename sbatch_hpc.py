@@ -27,7 +27,7 @@ else:
 
 
 # submit the second job to be dependent on the first
-cmd = "sbatch --depend=afterany:%s slurm_svf.sh" + wd % jobnum
+cmd = "sbatch --depend=afterany:%s slurm_svf.sh %s" % (jobnum, wd)
 print "Submitting Job2 with command: %s" % cmd
 status,jobnum = commands.getstatusoutput(cmd)
 if (status == 0 ):
@@ -36,7 +36,7 @@ else:
     print "Error submitting Job2"
 
 # submit the third job to be dependent on the second
-cmd = "sbatch --depend=afterany:%s slurm_tscale.sh "+ wd+" "+Nmonths % jobnum
+cmd = "sbatch --depend=afterany:%s slurm_tscale.sh %s %d "% (jobnum, wd,Nmonths )
 print "Submitting Job2 with command: %s" % cmd
 status,jobnum = commands.getstatusoutput(cmd)
 if (status == 0 ):
