@@ -19,7 +19,8 @@ def main(wd, ensembleN):
 	ensemb_root = wd+"/ensemble"
 
 	# pad to 3 digits for sorting ease
-	i=int(ensembleN)
+	i=int(ensembleN)# this is 1-100
+
 	ipad=	'%03d' % (i,)
 
 	# make new dierectory if does not exist
@@ -29,29 +30,15 @@ def main(wd, ensembleN):
 		os.system(cmd)
 
 
-
-
-
-	# write copy of config for ensemble editing
-	# config.filename = ensemb_root +"/ensemble_config.ini"
-	# config.write()
-	# config = ConfigObj(config.filename)
-	
-
-	# start ensemble runs
-
 	# read in csv as pd data
 	df = pd.read_csv(ensemb_root+"/ensemble.csv")
 
 
-
-	# Loop Timer
-
-
-	pbias = df['pbias'][i]
-	tbias = df['tbias'][i]
-	lwbias = df['lwbias'][i]
-	swbias = df['swbias'][i]
+	# python 0-99 index
+	pbias = df['pbias'][i-1]
+	tbias = df['tbias'][i-1]
+	lwbias = df['lwbias'][i-1]
+	swbias = df['swbias'][i-1]
 
 
 	# config["main"]["wd"]  = ensemb_root + "/ensemble" + str(ipad) + "/"
@@ -61,9 +48,6 @@ def main(wd, ensembleN):
 	# config["da"]["lwscale"] = lwbias
 
 	# config.write()
-
-
-
 
 	# copy sim dirs only THIS doesnt scale as we 30GB data *100 workers! Do 1 by 1
 	# src = wd+"/out/tscale*.csv"
