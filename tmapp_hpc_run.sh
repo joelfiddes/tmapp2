@@ -1,5 +1,5 @@
 # Example bash tmapp_hpc_run.sh /home/caduff/sim/ccamm_inter 100 1200 2019
-
+# bash tmapp_hpc_run.sh /home/caduff/sim/ch_tmapp_100 500 2100 2019
 # Args:
 #	$1: is working directory
 # 	$2: number of months in sim rounded up to nearest 100

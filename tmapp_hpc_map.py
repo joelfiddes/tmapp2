@@ -14,7 +14,7 @@ if mode== 'subperiod':
 	start= sys.argv[4]
 	end= sys.argv[5]
 
-if mode== 'da':
+if mode== 'ensemble':
 	start= sys.argv[4]
 	end= sys.argv[5]
 
@@ -25,7 +25,7 @@ print("Mode = " + mode)
 # mode:
 # 	subperiod
 # 	allperiod
-# 	da
+# 	ensemble
 # 	timseries
 
 rcode = "/home/caduff/src/tmapp2/rsrc/spatialize.R"
