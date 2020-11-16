@@ -55,7 +55,7 @@ df.to_csv( wd+'/ensembRes'+str(ipad)+'.csv', index = False, header=False)
 
 
 # get open - loop results, but only once when ensembleN=0
-if ensembleN==1:
+if int(ensembleN)==1:
 
 	a =glob.glob(wd + "/fsm_sims/*")
 	file_listOL = natural_sort(a)
