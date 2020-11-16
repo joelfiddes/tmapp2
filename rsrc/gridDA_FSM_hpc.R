@@ -117,7 +117,7 @@ high.pri = c(high.pri, med$y)
 date=1:length(obs)
 
 #  xlim=c(date[182],date[355])
-plot(date,high.pri, col=NULL, type='l', main=paste('(A) fSCA'), ylab="fSCA (0-1)",xlab='', ylim=c(0,0.2))
+plot(date,high.pri, col=NULL, type='l', main=paste('(A) fSCA'), ylab="fSCA (0-1)",xlab='', ylim=c(0,1))
 #lines(low.pri, col='red')
 lines(date,med.pri ,col='red', lwd=3)
 #lines(high.post, col='blue')
@@ -148,6 +148,7 @@ legend("topright", c("prior", "posterior", "obs", "open-loop") , col=c("red", "b
 #abline(v=date[DSTART], lty=3)
 #abline(v=date[DEND], lty=3)
 #====================================================================
+
 #   # Now plot SWE (or HS)
 #====================================================================
 
