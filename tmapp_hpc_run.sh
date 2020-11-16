@@ -11,7 +11,8 @@ NGRIDS=6 # number of era5 grids
 NENSEMBLE=100 # must match config.ini
 NJOBS=100 # can be any reasonable number
 DA=true
-
+mapstart=2019-03-31 
+mapend=2019-03-31
 
 if [[ $# -eq 0 ]] ; then
     echo 'Working directory needed as Arg1'
@@ -107,7 +108,7 @@ if [ "$DA" = true ] ; then
 	jid8=${SBATCHID//[!0-9]/}
 
 	# map out ensemble with highest weight
-	SBATCHID=$(sbatch  --dependency=afterany:$jid8  --array=1 slurm_map.sh $1 ensemble $NGRIDS )
+	SBATCHID=$(sbatch  --dependency=afterany:$jid8  --array=1 slurm_map.sh $1 ensemble $NGRIDS 2019-03-31 2019-03-31)
 	jid9=${SBATCHID//[!0-9]/}
 
 	fi

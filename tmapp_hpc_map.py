@@ -14,7 +14,11 @@ if mode== 'subperiod':
 	start= sys.argv[4]
 	end= sys.argv[5]
 
+if mode== 'da':
+	start= sys.argv[4]
+	end= sys.argv[5]
 
+print(paste("Mode =", mode))
 #start='2003-05-01' 
 #end = '2003-05-30'
 
