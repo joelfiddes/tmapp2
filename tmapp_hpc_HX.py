@@ -79,8 +79,11 @@ No=len(Y)
 Rinv=np.array([(1/R)]*No)
 mat = np.ones((1,HX.shape[1])) 
 
+# reshape Y to have dims of mat
+Y1 = np.reshape(np.array(Y), (80, 1)) 
+
 # Calculate the likelihood.
-Inn= np.kron(mat,Y) -HX
+Inn= np.kron(mat,Y1 )-HX
 
 # with %*% gives NA
 EObj=Rinv.dot(Inn**2)                  # [1 x Ne] ensemble objective function.
