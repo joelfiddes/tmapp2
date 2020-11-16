@@ -13,7 +13,7 @@ import numpy as np
 # approx 38 s for 100 samples and 32 model types (320 sims) for 1 sim year
 
 
-def main(wd, ensembleN):
+def main(wd, ensembleN, daYear):
 
 	config = ConfigObj(wd+"/config.ini")
 	ensemb_root = wd+"/ensemble"
@@ -123,7 +123,7 @@ def main(wd, ensembleN):
 		# subset by hydro year + 3 year spinup
 		# so if daYear =2019
 		# simulation goes 2016-01-01 00:00 (first timestamp in 2016) to 2019-12-31 23:00 (last timestamp in 2019)
-		startYear = daYear-3
+		startYear = daYear -3
 		startDayIndex = np.array(np.where(df.iloc[:,0]==startYear)[0])[0]  
 		endDayIndex = np.array(np.where(df.iloc[:,0]==daYear)[-1])[-1]  
 		dfsub=df.loc[startDayIndex:endDayIndex,:]
@@ -182,5 +182,6 @@ if __name__ == '__main__':
 	import sys
 	wd      = sys.argv[1]
 	ensembleN =sys.argv[2]
+	daYear =int(sys.argv[3])
 
 	main(config)

@@ -2,6 +2,7 @@
 # JobArray.sh
 #$1 : wd
 #$2 : da year
+#
 # run python tmapp_hpc_perturb.py #WD once at cmdline THEN:
 
 # run sbatch slurm_da.sh /home/caduff/sim/ch_tmapp_50
@@ -43,7 +44,7 @@ pwd; hostname; date
 echo This is task $SLURM_ARRAY_TASK_ID, which will do Ensemble $SLURM_ARRAY_TASK_ID 
 
  #Do your stuff here
-python tmapp_hpc_daRunEnsemble.py $1 $SLURM_ARRAY_TASK_ID 
+python tmapp_hpc_daRunEnsemble.py $1 $SLURM_ARRAY_TASK_ID $2
 
 python tmapp_hpc_daGetResults.py $1 $2 $SLURM_ARRAY_TASK_ID 
 
