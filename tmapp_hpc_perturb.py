@@ -22,7 +22,8 @@ if not os.path.exists(ensemb_dir):
 # write copy of config for ensemble editing
 
 #generate ensemble
-subprocess.call(["Rscript", "rsrc/ensemGen.R" , str(N) , ensemb_dir, config['ensemble']['sampling'] ])
+if not os.path.isfile(wd+"/ensemble/ensemble.csv"):
+	subprocess.call(["Rscript", "rsrc/ensemGen.R" , str(N) , ensemb_dir, config['ensemble']['sampling'] ])
 
 # copy FSm exe to wd
 fsm=config['main']['FSMPATH'] + "/FSM"
