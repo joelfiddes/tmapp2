@@ -61,7 +61,7 @@ if ensembleN==1:
 	file_listOL = natural_sort(a)
 
 	data = []
-	for file_path in tqdm(file_listOL):
+	for file_path in file_listOL:
 		data.append( np.genfromtxt(file_path, usecols=6)[int(startIndex):int(endIndex)]   )
 
 	myarray = np.asarray(data)
