@@ -21,6 +21,7 @@ fi
 # clear logs
 rm LOG*
 
+source bin/activate
 # Job dependency doc 
 # https://hpc.nih.gov/docs/job_dependencies.html
 
