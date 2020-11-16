@@ -15,7 +15,7 @@ fsca= read.csv(paste0(wd, "/meanSCA.csv"))
 fsca_dates = read.csv(paste0(wd,"/fsca_dates.csv"))
 fsca = fsca$meanvec
 weight = read.csv(paste0(wd, "/ensemble/weights.txt"), header=F)
-weight = weight$V2
+weight = weight$V1
 ndays = length(obs)
 lq=0.3
 uq=0.85

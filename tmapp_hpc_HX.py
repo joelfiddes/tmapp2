@@ -93,11 +93,11 @@ LH=np.exp(-0.5*EObj)                     # Scaled likelihood.
 # Calculate the posterior weights as the normalized likelihood. 
 w=LH/sum(LH)                        # Posterior weights.
 
-pd.Series(w).to_csv( wd + "/ensemble/weights.txt")
+np.savetxt( wd + "/ensemble/weights.txt",w)
 np.savetxt(wd + "/ensemble/HX", HX)
 np.savetxt(wd + "/ensemble/HX_swe", HX_swe)
 np.savetxt(wd + "/ensemble/obs", Y)
 np.savetxt(wd + "/openloopMean.csv", oloop)
 
-cmd = [ "Rscript",   "./rsrc/gridDA_FSM_hpc.R" , wd, N]
+cmd = [ "Rscript",   "./rsrc/gridDA_FSM_hpc.R" , wd, str(N)]
 subprocess.check_output(cmd)
