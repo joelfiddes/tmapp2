@@ -154,7 +154,7 @@ if mode=='subperiod':
 if mode=='ensemble':
 	# plot MAP ensemble
 	w = pd.read_csv(wd+"/ensemble/weights.txt", header=None)
-	ensembleN=int(w.idxmax()[1]  +1)
+	ensembleN=int(w.idxmax()  +1)
 
 	ipad=	'%03d' % (ensembleN,)
 
