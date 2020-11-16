@@ -1,4 +1,4 @@
-# Example bash tmapp_hpc_run.sh /home/caduff/sim/ccamm_inter 100 1200 2003
+# Example bash tmapp_hpc_run.sh /home/caduff/sim/ccamm_inter 100 1200 2019
 
 # Args:
 #	$1: is working directory
@@ -10,7 +10,7 @@
 NGRIDS=6 # number of era5 grids
 NENSEMBLE=100 # must match config.ini
 NJOBS=100 # can be any reasonable number
-DA=false
+DA=true
 
 
 if [[ $# -eq 0 ]] ; then
@@ -76,7 +76,7 @@ SBATCHID=$(sbatch  --dependency=afterany:$jid3  --array=1-$NJOBS slurm_sim.sh $1
 jid4=${SBATCHID//[!0-9]/}
 
 # mapping jobs (clash if simulateous on file rm code)
-SBATCHID=$(sbatch  --dependency=afterany:$jid4  --array=1 slurm_map.sh $1 subperiod $NGRIDS 2017-03-01 2017-03-30)
+SBATCHID=$(sbatch  --dependency=afterany:$jid4  --array=1 slurm_map.sh $1 subperiod $NGRIDS 2019-03-31 2019-03-31)
 jid5=${SBATCHID//[!0-9]/}
 
 SBATCHID=$(sbatch  --dependency=afterany:$jid5  --array=1 slurm_map.sh $1 allperiod $NGRIDS )
@@ -98,7 +98,7 @@ if [ "$DA" = true ] ; then
 	jid6=${SBATCHID//[!0-9]/}
 
 	# compute mean Modis fSCA
-	SBATCHID=$(sbatch  --dependency=afterany:$jid6 --array=1 slurm_modis.sh $1)
+	SBATCHID=$(sbatch  --dependency=afterany:$jid6 --array=1 slurm_modis.sh $1 $4)
 	jid7=${SBATCHID//[!0-9]/}
 
 	# run PBS and plots
