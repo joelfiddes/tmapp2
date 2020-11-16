@@ -7,7 +7,7 @@ from configobj import ConfigObj
 
 wd= sys.argv[1]
 mode=sys.argv[2]
-ngrid = sys.argv[3]
+ngrid = str(sys.argv[3])
 
 # contingent args on mode
 if mode== 'subperiod':
@@ -150,15 +150,15 @@ if mode=='subperiod':
 if mode=='da':
 	# plot MAP ensemble
 	w = pd.read_csv(wd+"/ensemble/weights.txt", header=None)
-	ensembleN=w.idxmax()[1]  
-	i=int(ensembleN+1)
-	ipad=	'%03d' % (i,)
+	ensembleN=int(w.idxmax()[1]  +1)
 
-	timeseries_means_period_ensemble(wd,i,  nsims, col, start, end)
+	ipad=	'%03d' % (ensembleN,)
+
+	timeseries_means_period_ensemble(wd,ensembleN,  nsims, col, start, end)
 
 	meanVar= wd+"/ensemble/ensemble"+ipad+"/mean_ts_"+str(col)+"_"+start+end+".csv"
 	outname="spatial_" +start+"_"+end+"_"+str(col)+"ensemble"+ipad
-	cmd = ["Rscript" ,rcode ,wd ,meanVar, str(nclust), outname, ngrid]
+	cmd = ["Rscript" ,rcode ,wd ,meanVar, str(nclust), outname, str(ngrid)]
 	subprocess.check_output(cmd)
 
 

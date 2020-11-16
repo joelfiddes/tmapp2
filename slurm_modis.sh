@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # $1 : wd
-
+# $2 : daYear (int)
 #SBATCH -J modis # A single job name for the array
 #SBATCH -p node # Partition (required)
 #SBATCH -A node # Account (required)
@@ -16,5 +16,5 @@
 #SBATCH --mail-type=ALL  # Send me some mails when jobs end or fail.
 
 pwd; hostname; date
-Rscript ../tscale-evo/process_modis.R $1 /home/caduff/data/modis_fsca_gf/
+Rscript ../tscale-evo/process_modis.R $1 /home/caduff/data/modis_fsca_gf/ $2
 date

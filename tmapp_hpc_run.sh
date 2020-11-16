@@ -12,6 +12,7 @@ NENSEMBLE=100 # must match config.ini
 NJOBS=100 # can be any reasonable number
 DA=false
 
+
 if [[ $# -eq 0 ]] ; then
     echo 'Working directory needed as Arg1'
     exit 0

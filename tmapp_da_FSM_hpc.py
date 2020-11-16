@@ -5,6 +5,7 @@ import pandas as pd
 import sys
 from configobj import ConfigObj
 import glob
+import numpy as np
 
 
 
@@ -76,6 +77,7 @@ def main(wd, ensembleN):
 	stephr = df.iloc[1,3] -df.iloc[0,3] 
 	tout=24/stephr
 	
+	# order of tsfiles does not matter here
 	for myfile in tsfiles:
 		myfilebase = os.path.basename(myfile)  # remove path
 		# parse original meteo and purturb       
@@ -108,7 +110,7 @@ def main(wd, ensembleN):
 
 
 		if config["da"]["PPARS"] == "P":
-			df.iloc[:,6] = df.iloc[:,6] *pbias#multiplicative formal
+			df.iloc[:,6] = df.iloc[:,6] *pbias#multiplicative 
 			df.iloc[:,7] = df.iloc[:,7] *pbias#multiplicative
 
 		if config["da"]["PPARS"] == "PT":
@@ -124,7 +126,7 @@ def main(wd, ensembleN):
 			df.iloc[:,8] = df.iloc[:,8]*tbias
 			df.iloc[:,4] = df.iloc[:,4] * swbias##multiplicative
 
-
+		# suspicious of LW linked to TA so avoid this option
 		if config["da"]["PPARS"] == "PTSL":
 			df.iloc[:,6] = df.iloc[:,6] *pbias#multiplicative
 			df.iloc[:,7] = df.iloc[:,7] *pbias#multiplicative
@@ -132,7 +134,16 @@ def main(wd, ensembleN):
 			df.iloc[:,4] = df.iloc[:,4] * swbias##multiplicative
 			df.iloc[:,5] = df.iloc[:,5] * lwbias##multiplicative
 
-		df.to_csv( ensemb_dir+myfilebase,sep='\t', index = False, header=False)
+
+
+		# subset by hydro year + 3 year spinup
+		# so if daYear =2019
+		# simulation goes 2016-01-01 00:00 (first timestamp in 2016) to 2019-12-31 23:00 (last timestamp in 2019)
+		startYear = daYear-3
+		startDayIndex = np.array(np.where(df.iloc[:,0]==startYear)[0])[0]  
+		endDayIndex = np.array(np.where(df.iloc[:,0]==daYear)[-1])[-1]  
+		dfsub=df.loc[startDayIndex:endDayIndex,:]
+		dfsub.to_csv( ensemb_dir+myfilebase,sep='\t', index = False, header=False)
 		
 
 		for n in range(31,32): # only do full physics setup31
