@@ -14,6 +14,7 @@ import numpy as np
 
 
 def main(wd, ensembleN, daYear):
+	daYear=int(daYear)
 
 	config = ConfigObj(wd+"/config.ini")
 	ensemb_root = wd+"/ensemble"
@@ -182,6 +183,6 @@ if __name__ == '__main__':
 	import sys
 	wd      = sys.argv[1]
 	ensembleN =sys.argv[2]
-	daYear =int(sys.argv[3])
+	daYear =sys.argv[3]
 
-	main(config)
+	main(wd, ensembleN, daYear)
