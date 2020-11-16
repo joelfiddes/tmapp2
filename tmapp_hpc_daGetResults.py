@@ -60,6 +60,11 @@ if int(ensembleN)==1:
 	a =glob.glob(wd + "/fsm_sims/*")
 	file_listOL = natural_sort(a)
 
+	df =pd.read_csv(file_listOL[0], delim_whitespace=True, parse_dates=[[0,1,2]], header=None)
+	startIndex = df[df.iloc[:,0]==str(da_year)+"-03-31"].index.values     
+	endIndex = df[df.iloc[:,0]==str(da_year)+"-06-19"].index.values   
+
+
 	data = []
 	for file_path in file_listOL:
 		data.append( np.genfromtxt(file_path, usecols=6)[int(startIndex):int(endIndex)]   )
