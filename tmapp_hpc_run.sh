@@ -7,7 +7,7 @@
 # 	$4: data assimilation year corresponding to melt period
 
 # variables
-NGRIDS=21 # number of era5 grids
+NGRIDS=6 # number of era5 grids
 NENSEMBLE=100 # must match config.ini
 NJOBS=100 # can be any reasonable number
 DA=true

@@ -76,7 +76,7 @@ oloop = arr.sum(axis=1)/sum(lp.members)
 
 # cut all values > 10000
 # extract obs for da year
-startIndex = fsca_dates[fsca_dates.iloc[:,0]==str(da_year)+"-03-31"].index.values     
+startIndex = fsca_dates[fsca_dates.iloc[:,0]==str(da_year)+"-01-31"].index.values     
 endIndex = fsca_dates[fsca_dates.iloc[:,0]==str(da_year)+"-06-19"].index.values 
 Y=fsca[int(startIndex):int(endIndex)]
 Y = Y.mean_fsca/100 

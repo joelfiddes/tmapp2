@@ -36,7 +36,7 @@ file_list = natural_sort(a)
 
 # compute dates index for da we always extract 31 March to Jun 30 for DA - this may of course not always be appropriate
 df =pd.read_csv(file_list[0], delim_whitespace=True, parse_dates=[[0,1,2]], header=None)
-startIndex = df[df.iloc[:,0]==str(da_year)+"-03-31"].index.values     
+startIndex = df[df.iloc[:,0]==str(da_year)+"-01-31"].index.values     
 endIndex = df[df.iloc[:,0]==str(da_year)+"-06-19"].index.values     
 
 if len(startIndex) ==0:
@@ -61,7 +61,7 @@ if int(ensembleN)==1:
 	file_listOL = natural_sort(a)
 
 	df =pd.read_csv(file_listOL[0], delim_whitespace=True, parse_dates=[[0,1,2]], header=None)
-	startIndex = df[df.iloc[:,0]==str(da_year)+"-03-31"].index.values     
+	startIndex = df[df.iloc[:,0]==str(da_year)+"-01-31"].index.values     
 	endIndex = df[df.iloc[:,0]==str(da_year)+"-06-19"].index.values   
 
 
