@@ -28,11 +28,20 @@ lp = pd.read_csv(wd + "/listpoints.txt")
 # find all ensemble result files
 ensembleResults =glob.glob(wd + "/ensembRes*")
 
+import re                                                                                                                                                                                                                                                             
+
+def natural_sort(l): 
+	convert = lambda text: int(text) if text.isdigit() else text.lower() 
+	alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
+	return sorted(l, key = alphanum_key)
+
+ensembleResults_sort = natural_sort(ensembleResults)
+
+
 # loop over to do processing
 data=[]
-for eres in ensembleResults:
+for eres in ensembleResults_sort:
 	ensembRes2 = pd.read_csv(eres, header=None)
-
 	ensembRes2[ ensembRes2 <= sdThresh ] = 0
 	ensembRes2[ ensembRes2 > sdThresh ] = 1
 	Vect = lp.members
@@ -40,11 +49,11 @@ for eres in ensembleResults:
 	HXi = arr.sum(axis=1)/sum(lp.members)
 	data.append(HXi)
 
-HX = np.asarray(data).transpose()
+HX = np.array(data).transpose()
 
 # make the real value matrix fro plotting
 data=[]
-for eres in ensembleResults:
+for eres in ensembleResults_sort:
 	ensembRes2 = pd.read_csv(eres, header=None)
 	ensembRes2[ensembRes2>1000]=1000
 	Vect = lp.members
