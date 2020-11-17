@@ -37,8 +37,15 @@ for handler in logging.root.handlers[:]:
 logging.basicConfig(level=logging.DEBUG, filename=logfile,filemode="a+",format="%(asctime)-15s %(levelname)-8s %(message)s")
 
 
+import re                                                                                                                                                                                                                                                             
+
+def natural_sort(l): 
+	convert = lambda text: int(text) if text.isdigit() else text.lower() 
+	alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
+	return sorted(l, key = alphanum_key)
+	
 # concat all listpoint files
-filenames = sorted(glob.glob(wd + "/*/*/listpoints.txt"))
+filenames = natural_sort(glob.glob(wd + "/*/*/listpoints.txt"))
 
 dfs = []
 for filename in filenames:

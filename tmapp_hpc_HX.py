@@ -41,7 +41,7 @@ ensembleResults_sort = natural_sort(ensembleResults)
 # loop over to do processing
 data=[]
 for eres in ensembleResults_sort:
-	ensembRes2 = pd.read_csv(eres, header=None)
+	ensembRes2 = pd.read_csv(eres, header=None) # shape should be N_sample (grid*Nclust) x N_obs
 	ensembRes2[ ensembRes2 <= sdThresh ] = 0
 	ensembRes2[ ensembRes2 > sdThresh ] = 1
 	Vect = lp.members
@@ -49,8 +49,9 @@ for eres in ensembleResults_sort:
 	HXi = arr.sum(axis=1)/sum(lp.members)
 	data.append(HXi)
 
-HX = np.array(data).transpose()
-
+HX = np.array(data).transpose() # result is 2dims N_obs * N_ensemble if not an ensemblerun has failed
+if len(HX.shape) <2:
+	print "HX failed, an Ensemble run must have failed"
 # make the real value matrix fro plotting
 data=[]
 for eres in ensembleResults_sort:

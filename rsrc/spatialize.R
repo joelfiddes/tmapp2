@@ -12,9 +12,6 @@ gridseq =1:ngrid
 meanswe =read.csv(meanVar ,head=F )
 
 
-# this is given by filenames = sorted(glob.glob(wd + "/*/*/listpoints.txt"))    
-# in tscale3D.py but only valid for this domain - NEED TO FIX!
-
 	for (i in 1:length(gridseq)){
 		print(i)
 		grid = gridseq[i]

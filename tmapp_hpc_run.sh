@@ -77,7 +77,7 @@ jid3=${SBATCHID//[!0-9]/}
 SBATCHID=$(sbatch  --dependency=afterany:$jid3  --array=1-$NJOBS slurm_sim.sh $1 $3)
 jid4=${SBATCHID//[!0-9]/}
 
-# mapping jobs (clash if simulateous on file rm code)
+# mapping jobs (clash if simulateous on file rm code) can run parallel to da code below
 SBATCHID=$(sbatch  --dependency=afterany:$jid4  --array=1 slurm_map.sh $1 subperiod $NGRIDS 2019-03-31 2019-03-31)
 jid5=${SBATCHID//[!0-9]/}
 
@@ -93,23 +93,23 @@ if [ "$DA" = true ] ; then
 
 	# Generate meteo purturbations 
 	SBATCHID=$(sbatch  --dependency=afterany:$jid4  --array=1 slurm_perturb.sh $1)
-	jid5=${SBATCHID//[!0-9]/}
-
-	# run ensembles get results, array = number of ensembles (in config.ini)
-	SBATCHID=$(sbatch  --dependency=afterany:$jid5  --array=1-$NENSEMBLE slurm_da.sh $1 $4)
-	jid6=${SBATCHID//[!0-9]/}
-
-	# compute mean Modis fSCA
-	SBATCHID=$(sbatch  --dependency=afterany:$jid6 --array=1 slurm_modis.sh $1 $4)
-	jid7=${SBATCHID//[!0-9]/}
-
-	# run PBS and plots
-	SBATCHID=$(sbatch  --dependency=afterany:$jid7 --array=1 slurm_pbs.sh  $1  $4)
 	jid8=${SBATCHID//[!0-9]/}
 
-	# map out ensemble with highest weight
-	SBATCHID=$(sbatch  --dependency=afterany:$jid8  --array=1 slurm_map.sh $1 ensemble $NGRIDS 2019-03-31 2019-03-31)
+	# run ensembles get results, array = number of ensembles (in config.ini)
+	SBATCHID=$(sbatch  --dependency=afterany:$jid8  --array=1-$NENSEMBLE slurm_da.sh $1 $4)
 	jid9=${SBATCHID//[!0-9]/}
+
+	# compute mean Modis fSCA
+	SBATCHID=$(sbatch  --dependency=afterany:$jid9 --array=1 slurm_modis.sh $1 $4)
+	jid10=${SBATCHID//[!0-9]/}
+
+	# run PBS and plots
+	SBATCHID=$(sbatch  --dependency=afterany:$jid10 --array=1 slurm_pbs.sh  $1  $4)
+	jid11=${SBATCHID//[!0-9]/}
+
+	# map out ensemble with highest weight
+	SBATCHID=$(sbatch  --dependency=afterany:$jid11  --array=1 slurm_map.sh $1 ensemble $NGRIDS 2019-03-31 2019-03-31)
+	jid12=${SBATCHID//[!0-9]/}
 
 	fi
 
