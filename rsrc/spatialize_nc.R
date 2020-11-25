@@ -44,9 +44,11 @@ rast.list$fun <- mean
 rast.mosaic <- do.call(mosaic,rast.list)
 hist<-rast.mosaic
 	#plot(hist,zlim=zlim, col=mycol, main= "1980-2000 Hist ")
-writeRaster(hist, paste0(outroot,outname,"__map.tif"), overwrite=T)
+writeRaster(hist, paste0(outroot,outname,"_map.nc"),overwrite=TRUE, format="CDF",     varname="HS", varunit="m",    longname="Snow height", xname="Longitude",   yname="Latitude", zname="Time (Month)")
 
 
 for (i in 1:length(rasters1)){
 	system(paste0("rm ",rasters1[i]))
 	}
+
+
