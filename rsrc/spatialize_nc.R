@@ -48,7 +48,7 @@ hist<-rast.mosaic
 
 hist_agg = aggregate(hist, fact=9,mean)
 writeRaster(hist_agg, paste0(outroot,outname,"_map.tif"),overwrite=TRUE)
-writeRaster(hist_agg, paste0(outroot,outname,"_map.nc"),overwrite=TRUE, format="CDF",     varname="HS", varunit="m",    longname="Snow height", xname="Longitude",   yname="Latitude", zname="Time")
+#writeRaster(hist_agg, paste0(outroot,outname,"_map.nc"),overwrite=TRUE, format="CDF",     varname="HS", varunit="m",    longname="Snow height", xname="Longitude",   yname="Latitude", zname="Time")
 
 
 for (i in 1:length(rasters1)){
