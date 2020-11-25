@@ -35,7 +35,7 @@ require(raster)
 
 
 
-rasters1 <- list.files(outroot, pattern=paste0(outname),full.names=TRUE, recursive=TRUE)
+rasters1 <- list.files(outroot, pattern=paste0(outname,"g"),full.names=TRUE, recursive=TRUE) # just looks for indiv grids
 rast.list <- list()
 for(i in 1:length(rasters1)) { rast.list[i] <- raster(rasters1[i]) }
 
