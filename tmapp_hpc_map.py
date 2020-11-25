@@ -97,6 +97,45 @@ def timeseries_means_period_ensemble(wd, ensembleN, nsims, col, start, end):
 
 	pd.Series(mean_ts).to_csv(wd+"/ensemble/ensemble"+str(ipad)+"/mean_ts_"+str(col)+"_"+start+end+".csv",header=False, float_format='%.3f') 
 
+
+def timeseries_means_period_ensemble_MAP1(wd, ensembleN, nsims, col, start, end):
+	"""
+	Date format "yyyy-mm-dd"
+	if statrt and end are same date then  single day is computed
+	"""
+
+	i=int(ensembleN)
+	ipad=	'%03d' % (i,)
+
+
+	mean_ts=[]
+	for ID in (range(nsims)):
+
+		idpad =	'%03d' % (ID+1,)
+		f=glob.glob(wd + "/ensemble/ensemble"+str(ipad)+"/out"+str(idpad)+"_*")
+		df =pd.read_csv(f[0], delim_whitespace=True, parse_dates=[[0,1,2]], header=None)
+		df.set_index(df.iloc[:,0], inplace=True)  
+		df.drop(df.columns[[0]], axis=1, inplace=True )  
+		swe=df.iloc[:,col]
+		swemean = swe[slice(start,end)].astype(float).mean() # catches case where data has been return as object
+		mean_ts.append(swemean)
+
+
+	return(mean_ts) # mean value for ensemble
+
+def timeseries_means_period_ensemble_MAP2(wd, NENS, nsims, col, start, end):
+	
+	ens_ts=[]
+	for i in range(NENS):
+		ensembleN = i+1
+		print(ensembleN)
+		a= 	timeseries_means_period_ensemble_MAP1(wd, ensembleN, nsims, col, start, end)
+		ens_ts.append(a)
+
+	return(ens_ts)
+
+
+
 def timeseries(wd, nsims, col):
 	'''compute daily time series of domain'''
 	#gridseq =1,10,11,12,13,14,15,16,17,18,19,2,20,21,3,4,5,6,7,8,9
@@ -167,8 +206,63 @@ if mode=='ensemble':
 
 
 
+
+
+
 #=== compare domain mean to obs open and DA
 
 #=== compare domain mean to obs
 if mode=='timeseries':
 	meanVals = timeseries(wd, nsims, col)
+
+
+if mode == 'map':
+	# find all ensemble result files
+	ensembleResults =glob.glob(wd + "/ensembRes*")
+	lp = pd.read_csv(wd + "/listpoints.txt")
+	w = np.array(pd.read_csv(wd+"/ensemble/weights.txt", header=None))
+
+	import re                                                                                                                                                                                                                                                             
+
+	def natural_sort(l): 
+		convert = lambda text: int(text) if text.isdigit() else text.lower() 
+		alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
+		return sorted(l, key = alphanum_key)
+
+	ensembleResults_sort = natural_sort(ensembleResults)
+
+
+
+	# loop over to do processing
+	data=[]
+	for eres in ensembleResults_sort:
+		ensembRes2 = pd.read_csv(eres, header=None) # shape should be N_sample (grid*Nclust) x N_obs
+		data.append(ensembRes2)
+
+	a =np.dstack(data) # sample x time * ensembles
+	a2 = 	a*w.transpose() # times by pbs weights
+	a3 =a2.sum(2) # sum the weighted values
+	a4= a3.mean(1) # mean through time
+
+	pd.Series(a4).to_csv(wd+"/PBSMAP_ts_"+str(col)+".csv",header=False, float_format='%.3f') 
+	meanVar= wd+"/PBSMAP_ts_"+str(col)+".csv"
+
+	outname="PBSMAP_ts_"+str(col)
+	cmd = ["Rscript" ,rcode ,wd ,meanVar, str(nclust), outname, str(ngrid)]
+	subprocess.check_output(cmd)
+
+	# 	Vect = lp.members
+	# 	arr = ensembRes2.transpose()*Vect
+	# 	HXi = arr.sum(axis=1)/sum(lp.members)
+	# 	data.append(HXi)
+
+	# HX = np.array(data).transpose() 
+
+
+
+
+	ens_mean = timeseries_means_period_ensemble_MAP2(wd, NENS, nsims, col, start, end)
+	x =np.asarray(ens_mean)
+	w = pd.read_csv(wd+"/ensemble/weights.txt", header=None)
+	y =np.array(w)*x
+	ensembleMean = y.mean(1)

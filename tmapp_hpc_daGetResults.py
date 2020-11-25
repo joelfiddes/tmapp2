@@ -46,7 +46,7 @@ if len(endIndex) ==0:
 
 data = []
 for file_path in file_list:
-	data.append( np.genfromtxt(file_path, usecols=6)[int(startIndex):int(endIndex)]   )
+	data.append( np.genfromtxt(file_path, usecols=6)[int(startIndex):int(endIndex)]   ) # column 7 (index 6) is snow water equiv
 
 myarray = np.asarray(data)
 df =pd.DataFrame(myarray)
