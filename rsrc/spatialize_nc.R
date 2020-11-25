@@ -47,6 +47,6 @@ hist<-rast.mosaic
 writeRaster(hist, paste0(outroot,outname,"__map.tif"), overwrite=T)
 
 
-for (i in length(rasters1)){
+for (i in 1:length(rasters1)){
 	system(paste0("rm ",rasters1[i]))
 	}
