@@ -16,9 +16,8 @@ sys.path.insert(1, tscale_root)
 import tscale_lib as tlib
 
 # pars to add to config
-reduceSteepSnow='TRUE'
-outputFormat='FSM'
-
+config['toposcale']['reduceSteepSnow'] # TRUE or FALSE
+config['toposcale']['outputFormat'] # "FSM" or "tscale"
 
 #	Log
 logdir = wd+"/logs/"
