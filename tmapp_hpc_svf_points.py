@@ -18,8 +18,6 @@ sys.path.insert(1, tscale_root)
 import tscale_lib as tlib
 
 
-print("Computing SVF grid " + str(grid))
-
 
 homes = sorted(glob.glob(wd+"/sim/*")) # order doesnt matter
 tasks = homes[int(starti)-1:int(endi)]
@@ -29,7 +27,7 @@ for i,task in enumerate(tasks):
 	tlib.make_listpoints(task, pointsShp)
 	print("Grid " + str(task) + " done!")
 
-	
+
 
 
 
