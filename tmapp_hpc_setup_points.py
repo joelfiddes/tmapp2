@@ -45,11 +45,8 @@ pointsBuffer = 0.08
 
 
 # =========================================================================
-#	Log
+#	code
 # =========================================================================
-
-
-
 
 tlib.download_sparse_dem(wd, pointsShp, demRes, pointsBuffer, demDir)
 tlib.setup_sim_dirs(wd)
@@ -59,5 +56,4 @@ outdir = wd+"/out/"
 if not os.path.exists(outdir):
 	os.makedirs(outdir)
 	
-logging.info("Setup complete!")
 print("Setup complete!")

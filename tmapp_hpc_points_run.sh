@@ -5,7 +5,10 @@
 
 # Args:
 #	$1: is working directory
-# 	$2: number of months in sim rounded up to nearest 100
+# 	$2: number of points (simdirs) rounded up to nearest 100
+#	$3: number of months rounded up to nearest 100
+
+
 # 	$3: number of samples rounded up to nearest 100
 # 	$4: data assimilation year corresponding to melt period
 
@@ -42,7 +45,7 @@ source bin/activate
 # gets dem, computes asp/slp and clips ndvi
 # requires predictors/ndvi_modis.tif to exist
 
-SBATCHID=$(sbatch slurm_setup.sh $1)
+SBATCHID=$(sbatch slurm_setup_points.sh $1) # single array
 jid1=${SBATCHID//[!0-9]/}
 
 # = Parallel job by N era5 grids  ==============================================
@@ -58,7 +61,7 @@ jid1=${SBATCHID//[!0-9]/}
 
 
 
-SBATCHID=$(sbatch  --dependency=afterany:$jid1 --array=1-$NGRIDS  slurm_svf.sh $1)
+SBATCHID=$(sbatch  --dependency=afterany:$jid1 --array=1-$NJOBS  slurm_svf_points.sh $1 $2) # array of simdirs (points)
 jid2=${SBATCHID//[!0-9]/}
 
 # = Parallel job by N jobs (normally 100) x months ==============================
@@ -70,7 +73,7 @@ jid2=${SBATCHID//[!0-9]/}
 # jobs per processor must be a whole number
 
 # array = reasonable number
-SBATCHID=$(sbatch  --dependency=afterany:$jid2 --array=1-$NJOBS slurm_tscale_points.sh $1 $2)
+SBATCHID=$(sbatch  --dependency=afterany:$jid2 --array=1-$NJOBS slurm_tscale.sh $1 $3) # array of months
 jid3=${SBATCHID//[!0-9]/}
 
 # = Parallel job by N jobs (normally 100) x samples ============================
@@ -107,8 +110,8 @@ if [ "$DA" = true ] ; then
 	jid11=${SBATCHID//[!0-9]/}
 
 	# map out ensemble with highest weight
-	SBATCHID=$(sbatch  --dependency=afterany:$jid11  --array=1 slurm_map.sh $1 ensemble $NGRIDS 2019-03-31 2019-03-31)
-	jid12=${SBATCHID//[!0-9]/}
+	#SBATCHID=$(sbatch  --dependency=afterany:$jid11  --array=1 slurm_map.sh $1 ensemble $NGRIDS 2019-03-31 2019-03-31)
+	#jid12=${SBATCHID//[!0-9]/}
 
 	fi
 
