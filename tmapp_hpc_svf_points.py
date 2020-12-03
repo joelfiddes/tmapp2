@@ -12,7 +12,7 @@ config = ConfigObj(wd + "/config.ini")
 svfSectors = config['toposcale']['svfSectors']
 svfMaxDist = config['toposcale']['svfMaxDist']
 tscale_root = config['main']['tscale_root']  # path to tscaleV2 directory
-
+pointsShp = config['main']['pointsShp']
 
 sys.path.insert(1, tscale_root)
 import tscale_lib as tlib
